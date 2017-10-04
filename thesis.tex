@@ -1,0 +1,60 @@
+\documentclass[12pt]{report}
+\usepackage[utf8]{inputenc}
+\usepackage{polski}
+\usepackage[polish]{babel}
+\usepackage{graphicx}
+\graphicspath{ {images/} }
+
+\title{
+	{Generowanie obrazu metodą śledzenia promieni w czasie rzeczywistym z wykorzystaniem obliczeń równoległych}\\
+	%{\large Politechnika Wrocławska}\\
+	{\includegraphics{pwr.png}}
+}
+\author{Mateusz Gniewkowski}
+\date{DD:MM:RR}
+
+\begin{document}
+
+\maketitle
+
+\chapter*{Streszczenie}
+Streszczenie...
+
+
+\tableofcontents
+
+%\chapter{chapt}
+%\input{chapters/chapt}
+
+\chapter{Wstęp}
+\input{chapters/wstep}
+
+\chapter{Analiza problemu}
+\input{chapters/analiza}
+
+\chapter{Projekt systemu}
+\input{chapters/projekt}
+
+\chapter{Opis wybranych technologii}
+	\section{C++}
+	\section{QT}
+	\section{Standard MPI}
+
+\chapter{Implementacja}
+\input{chapters/implementacja}
+
+\chapter{Opis funkcjonalny}
+
+\chapter{Rezultaty}
+\input{chapters/rezultaty}
+
+\chapter{Podsumowanie}
+
+
+\chapter{Dodatek A - obliczenia równoległe}
+\chapter{Dodatek B - matematyka i algorytmy} 
+
+
+
+
+\end{document}
