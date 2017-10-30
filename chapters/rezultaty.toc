@@ -1,7 +1,0 @@
-\select@language {polish}
-\contentsline {chapter}{\numberline {1}Wst\IeC {\k e}p}{3}
-\contentsline {chapter}{\numberline {2}Analiza problemu}{4}
-\contentsline {chapter}{\numberline {3}Projekt systemu}{5}
-\contentsline {chapter}{\numberline {4}Implementacja}{6}
-\contentsline {chapter}{\numberline {5}Rezultaty}{7}
-\contentsline {chapter}{\numberline {6}Podsumowanie}{8}
