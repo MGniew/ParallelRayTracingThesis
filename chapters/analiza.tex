@@ -224,6 +224,30 @@ gdzie $R$ i $V$ oznaczają kolejno kierunek odbicia promienia i kierunek obserwa
 Cieniowanie ma na celu stworzenie złudzenia, w którym siatka trójkątów sprawia wrażenie gładkiej powierzchni. Najpopularniejszymi metodami cieniowania są ,,Cieniowanie Gourauda'', które polega na wyliczeniu kolorów każdego wierzchołka prymitywu, a następnie interpolacji pozostałych. Takie rozwiązanie jest stosunkowo szybkie obliczeniowo, ale nie daje realistycznych rezultatów. Popularną alternatywą jest ,,Cieniowanie Phonga''. Polega ono na określeniu w każdym wierzchołku poligonu wektorów ,,normalnych'' (niekoniecznie będących normalnymi do powierzchni), a następnie wyliczeniu (poprzez interpolację) takich wektorów dla pozostałych punktów. Takie wektory są później wykorzystywane np. w modelu Phonga w miejsce prawdziwych wektorów normalnych. Jako, że zarówno model Phonga jak i cieniowanie Phonga będą wykorzystywane w programie, którego dotyczy niniejsza praca, poniżej opisano metodę interpolacji wektorów.
 
 
+\subparagraph{Interpolacja barycentryczna}
+
+Do interpolacji wektorów może posłużyć nam tzw. barycentryczna. W przypadku trójkąta sytuacja prezentuje się następująco:
+
+\begin{figure}[h!]
+\centering
+  \caption{Interpolacja barycentryczna, źródło: nieznane}
+  \includegraphics[width=10cm]{interpolacja.png}
+\end{figure}
+
+Na powyższym trójkącie zaznaczono punkt $p$, a następnie poprowadzono do niego proste z każdego wierzchołka. W ten sposób prymityw został podzielony na trzy mniejsze trójkąty ($A_1$, $A_2$, $A_3$), których pola zależą od odległości od kolorystycznie odpowiadających punktów. Znając wektory normalne w tych trzech punktach i pola wszystkich trzech fragmentów możemy obliczyć jaki wpływ ma poszczególny wektor na wektor normalny w zaznaczonym punkcje:
+\\
+$N_p = N_{x_1} * P_{A_1}/P + N_{x_2} * P_{A_2}/P + N_{x_3} * P_{A_3}/P$\\
+\\
+gdzie :
+$N_x$ - wektor normalny w odpowiadającym punkcie.
+$P$ - pole całkowite
+$P_A$ - pole fragmentu
+
+Otrzymany w ten sposób wektor należy znormalizować, ponieważ jego długość nie koniecznie jest równa jeden.
+
+  
+
+
 
 
 \subsection{Rekursywny algorytm śledzenia promieni}
