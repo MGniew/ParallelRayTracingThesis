@@ -188,6 +188,44 @@ bool RayIntersectsTriangle(Vector3D rayOrigin,
 \end{lstlisting}
 
 \subsubsection{Model światła}
+
+Główny podział modeli światła stanowią modele empiryczne i fizyczne \cite{suffern2007, falski2004}. W niniejszej pracy skupimy się na pierwszej grupie, gdyż jest ona mniej kosztowna obliczeniowo, a dająca zadowalające rezultaty - fizyczne modele światła są raczej wykorzystywane w badaniach niż w standardowych zastosowaniach grafiki komputerowej.
+
+
+Najprostszym modelem światła jest tzw. oświetlenie bezkierunkowe. Wykorzystuje ono tzw. światło otoczenia (ambient light), które z definicji nie ma określonego źródła (wypełnia całą scenę) i dochodzi do każdego elementu z taką samą intensywnością.
+\\
+$I = I_{amb} * k_{amb}$\\
+\\
+W powyższym wzorze $I_{amb}$ oznacza intensywność światła otoczenia, a $k_{amb}$ to ,,albedo'' powierzchni przedmiotu (stosunek ilości promienia odbitego do padającego). Wartość natężenia światła liczy się najczęściej dla trzech składowych RGB, zawierających się w przedziale od 0 do 1.
+
+
+Bardziej zaawansowanym modelem, bo wykorzystującym światło rozproszone (diffuse light) jest tzw. model Lamberta - dodatkowo uwzględnia on punktowe źródła światła, których promienie padają pod pewnym kątem na daną powierzchnie. Model Lamberta zakłada, że oświetlane powierzchnie są idealnie matowe, zatem światło odbite od nich rozchodzi się tak samo we wszystkich kierunkach (odbicie lambertowskie). W związku z tym, nie ma możliwości otrzymania odblasków widocznych na powierzchniach błyszczących.\\
+\\
+$I = I_{amb} * k_{amb} + I_{dif} * d_{amb} * (N \bullet L)$
+\\
+W powyższym wzorze $N$ i $L$ są kolejno wektorem normalnym do powierzchni i wektorem wskazującym kierunek padania światła.
+
+
+Ostatnim, omawianym w tym dokumencie modelem światła, jest model Phonga. Wprowadza on tzw. światło kierunkowe (specular light), które uwzględnia odblaski. Model Phonga wyraża się wzorem:\\
+\\
+$I = I_{amb} * k_{amb} + 1/(a + bd + c^2d)(I_{dif} * d_{amb} * (N \bullet L) + k_{spec} * I_{spec} * (R \bullet V)^n)$
+\\
+gdzie $R$ i $V$ oznaczają kolejno kierunek odbicia promienia i kierunek obserwacji. Ułamek $1/(a + bd + c^2d)$ określa intensywność padającego światła w zależności od odległości od źródła ($d$ to odległość od źródła światła, pozostałe parametry są dobieranie empirycznie).
+
+\begin{figure}[h!]
+\centering
+  \caption{Model Phonga, źródło: https://pl.wikipedia.org/wiki/Cieniowanie\_Phonga}
+  \includegraphics[width=10cm]{phong.png}
+\end{figure}
+
+\paragraph{Cieniowanie}
+
+
+Cieniowanie ma na celu stworzenie złudzenia, w którym siatka trójkątów sprawia wrażenie gładkiej powierzchni. Najpopularniejszymi metodami cieniowania są ,,Cieniowanie Gourauda'', które polega na wyliczeniu kolorów każdego wierzchołka prymitywu, a następnie interpolacji pozostałych. Takie rozwiązanie jest stosunkowo szybkie obliczeniowo, ale nie daje realistycznych rezultatów. Popularną alternatywą jest ,,Cieniowanie Phonga''. Polega ono na określeniu w każdym wierzchołku poligonu wektorów ,,normalnych'' (niekoniecznie będących normalnymi do powierzchni), a następnie wyliczeniu (poprzez interpolację) takich wektorów dla pozostałych punktów. Takie wektory są później wykorzystywane np. w modelu Phonga w miejsce prawdziwych wektorów normalnych. Jako, że zarówno model Phonga jak i cieniowanie Phonga będą wykorzystywane w programie, którego dotyczy niniejsza praca, poniżej opisano metodę interpolacji wektorów.
+
+
+
+
 \subsection{Rekursywny algorytm śledzenia promieni}
 \subsection{Równoległa wersja algorytmu śledzenia promieni}
 
