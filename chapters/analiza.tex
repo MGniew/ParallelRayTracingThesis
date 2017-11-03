@@ -224,6 +224,14 @@ gdzie $R$ i $V$ oznaczają kolejno kierunek odbicia promienia i kierunek obserwa
 Cieniowanie ma na celu stworzenie złudzenia, w którym siatka trójkątów sprawia wrażenie gładkiej powierzchni. Najpopularniejszymi metodami cieniowania są ,,Cieniowanie Gourauda'', które polega na wyliczeniu kolorów każdego wierzchołka prymitywu, a następnie interpolacji pozostałych. Takie rozwiązanie jest stosunkowo szybkie obliczeniowo, ale nie daje realistycznych rezultatów. Popularną alternatywą jest ,,Cieniowanie Phonga''. Polega ono na określeniu w każdym wierzchołku poligonu wektorów ,,normalnych'' (niekoniecznie będących normalnymi do powierzchni), a następnie wyliczeniu (poprzez interpolację) takich wektorów dla pozostałych punktów. Takie wektory są później wykorzystywane np. w modelu Phonga w miejsce prawdziwych wektorów normalnych. Jako, że zarówno model Phonga jak i cieniowanie Phonga będą wykorzystywane w programie, którego dotyczy niniejsza praca, poniżej opisano metodę interpolacji wektorów.
 
 
+
+\begin{figure}[h!]
+\centering
+  \caption{,,Cieniowanie Gourauda'' i ,,Cieniowanie Phonga'', źródło: http://www.csc.villanova.edu/~mdamian, 02.11.2017}
+  \includegraphics[width=10cm]{gouraudvsphong.png}
+\end{figure}
+
+
 \subparagraph{Interpolacja barycentryczna}
 
 Do interpolacji wektorów może posłużyć nam tzw. barycentryczna. W przypadku trójkąta sytuacja prezentuje się następująco:
@@ -245,12 +253,37 @@ $P_A$ - pole fragmentu
 
 Otrzymany w ten sposób wektor należy znormalizować, ponieważ jego długość nie koniecznie jest równa jeden.
 
-  
-
-
-
-
+ 
 \subsection{Rekursywny algorytm śledzenia promieni}
+
+Rekursywny algorytm śledzenia promieni \cite{foley95} jest rozwinięciem algorytmu podstawowego, opisanego w poprzednim rozdziale. Uwzględnia on cienie, odbicia i załamania światła, dzięki śledzeniu dodatkowych promieni wysłanych z punktów przecięcia. W przypadku generowania cieni, z każdego punktu przecięcia wysyła się promień w kierunku źródła światła. Jeżeli promień ten natrafi na przeszkodę, to znaczy, że punkt znajduje się w cieniu, a więc wyliczając barwę piksela (korzystając np. z modelu Phonga omówionego powyżej), korzystamy tylko ze światła otoczenia. Dla odbić, do wysłania promienia wtórnego korzysta się z zasady, która mówi o tym, że kąt padania równy jest kątowi odbicia. W przypadku załamania światła, określa się współczynniki jego załamania (wartości dla różnych materiałów są stablicowane i ogólnodostępne) i stosuje prawo Snelliusa \cite{snellius}:\\
+\\
+$ sin(alpha)/sin(beta) = n_2/n_1$\\
+\\
+gdzie $\alpha$ - kąt padania, $\beta$ - kąt załamania, $n_1$ - współczynnik załamania pierwszego materiału, $n_2$ współczynnik załamania drugiego materiału.
+
+
+W tym miejscu należy zauważyć, że nie wszystkie materiały są przezroczyste i nie wszystkie materiały odbijają światło w podobny sposób co lustro (można w nich zobaczyć odbicia innych przedmiotów). Implementując algorytm śledzenia promieni należy wprowadzić mechanizm, który pozwala stwierdzić jaki ułamek ostatecznego koloru piksela będzie stanowić wynik śledzenia promieni odbitych/załamanych i czy takie promienie warto wysyłać - każdy z nich znacząco wpływa na czas obliczeń, więc ich redukcja, która nie wpływa w zauważalnym stopniu na wygenerowany obraz, jest kluczowym elementem optymalizacji.
+
+
+\begin{figure}[h!]
+\centering
+  \caption{Wizualizacja algorytmu rekursywnego, źródło: \cite{scratch}}
+  \includegraphics[width=10cm]{rekursywny.png}
+\end{figure}
+
+Rekursywny algorytm śledzenia promieni najczęściej implementuje się korzystając z funkcji rekurencyjnej \cite{suffern2007}, która przyjmuje punkt początkowy promienia, jego kierunek, oraz aktualną głębokość drzewo rekurencyjnego. Ostatni z parametrów często jest wykorzystywany w warunku stopu - po osiągnięciu określonej głębokości funkcja zwraca aktualnie osiągnięty kolor.
+
+
+\begin{figure}[h!]
+\centering
+  \caption{Wizualizacja algorytmu rekursywnego, źródło: \cite{scratch}}
+  \includegraphics[width=10cm]{rekursywny_drzewo.png}
+\end{figure}
+
+
 \subsection{Równoległa wersja algorytmu śledzenia promieni}
 
-\section{Wybór technologii}
+Algorytm śledzenie promieni jest bardzo kosztowny obliczeniowo. Jednym ze skuteczniejszych metod przyspieszenia generowania obrazu jest jego zrównoleglenie, które w przypadku tej metody jest bardzo proste, ponieważ wygenerowanie sceny składa się z wielu obliczeń mogących odbywać się niezależnie od siebie. Najczęściej zrównoleglenie następuje poziomie promieni pierwotnych - zbiór pikseli (pseudokodu znajdujący się w punkcie 2.1.1) dzieli się na podzbiory, mogące być przeanalizowane równolegle. Po obliczeniu kolorów wszystkich pikseli z wycinka, składa się je w jeden spójny obraz. Więcej o algorytmie równoległym można przeczytać w rozdziałach !ROZDZIAŁY!.
+
+\section{Optymalizacja algorytmu śledzenia promieni}
