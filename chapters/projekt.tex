@@ -27,7 +27,7 @@
     +minZ : float \\
     +maxZ : float \\ 
     \hline
-	+intersect(start: Vector3$<$float$>$, dir: Vector3$<$float$>$ \\ 
+	+intersect(start: Vector3, dir: Vector3 \\ 
 	\hline
     \end{tabular}
 \end{center}
@@ -43,12 +43,12 @@
 	\hline
 	+build(root : node*, polygons : SceneObject*, depth : int) \\ 
 	-getBestPlane(polygons : list$<$SceneObject*$>$) : Plane \\
-	+getClosest(crossPoint : Vector3$<$float$>$\&, startingPoint : Vector3$<$float$>$\&, directionVector : Vector3$<$float$>$\&) : SceneObject* \\
-	+isInShadow(crossPoint : Vector3$<$float$>$\&, directionVector : Vector3$<$float$>$\&, lightPos : Vector3$<$float$>$\&) : bool \\
-	-getBoundingBox(polygons : std.list$<$SceneObject*$>$) : BoundingBox \\
-	-intersect(root : node*, crossPoint : Vector3$<$float$>$\&, startingPoint : Vector3$<$float$>$\&, directionVector : Vector3$<$float$>$\&) : SceneObject * \\
-	-getClosestInNode(polygons : std.list$<$SceneObject*$>$, crossPoint : Vector3$<$float$>$\&, startingPoint : Vector3$<$float$>$\&, directionVector : Vector3$<$float$>$\&) : SceneObject * \\
-	-isInShadow\_tree(root : node*, crossPoint : Vector3$<$float$>$\&, directionVector : Vector3$<$float$>$\&, LightDistance : float) : bool \\
+	+getClosest(crossPoint : Vector3\&, startingPoint : Vector3\&, directionVector : Vector3\&) : SceneObject* \\
+	+isInShadow(crossPoint : Vector3\&, directionVector : Vector3\&, lightPos : Vector3\&) : bool \\
+	-getBoundingBox(polygons : list$<$SceneObject*$>$) : BoundingBox \\
+	-intersect(root : node*, crossPoint : Vector3\&, startingPoint : Vector3\&, directionVector : Vector3\&) : SceneObject * \\
+	-getClosestInNode(polygons : list$<$SceneObject*$>$, crossPoint : Vector3\&, startingPoint : Vector3\&, directionVector : Vector3\&) : SceneObject * \\
+	-isInShadow\_tree(root : node*, crossPoint : Vector3\&, directionVector : Vector3\&, LightDistance : float) : bool \\
 	-deleteTree(root : node*) : void \\
 	\hline
     \end{tabular}
@@ -58,10 +58,10 @@
     \begin{tabular}{|l|}
     \hline
     Node \\ \hline
-    Plane partitionPlane \\
-    std::list$<$SceneObject*$>$ polygons \\
-    node* front \\
-    node* back \\ \hline
+    partitionPlane : Plane \\
+    polygons : list$<$SceneObject*$>$ \\
+    front : node*  \\
+    back : node*  \\ \hline
     \end{tabular}
 \end{center}
 
@@ -70,13 +70,12 @@
     \begin{tabular}{|l|}
     \hline
     GLwidget \\ \hline
-    Scene* scene; \\ \hline
-    void initializeGL(); \\ 
-    void resizeGL(int w, int h); \\
-    void paintGL(); \\ \hline
+    scene : Scene*  \\ \hline
+    initializeGL() : void \\ 
+    resizeGL(int w, int h) : void \\
+    paintGL() : void \\ \hline
     \end{tabular}
 \end{center}
-
 
 \begin{center}
     \begin{tabular}{|l|}
@@ -97,9 +96,9 @@
     \begin{tabular}{|l|}
     \hline
     InputParser \\ \hline
-    std::vector$<$std::string$>$ tokens; \\ \hline
-    +getCmdOption(option : std.string const\&) : std.string const\&) \\
-    +cmdOptionExists(option : std.string const\&) : bool \\ \hline
+    tokens : vector$<$string$>$  \\ \hline
+    +getCmdOption(option : string const\&) : string const\&) \\
+    +cmdOptionExists(option : string const\&) : bool \\ \hline
     \end{tabular}
 \end{center}
 
@@ -108,13 +107,13 @@
     \begin{tabular}{|l|}
     \hline
     Light \\ \hline
-    +pos : Vector3$<$float$>$* \\ 
-    +amb : Vector3$<$float$>$* \\
-    +dif : Vector3$<$float$>$* \\
-    +spec : Vector3$<$float$>$* \\
+    +pos : Vector3* \\ 
+    +amb : Vector3* \\
+    +dif : Vector3* \\
+    +spec : Vector3* \\
     \hline
-	+serialize(bytes : std.vector$<$char$>$*) : void \\ 
-	+deserialize(bytes : std.vector$<$char$>$ const\&) : void \\
+	+serialize(bytes : vector$<$char$>$*) : void \\ 
+	+deserialize(bytes : vector$<$char$>$ const\&) : void \\
 	+getType() : char \\
 	\hline
     \end{tabular}
@@ -124,25 +123,16 @@
 \begin{center}
     \begin{tabular}{|l|}
     \hline
-    Nazwa klasy \\ \hline
-    Spis atrybutów \\ \hline
-	Spis metod \\ \hline
-    \end{tabular}
-\end{center}
-
-\begin{center}
-    \begin{tabular}{|l|}
-    \hline
     MainWindow  \\ \hline
-    Ui::MainWindow *ui; \\
-    StatisticsWindow *statisticWindow; \\
-    MasterThread *masterThread; \ \
-    QLabel* statusLabel; \\ \hline
-    void createMaster() \\
-    void ShowStats(); \\
-    void setSpeed(double time); \\
-    void on\_actionStatistics\_triggered(); \\
-    void onQuit(); \\ \hline
+    ui : MainWindow* \\
+    statisticWindow : StatisticsWindow* \\
+    masterThread : MasterThread* \ \
+    statusLabel : QLabel* \\ \hline
+    createMaster() \\
+    ShowStats() \\
+    setSpeed(double time) \\
+    on\_actionStatistics\_triggered() \\
+    onQuit(); \\ \hline
     \end{tabular}
 \end{center}
 
@@ -151,35 +141,35 @@
     \begin{tabular}{|l|}
     \hline
     MasterThread  \\ \hline
-    bool isAlive; \\
-    Camera* camera; \\
-    Scene* scene; \\
-     double** processSpeed; \\
-         int worldSize; \\
-    MPI\_Status status; \\
-        std::vector$<$std::string$>$ names; \\
-    int pending; \\
-    int numChunks; \\
-    std::queue$<$Chunk$>$ queue; \\
-    int test; \\
+    isAlive : bool \\
+    camera : Camera* \\
+    scene : Scene* \\
+    processSpeed : double** \\
+    worldSize : int \\
+    status : MPI\_Status \\
+    names : vector$<$string$>$ \\
+    pending : int \\
+    numChunks : int \\
+    queue : queue$<$Chunk$>$ \\
+    test : int \\
     \hline
-	void run() \\
-	void splitToChunks(int num); \\
-	 void clearQueue(std::queue$<$Chunk$>$ \&q); \\
-    void sendCameraBcast(); \\
-    void sendCameraPointToPoint(); \\
-    void sendScene(); \\
-    void sendDepth(int depth); \\
-    bool sendNextChunk(int dest); \\
-    void sendExitSignal(); \\
-    int recvPixels(MPI\_Status \&stat); \\
-    int recvMessage(); \\
-    void finishPending(); \\
-    void updateProcessSpeed(); \\
-    void waitUntillRdy(); \\
-    void printResult(double spf, double bsp); \\
-    void getNames(); \\
-    void emitNames(); \\
+	run() \\
+	splitToChunks(int num) \\
+	clearQueue(queue$<$Chunk$>$ \&q) \\
+    sendCameraBcast() \\
+    sendCameraPointToPoint() \\
+    sendScene() \\
+    sendDepth(int depth) \\
+    sendNextChunk(int dest) \\
+    sendExitSignal() \\
+    recvPixels(MPI\_Status \&stat) : int \\
+    recvMessage() : int \\
+    finishPending() \\
+    updateProcessSpeed() \\
+    waitUntillRdy() \\
+    printResult(double spf, double bsp) \\
+    getNames() \\
+    emitNames() \\
 	\hline
     \end{tabular}
 \end{center}
@@ -189,8 +179,10 @@
     \begin{tabular}{|l|}
     \hline
     Chunk \\ \hline
-    int startx, stopx; \\
-    int starty, stopy;  \\
+    startx : int \\
+    stopx : int \\
+    starty : int \\
+    stopy : int \\
     \hline
     \end{tabular}
 \end{center}
@@ -206,11 +198,11 @@
     +startx : int \\
     +starty : int \\
     \hline
-	+serialize(bytes : std.vector$<$char$>$*) : void \\
-	+deserialize(bytes : std.vector$<$char$>$ const\&) : void \\
+	+serialize(bytes : vector$<$char$>$*) : void \\
+	+deserialize(bytes : vector$<$char$>$ const\&) : void \\
 	+getType() : char \\
 	+setStartXY(x : int, y : int) : void \\
-	+setPixel(posX : int, posY : int, vec : Vector3$<$float$>$\&) : void \\
+	+setPixel(posX : int, posY : int, vec : Vector3\&) : void \\
 	\hline
     \end{tabular}
 \end{center}
@@ -226,10 +218,10 @@
     \hline
 	Spis metod \\ 
 	+classifyObject(obj : SceneObject*) : int \\
-	+classifyPoint(point : Vector3$<$float$>$*) : int \\
-	+getDistToPoint(point : Vector3$<$float$>$*) : float \\
-	+rayIntersectPlane(startingPoint : Vector3$<$float$>$, directionVector : Vector3$<$float$>$) : bool \\
-	+getNormal() : Vector3$<$float$>$ \\
+	+classifyPoint(point : Vector3*) : int \\
+	+getDistToPoint(point : Vector3*) : float \\
+	+rayIntersectPlane(startingPoint : Vector3, directionVector : Vector3) : bool \\
+	+getNormal() : Vector3 \\
 	+isValid() : bool \\
 	\hline
     \end{tabular}
@@ -241,10 +233,10 @@
     RayTracer \\ \hline
     +camera : Camera* \\
     +scene : Scene* \\
-    +buffer : Vector3$<$float$>$*** \\ \hline
+    +buffer : Vector3*** \\ \hline
 	+basicRayTracer() : void \\
 	+recursiveRayTracer(depth : int) : void \\
-	+getColorRecursive(startPoint : Vector3$<$float$>$, directionVector : Vector3$<$float$>$, depth : int) : Vector3$<$float$>$ \\
+	+getColorRecursive(startPoint : Vector3, directionVector : Vector3, depth : int) : Vector3 \\
 	\hline
     \end{tabular}
 \end{center}
@@ -261,8 +253,8 @@
     +lights : Light** \\
     +sceneObjects : SceneObject** \\
     +pixels : Pixels* \\
-    +backgroundColor : Vector3$<$float$>$* \\
-    +globalAmbient : Vector3$<$float$>$* \\
+    +backgroundColor : Vector3* \\
+    +globalAmbient : Vector3* \\
     +bsp : BSP* \\
     \hline
 	+getInstance() : Scene * \\
@@ -270,11 +262,11 @@
 	+addObject(sceneObject : SceneObject*) : void \\
 	+addLight(light : Light*) : void \\
 	+setUpPixels(x : int, y : int) : void \\
-	+getClosest(crossPoint : Vector3$<$float$>$\&, startPoint : Vector3$<$float$>$\&, directionVector : Vector3$<$float$>$\&) : SceneObject * \\
-	+isInShadow(crossPoint : Vector3$<$float$>$\&, directionVector : Vector3$<$float$>$\&, lightPos : Vector3$<$float$>$\&) : bool \\
-	+setPixelColor(x : int, y : int, color : Vector3$<$float$>$) : void \\
-	+serialize(bytes : std.vector$<$char$>$*) : void \\
-	+deserialize(bytes : std.vector$<$char$>$ const\&) : void \\
+	+getClosest(crossPoint : Vector3\&, startPoint : Vector3\&, directionVector : Vector3\&) : SceneObject * \\
+	+isInShadow(crossPoint : Vector3\&, directionVector : Vector3\&, lightPos : Vector3\&) : bool \\
+	+setPixelColor(x : int, y : int, color : Vector3) : void \\
+	+serialize(bytes : vector$<$char$>$*) : void \\
+	+deserialize(bytes : vector$<$char$>$ const\&) : void \\
 	+getType() : char \\
 	\hline
     \end{tabular}
@@ -289,13 +281,13 @@
     \#mirror : float \\
     \#local : float \\
     \#density : float \\
-    \#amb : Vector3$<$float$>$* \\
-    \#dif : Vector3$<$float$>$* \\
-    \#spec : Vector3$<$float$>$* \\
+    \#amb : Vector3* \\
+    \#dif : Vector3* \\
+    \#spec : Vector3* \\
     \hline
-	+getLocalColor(normalVector : Vector3$<$float$>$\&, crossPoint : Vector3$<$float$>$\&, observationVector : Vector3$<$float$>$\&) : Vector3$<$float$>$ \\
-	+trace(crossPoint : Vector3$<$float$>$\&, startPoint : Vector3$<$float$>$\&, directionVector : Vector3$<$float$>$\&, dist : float\&) : bool \\
-	+getNormalVector(crossPoint : Vector3$<$float$>$\&) : Vector3$<$float$>$ \\
+	+getLocalColor(normalVector : Vector3\&, crossPoint : Vector3\&, observationVector : Vector3\&) : Vector3 \\
+	+trace(crossPoint : Vector3\&, startPoint : Vector3\&, directionVector : Vector3\&, dist : float\&) : bool \\
+	+getNormalVector(crossPoint : Vector3\&) : Vector3 \\
 	+getBoundingBox() : BoundingBox \\
 	\hline
     \end{tabular}
@@ -306,8 +298,8 @@
     \hline
     Serializable \\ \hline
     +serializedSize : int \\ \hline
-	+serialize(bytes : std.vector$<$char$>$*) : void \\ 
-	+deserialize(bytes : std.vector$<$char$>$ const\&) : void \\
+	+serialize(bytes : vector$<$char$>$*) : void \\ 
+	+deserialize(bytes : vector$<$char$>$ const\&) : void \\
 	+getType() : char \\
 	\hline
     \end{tabular}
@@ -321,7 +313,7 @@
 	+y : int \\
 	+depth : int \\
 	+status : MPI\_Status \\
-	+pixels : Vector3$<$float$>$*** \\
+	+pixels : Vector3*** \\
 	+camera : Camera* \\
 	+scene : Scene* \\ \hline
 	+exec() : int \\
@@ -366,7 +358,7 @@ TINY OBJECTY LOADER!!!!!!!!!
     \hline
     Sphere \\ \hline
     +radius : float \\
-    +pos : Vector3$<$float$>$* \\
+    +pos : Vector3* \\
     \hline
     \end{tabular}
 \end{center}
@@ -375,19 +367,19 @@ TINY OBJECTY LOADER!!!!!!!!!
     \begin{tabular}{|l|}
     \hline
     Triangle \\ \hline
-    +pointA : Vector3$<$float$>$* \\
-    +pointB : Vector3$<$float$>$* \\
-    +pointC : Vector3$<$float$>$* \\
-    +normalA : Vector3$<$float$>$* \\
-    +normalB : Vector3$<$float$>$* \\
-    +normalC : Vector3$<$float$>$* \\
+    +pointA : Vector3* \\
+    +pointB : Vector3* \\
+    +pointC : Vector3* \\
+    +normalA : Vector3* \\
+    +normalB : Vector3* \\
+    +normalC : Vector3* \\
     \hline
-	+split(plane : Plane, front : std.list$<$Triangle*$>$\&, back : std.list$<$Triangle*$>$\&) : void \\ 
-	+getPointbyNum(a : int) : Vector3$<$float$>$ * \\
-	+getPlanes() : std.list$<$Plane$>$ \\
+	+split(plane : Plane, front : list$<$Triangle*$>$\&, back : list$<$Triangle*$>$\&) : void \\ 
+	+getPointbyNum(a : int) : Vector3 * \\
+	+getPlanes() : list$<$Plane$>$ \\
 	+getPerpendicularPlane(i : int) : Plane \\
 	+getPlane() : Plane \\
-	+Area(a : Vector3$<$float$>$, b : Vector3$<$float$>$) : float \\
+	+Area(a : Vector3, b : Vector3) : float \\
 	+getBoundingBox() : BoundingBox \\
 	\hline
     \end{tabular}
@@ -410,8 +402,8 @@ TINY OBJECTY LOADER!!!!!!!!!
 	+rotateZ(alpha : float) : void \\
 	+distanceFrom(v : Vector3\&) : float \\
 	+powDistanceFrom(v : Vector3\&) : float \\
-	+reflect(n : Vector3\&) : Vector3$<$float$>$ \\
-	+refract(normalVector : Vector3\&, a : float, b : float) : Vector3$<$float$>$ \\
+	+reflect(n : Vector3\&) : Vector3 \\
+	+refract(normalVector : Vector3\&, a : float, b : float) : Vector3 \\
 	+isZeroVector() : bool \\
 	+length() : float \\
 	\hline
