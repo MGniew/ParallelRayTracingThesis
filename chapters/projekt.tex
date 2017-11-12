@@ -1,19 +1,90 @@
 \section{Projekt klastra}
 
-	Napisz coś mądrego + schemat
+\begin{figure}[h!]
+\centering
+  \caption{Schemat systemu}
+  \includegraphics[width=10cm]{cluster.png}
+\end{figure}
+
+	Na powyższym schemacie przedstawiono konceptualny schemat działania systemu. W założeniach, użytkownik ma komunikować się z klastrem poprzez graficzny interfejs użytkownika (zbudowany z wykorzystaniem biblioteki Qt), który udostępni mu podgląd dynamiczne budowanej animacji i wszelkich statystyk z nią związanych. Program master'a (a więc głównego węzła klastra) ma wykonywać się na tej samej maszynie, która udostępnia interfejs - główny proces zostanie podzielony na dwa wątki: jeden zajmujący się obsługą klastra (wątek master'a) i drugi związany z użytkownikiem (wątek GUI). Węzeł zarządzający komunikuje się z każdym z węzłów wykonawczych, zlecając im zadania i zbierając od nich wyniki. W chwili, w której zostanie wygenerowana cała klatka, master informuje wątek GUI, o tym że wygenerowany obraz jest gotowy do wyświetlenia. W poniższych punktach zostanie zaprezentowany proponowany algorytm zachowania węzłów.  
 	
-	\subsection{Master} Opisz co ma robić master
-	\subsection{Slave} Opisz co ma robić slave
+\subsection{Master}
+
+Pierwszym i najważniejszym zadaniem węzła zarządzającego jest wczytanie pliku zawierającego definicję generowanego obrazu. Na podstawie pliku wejściowego ma on stworzyć scenę, kamerę, obiekty i światła. Następnie musi on rozesłać informacje na temat obiektów do wszystkich węzłów wykonawczych, tak aby każdy z nich posiadał tę samą definicję obrazu (broadcast). Gdy już każdy z węzłów zasygnalizuje gotowość, węzeł zarządzający rozsyła zadania policzenia danego wycinka obrazu do węzłów wykonawczych. Poniżej przedstawiono przykładowy pseudokod działania master'a. Warto zwrócić uwagę, że zadania umieszczane są na kolejce oczekującej - takie rozwiązanie powinno dawać lepsze rezultaty niż rozesłanie wszystkim węzłom wszystkich zadań od razu, ponieważ różne fragmenty obrazu mogą być generowane z różną prędkością. Mogłoby więc dochodzić do sytuacji, w której część węzłów zrealizowało już swoje zadania (a więc ich moc obliczeniowa nie jest wykorzystywana), a część (która dostała bardziej wymagające obliczenia) ciągle liczy.
+
+\begin{algorithmic}
+\\
+\State readFile()
+\State sendScene()
+\State sendCamera()
+\\
+\While{true}
+\\
+\State queue = splitImageToChunks()
+\State //pending - liczba zleconych, niewykonanych zadań
+\State pending = sendChunkToEveryNode()
+\\
+\While {pending $>$ 0}
+\State msg = recvMessage()
+\If {msg == EXIT} exit()
+\ElsIf {msg = PIXELS}
+	recvPixels()
+	\If {queue is not empty}
+		sendChunkToSlave()
+	\Else
+		pending--
+	\EndIf
+\EndIf
+\EndWhile
+\State informGUI()
+\State updateCameraPos()
+\EndWhile
+
+\end{algorithmic}
+
+
+\subsection{Slave}
+
+Nawiązując do poprzedniego punktu, pierwszą czynnością, którą powinien wykonać każdy ze slave'ów jest odebranie definicji obiektów wykorzystywanych przy generowaniu sceny. Następnie w pętli, może on czekać na zadanie, realizować je (z wykorzystaniem klasy RayTracer) i odsyłać z powrotem do węzła zarządzającego.
+
+\begin{algorithmic}
+\\
+\State recvScene()
+\State recvCamera()
+\\
+\While{true}
+\State msg = recvMessage()
+\If {msg == EXIT} exit()
+\ElsIf {msg == CHUNK}
+	recvChunk()
+	pixels = recursiveRayTracer()
+	sendPixels()
+\ElsIf {msg == CAMERA}
+	recvCamera() //aktualizacja pozycji kamery
+\EndIf
+\EndWhile
+
+\end{algorithmic}
+
+
+
 \section{Projekt programu}
 
 	Tu napisz co to ma robić
 	
 	\subsection{Diagram klas}
+	\begin{figure}[H]
+    \centering
+              \includegraphics[angle=90,width=\textwidth,
+                    height=0.8\textheight,
+                   ]{classDiagram.PNG}
+    \caption{Diagram klas}
+    \label{fig:classDiagram}
+	\end{figure}
 	
-	Poniżej przedstawiono uproszczony diagram klas. Ze względu estetycznych, opis poszczególnych z nich znajduje się w kolejnym podrozdziale. wstaw grafikę
+	Powyżej przedstawiono uproszczony diagram klas. Opis poszczególnych z nich (wraz ze spisem atrybutów i metod) znajduje się w kolejnym podrozdziale.
 	
-	
-	\subsection{Opis klas}
+\subsection{Opis klas}
 
 \begin{longtable}{|p{16cm}|}
 	\caption{BoundingBox} \label{tab:BoundingBox} \\ \hline
@@ -26,6 +97,8 @@
     +maxZ : float \\ \hline
     +intersect(start: Vector3, dir: Vector3 \\ \hline
 \end{longtable}
+
+Klasa BoundingBox reprezentuje prostopadłościany, które w założeniu mają otaczać inne obiekty (bryła otaczająca). Ma ona umożliwić przyspieszenie badania przecięcia promieni z elementami sceny (stąd metoda intersect). W programie będzie wykorzystywana przez drzewo BSP (otoczenie całej sceny) i SceneObject. 
 
 
 \begin{longtable}{|p{16cm}|}
@@ -53,7 +126,9 @@
     back : node*  \\ \hline
 \end{longtable}
 
+Klasa BSP implementuje drzewo opisane w rozdziale (!RODZIAŁ!). Poza metodami związanymi z budową drzewa, zawiera ona metody analogiczne do Klasy Scene (z tą różnicą, że metody Scene wykorzystują przegląd zupełny obiektów) umożliwiające przeglądanie sceny w poszukiwaniu przeciętych obiektów i badania, czy dany punkt znajduje się w cieniu. Drzewo BSP jest składową klasy Scene, która wywołuje jego metody (jeżeli jest ustawiona flaga mówiąca o wykrzystaniu drzewa).
 
+Podstawowym elementem drzewa jest struktura Node, która zawiera pola takie jak płaszczyzna podziału, wskaźniki na kolejne wierzchołki drzewa (reprezentujące przestrzeń przed i za płaszczyzną) i listę obiektów należących do danego wierzchołka. Obiekt może należeć do wierzchołka np. w sytuacji gdy wierzchołek jest liściem lub obiekt leży na płaszczyźnie podziału. Klasa BSP zostanie dokładniej opisana w rozdziale 6.
 
 \begin{longtable}{|p{16cm}|}
     \caption{GLwidget} \label{tab:GLwidget} \\ \hline
@@ -63,6 +138,8 @@
     resizeGL(int w, int h) : void \\
     paintGL() : void \\ \hline
 \end{longtable}
+
+Widgety są składowymi elementami graficznego interfejsu użytkownika i nie wszystkie z nich muszą być reprezentowane poprzez obiekty. Klasa GLwidget odpowiada za prezentowanie kolejnych klatek użytkownikowi. W przypadku kiedy główne okno aplikacji (MainWindow, ,,rodzic'' GLwidget) otrzyma informacje o wygenerowaniu kolejnej klatki od MasterThread wywołuje odpowiednią metodę GLwidget - GLwidget odwołuje się do Klasy Scene od której otrzymuje tablicę pikseli (Pixels) do wyświetlenia. 
 
 \begin{longtable}{|p{16cm}|}
     \caption{FileLoader} \label{tab:FileLoader} \\ \hline
@@ -76,6 +153,7 @@
 	+ReadFile(fname : char const*) : bool \\ \hline
 \end{longtable}
 
+FileLoader jest klasą odpowiedzialną za wczytanie definicji sceny z pliku (stąd powiązania z klasami Scene i Camera). Jest ona wykorzystywana przez klasę MasterThread. Klasa korzysta z biblioteki tinyobjloader dzięki której możliwe jest wczytywanie modeli zapisanych w formacie ,,obj''. Bibliotekę można znaleźć pod adresem https://github.com/syoyo/tinyobjloader. Jest ona udostępniona na licencji MIT.
 
 \begin{longtable}{|p{16cm}|}
     \caption{InputParser} \label{tab:InputParser} \\ \hline
@@ -85,6 +163,7 @@
     +cmdOptionExists(option : string const) : bool \\ \hline
 \end{longtable}
 
+Klasa InputParser jest prostą klasą pozwalająca na obróbkę danych wejściowych (dokładniej opisane w rozdziale !WSTAW RODZIAŁ!). Klasa MainWindow, która w założeniach ma tworzyć wątek MasterThread, wykorzystuje ją do przekazania mu parametrów.
 
 \begin{longtable}{|p{16cm}|}
     \caption{Light} \label{tab:Light} \\ \hline
@@ -100,6 +179,7 @@
 	\hline
 \end{longtable}
 
+Klasa Light określa obiekty światła. Więcej o świetle i jego znaczeniu na scenie można przeczytać w rozdziale !ROZDZIAŁ!.
 
 \begin{longtable}{|p{16cm}|}
     \caption{MainWindow} \label{tab:MainWindow} \\ \hline
@@ -115,6 +195,7 @@
     onQuit(); \\ \hline
 \end{longtable}
 
+Klasa MainWindow reprezentuje główne okno aplikacji. Ze względów projektowych jest ona odpowiedzialna za tworzenie obiektu MasterThread (ma to związek z mechanizmem przypisania sygnałów do slotów - mechanizm komunikacji międzywątkowej w Qt) jak i potrzebie komunikacji między jedną i drugą klasą. Klasa MainWindow (wraz z GLwidget i StatisticWidnow) reprezentuje warstwę prezentacji tworzonej aplikacji.
 
 \begin{longtable}{|p{16cm}|}
     \caption{MasterThread} \label{tab:MasterThread} \\ \hline
@@ -151,6 +232,9 @@
 	\hline
 \end{longtable}
 
+Główna klasa aplikacji, której obiekt tworzony jest w tym samym procesie co MainWindow, jednak działający w osobnym wątku. Takie rozwiązanie pozwala zachować responsywność aplikacji. Wątek okna głównego jest odpowiedzialny za przetwarzanie zdarzeń wygenerowanych przez użytkownika czy program, a wątek MasterThread, niezależnie od niego, zajmuje się w tym czasie generowaniem kolejnej klatki animacji. Rozdzielamy w ten sposób warstwę prezentacji od warstwy biznesowej tworząc tym samym aplikację przyjaźniejszą użytkownikowi.
+
+Głównym zadaniem MasterThread jest zarządzanie węzłami wykonawczymi (sami stanowi serce węzła nadzorującego). Posiada on szereg metod umożliwiających komunikację z innymi procesami tworzącymi aplikację. Ma on dostęp do lokalnych kopii obiektów Scene i Camera, ponieważ musi je rozesłać po klastrze i mieć możliwość modyfikacji ich parametrów (przesunięcie kamery co klatkę, aktualizacja obiektu Pixels). Więcej o zadaniach i sposobie działania MasterThread można przeczytać (!rodział z wyżej!, !rodział z implementacji!).
 
 \begin{longtable}{|p{16cm}|}
     \caption{Chunk} \label{tab:Chunk} \\ \hline
@@ -162,6 +246,7 @@
     \hline
 \end{longtable}
 
+Chunk jest prostą strukturą wykorzystywaną w komunikacji Master/Slave (MasterThread, SlaveMPI). Zawiera on w sobie informacje o tym jaki wycinek obrazu powinien być wyznaczany przez dany węzeł wykonawczy.
 
 \begin{longtable}{|p{16cm}|}
     \caption{Pixels} \label{tab:Pixels} \\ \hline
@@ -180,6 +265,8 @@
 	\hline
 \end{longtable}
 
+Klasa Pixels przechowuje tablice pikseli w formie ciągu bajtów unsigned char* (taka reprezentacja jest wykorzystywana przez funkcje rysujące, które zapewniają przyspieszenie sprzętowe). Pozwala ona stworzyć wygodny interfejs czytania i pisania do tablicy. 
+
 \begin{longtable}{|p{16cm}|}
     \caption{Plane} \label{tab:Plane} \\ \hline
     \multicolumn{1}{|c|}{Plane} \\ \hline
@@ -192,11 +279,13 @@
 	+classifyObject(obj : SceneObject*) : int \\
 	+classifyPoint(point : Vector3*) : int \\
 	+getDistToPoint(point : Vector3*) : float \\
-	+rayIntersectPlane(startingPoint : Vector3, directionVector : Vector3) : bool \\
+	+rayIntersectPlane(start : Vector3, dir : Vector3) : bool \\
 	+getNormal() : Vector3 \\
 	+isValid() : bool \\
 	\hline
 \end{longtable}
+
+Klasa reprezentuje obiekty płaszczyzn, wykorzystywane przy podziale podprzestrzeni przez drzewo BSP. Zawiera metody pozwalające określić po której stronie płaszczyzny znajduje się dany obiekt.
 
 \begin{longtable}{|p{16cm}|}
     \caption{RayTracer} \label{tab:RayTracer} \\ \hline
@@ -206,9 +295,11 @@
     +buffer : Vector3*** \\ \hline
 	+basicRayTracer() : void \\
 	+recursiveRayTracer(depth : int) : void \\
-	+getColorRecursive(startPoint : Vector3, directionVector : Vector3, depth : int) : Vector3 \\
+	+getColorRecursive(start : Vector3, dir : Vector3, depth : int) : Vector3 \\
 	\hline
 \end{longtable}
+
+Klasa RayTracer zawiera w sobie zestaw metod, które pozwalają na realizację algorytmu śledzenia promieni. W tym celu odwołuje się ona do pól klasy Scene i Camera. Każdy obiekt SlaveMPI (zawierający w sobie algorytm działający na węzłach wykonawczych) tworzy własny obiekt RayTracer'a. Klasa ta zostanie dokładniej opisana w rozdziale 6.
 
 \begin{longtable}{|p{16cm}|}
     \caption{Scene} \label{tab:Scene} \\ \hline
@@ -230,14 +321,16 @@
 	+addObject(sceneObject : SceneObject*) : void \\
 	+addLight(light : Light*) : void \\
 	+setUpPixels(x : int, y : int) : void \\
-	+getClosest(crossPoint : Vector3, startPoint : Vector3, directionVector : Vector3) : SceneObject * \\
-	+isInShadow(crossPoint : Vector3, directionVector : Vector3, lightPos : Vector3) : bool \\
+	+getClosest(cross : Vector3, start : Vector3, dir : Vector3) : SceneObject * \\
+	+isInShadow(cross : Vector3, dir : Vector3, lightPos : Vector3) : bool \\
 	+setPixelColor(x : int, y : int, color : Vector3) : void \\
 	+serialize(bytes : vector$<$char$>$*) : void \\
 	+deserialize(bytes : vector$<$char$>$ const) : void \\
 	+getType() : char \\
 	\hline
 \end{longtable}
+
+Obiekt zawierający definicję całej sceny. Jest on napisany według wzorca Singleton (może istnieć tylko jeden obiekt takiej klasy). Wywołując statyczną metodę getInstance() otrzymamy na niego wskaźnik. Obiekt Scene jest jednym z częściej wykorzystywanych obiektów, gdyż jest centralnym elementem aplikacji - zawiera pola istotne dla wielu klas. W związku z tym udostępnia on interfejs pozwalający na pobieranie interesujących daną klasę danych (np. metoda isInShadow, która bada czy dany punk znajduje się w cieniu. Klasa, zgodnie z flagą useBSP, dokonuje przeglądu zupełnego, lub wykorzystuje drzewo).
 
 \begin{longtable}{|p{16cm}|}
     \caption{SceneObject} \label{tab:SceneObject} \\ \hline
@@ -251,12 +344,14 @@
     \#dif : Vector3* \\
     \#spec : Vector3* \\
     \hline
-	+getLocalColor(normalVector : Vector3, crossPoint : Vector3, observationVector : Vector3) : Vector3 \\
-	+trace(crossPoint : Vector3, startPoint : Vector3, directionVector : Vector3, dist : float) : bool \\
-	+getNormalVector(crossPoint : Vector3) : Vector3 \\
+	+getLocalColor(normal : Vector3, cross : Vector3, observation : Vector3) : Vector3 \\
+	+trace(cross : Vector3, start : Vector3, dir : Vector3, dist : float) : bool \\
+	+getNormalVector(cross : Vector3) : Vector3 \\
 	+getBoundingBox() : BoundingBox \\
 	\hline
 \end{longtable}
+
+SceneObject jest wirtualną klasą po której powinny dziedziczyć wszystkie obiekty sceny. Pozwala on na wykorzystywanie wielopostaciowości (widoczne np. w klasie Scene), wymuszając na klasach potomnych implementacje metod pozwalających określić przecięcie z promieniem (trace()), oblicznie wektora normalnego w punkcie (getNormalVector()), czy pobranie koloru w punkcie (getLocalColor())
 
 \begin{longtable}{|p{16cm}|}
     \caption{Serializable} \label{tab:Serializable} \\ \hline
@@ -267,6 +362,8 @@
 	+getType() : char \\
 	\hline
 \end{longtable}
+
+Klasa Serializable jest właściwie Interfejsem - dziedziczą po niej wszystkie klasy, które muszą mieć możliwość serializacji (zamiana obiektu na ciąg bajtów) w związku z potrzebą wysłania ich do innych węzłów klastra. Bardziej szczegółowe informacje o serialializacji można znaleźć w rodziale 6.
 
 \begin{longtable}{|p{16cm}|}
     \caption{SlaveMPI} \label{tab:SlaveMPI} \\ \hline
@@ -291,26 +388,27 @@
 	\hline
 \end{longtable}
 
+SlaveMPI jest klasą analogiczną do klasy MasterThraed, jednak jej obiekt jest tworzony na każdym węźle wykonawczym. Zawiera ona w sobie metody implementujące mechanizmy komunikacji z resztą węzłów i takie pozwalające na wykonywanie zadań zleconych przez mastera  Metoda exec() implementuje algorytm opisany w rozdziale (!wstaw rozdział!) - główną pętlę programu węzłów wykonawczych. Więcej o implementacji można znaleźć w rozdziale 6.
+
 \begin{longtable}{|p{16cm}|}
     \caption{StatisticsWindow} \label{tab:StatisticsWindow} \\ \hline
     \multicolumn{1}{|c|}{StatisticsWindow} \\ \hline
     Ui::StatisticsWindow *ui; \\
     int worldSize; \\
     \hline
-	void resizeEvent(QResizeEvent *event); \\
-    void setTime(double time); \\
-    void setChunks(int i); \\
-    void setXY(int x, int y); \\
-    void setObj(int i); \\
-    void setLights(int i); \\
-    void setProccessName(int num, QString str); \\
-    void setProccessSpeed(double **speed); \\
-    void setUpList(); \\
+	resizeEvent(QResizeEvent *event) : void \\
+    setTime(double time) : void  \\
+    setChunks(int i) : void \\
+    setXY(int x, int y) : void \\
+    setObj(int i) : void \\
+    setLights(int i) : void  \\
+    setProccessName(int num, QString str) : void \\
+    setProccessSpeed(double **speed) : void \\
+    setUpList() : void \\
     \hline
 \end{longtable}
 
-
-TINY OBJECTY LOADER!!!!!!!!!
+StatisticWindow jest oknem, które (jak sama nazwa wskazuje) ma prezentować statystki dot. programu - czas generowania jednej klatki, średni czas pracy danego węzła, liczbę obiektów na scenie itd.
 
 \begin{longtable}{|p{16cm}|}
     \caption{Sphere} \label{tab:Sphere} \\ \hline
@@ -320,6 +418,7 @@ TINY OBJECTY LOADER!!!!!!!!!
     \hline
 \end{longtable}
 
+Klasa Sphere jest klasą reprezentującą sferę. Dziedziczy ona po SceneObject, a więc implementuje metody specyficzne dla tego typu obiektu (np. badanie przecięcia z obiektem).
 
 \begin{longtable}{|p{16cm}|}
     \caption{Triangle} \label{tab:Triangle} \\ \hline
@@ -341,6 +440,7 @@ TINY OBJECTY LOADER!!!!!!!!!
 	\hline
 \end{longtable}
 
+Triangle jest klasą reprezentującą obiekty trójkąta. Triangle podobnie jak Sphere dziedziczy po SceneObject i implementuje metody specyficzne dla tego typu obiektu.
 
 \begin{longtable}{|p{16cm}|}
     \caption{Vector3} \label{tab:Vector3} \\ \hline
@@ -364,4 +464,4 @@ TINY OBJECTY LOADER!!!!!!!!!
 	\hline
 \end{longtable}
 
-
+Klasa Vector3 jest klasą pozwalającą definiować obiekty takie jak punkt, czy wektor w przestrzeni 3D. Zapewnia ona szereg metod implemetnujących różne operacje matematyczne na tego typu obiektach. Poza wszystkimi metodami wymienionymi wyżej zostanie również przeciążonych wiele operatorów arytmetycznych.
