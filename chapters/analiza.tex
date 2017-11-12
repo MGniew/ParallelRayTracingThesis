@@ -287,3 +287,120 @@ Rekursywny algorytm śledzenia promieni najczęściej implementuje się korzysta
 Algorytm śledzenie promieni jest bardzo kosztowny obliczeniowo. Jednym ze skuteczniejszych metod przyspieszenia generowania obrazu jest jego zrównoleglenie, które w przypadku tej metody jest bardzo proste, ponieważ wygenerowanie sceny składa się z wielu obliczeń mogących odbywać się niezależnie od siebie. Najczęściej zrównoleglenie następuje poziomie promieni pierwotnych - zbiór pikseli (pseudokodu znajdujący się w punkcie 2.1.1) dzieli się na podzbiory, mogące być przeanalizowane równolegle. Po obliczeniu kolorów wszystkich pikseli z wycinka, składa się je w jeden spójny obraz. Więcej o algorytmie równoległym można przeczytać w rozdziałach !ROZDZIAŁY!.
 
 \section{Optymalizacja algorytmu śledzenia promieni}
+
+Tak jak to było wspomniane wcześniej, metoda śledzenia promieni jest bardzo kosztowna obliczeniowo. W związku z tym powstały metody przyspieszające, które najczęściej opierają się na redukcji testów przecięcia promieni z obiektami. Otaczając pewien model (siatkę prymitywów) bryłą, wiemy że promień który potencjalnie się z nim przecina, musi najpierw przeciąć daną bryłę. W ten sposób zamiast badać setki przecięć z każdym trójkątem modelu z osobna, możemy przeprowadzić tylko jeden test na bryle otaczającej. Ponadto, każdą z takich brył możemy dzielić dalej na kolejne podzbiory prymitywów, a sama bryła może być fragmentem innego podziału. W ten sposób dochodzimy do czegoś co nazywa się hierarchą obiektów.
+
+
+Hierarchia obiektów ma najczęściej postać drzewa, którego korzeniem najczęściej jest całą scena. Drzewo podziału przestrzeni, które zostało opisane w poprzednim akapicie nazywamy drzewem brył ograniczających (lub otaczających), z angielskiego, bound volume hierarchy - BVH. 
+
+\begin{figure}[h!]
+\centering
+  \caption{drzewo BVH, źródło: https://pl.wikipedia.org/wiki/Drzewo\_BVH}
+  \includegraphics[width=10cm]{bvh.jpg}
+\end{figure}
+
+Podstawową zaletą drzewa BVH jest to, że w przypadku scen dynamicznych (takich w których obiekty poruszają się), nie trzeba przebudowywać całego drzewa od początku co klatkę animacji.
+
+
+Poza drzewami BVH istnieje wiele innych metod podziału podprzestrzeni. Niżej zostaną opisane jeszcze trzy z nich - wiedza na ich temat pozwoli na wybór najlepszego rozwiązania. Więcej na temat każdego z opisanych tutaj drzew można przeczytać w \cite{trees, dunn02}.
+
+\subsection{Drzewa ósemkowe}
+
+Drzewo ósemkowe (ang. octree) polega na rekurencyjnym podziale przestrzeni na mniejsze, regularne części, najczęściej sześciany.
+
+\begin{figure}[h!]
+\centering
+  \caption{octree, źródło: https://en.wikipedia.org/wiki/Octreee}
+  \includegraphics[width=10cm]{octree.png}
+\end{figure}
+
+Takie rozwiązania ma znaczącą wadę w przypadku w której obiekty sceny są daleko od siebie, jednak prostota drzewa ósemkowego i krótki (w porównaniu do alternatyw) czas jego budowy sprawia, że jest ono często wykorzystywane w grafice komputerowej \cite{octree1, octree2}.
+
+\begin{figure}[h!]
+\centering
+  \caption{Zły przypadek dla drzewa ósemkowego}
+  \includegraphics[width=10cm]{badoctree.png}
+\end{figure}
+
+\subsection{Drzewa K-d}
+
+Budowa drzewa K-d (skrót od \emph{k-dimensional tree}) polega na podziale przestrzeni płaszczyznami równoległymi do osi układu (w przypadku trzech wymiarów są to osie x, y i z), w taki sposób aby po jednej i drugiej stronie ,,cięcia'' była podobna liczba prymitywów, a sama płaszczyzna przecinała jak najmniej figur !przypis o SAH!. W ten sposób powstaje drzewo binarne.
+
+Wybór płaszczyzny (w którym miejscu powinna ona przebiegać i do której osi powinna być równoległa) jest podstawowym elementem wpływającym na powstanie zrównoważonego drzewa. Najczęściej programiści uzależniają kierunek płaszczyzny od poziomu drzewa - w ten sposób ,,cięcie'' można wyznaczyć dzięki prostym punktom.
+
+\begin{figure}[h!]
+\centering
+  \caption{Drzewo K-d dla dwóch wymiarów}
+  \includegraphics[width=10cm]{kd.png}
+\end{figure}
+
+Można powiedzieć, że drzewo k-d jest bardziej ogólnym przypadkiem drzewa ósemkowego, w którym przestrzeń nie musi być dzielona na takie same kształty - dzięki temu drzewo k-d jest często szybsze niż drzewo ósemkowe. Z drugiej strony czas budowania i takiego drzewa jest znacznie dłuższy (szukanie optymalnego ,,przecięcia'') niż w przypadku drzew ósemkowych.
+
+
+\subsection{Drzewa BSP}
+
+Wadą drzew k-d jest możliwość cięć tylko pod trzema kątami (w przestrzeni 3D). W przypadku gdy dwa prymitywy mają wspólną krawędź będącą pod kątem do każdej z osi, nie mogą one zostać rozdzielone. Wadę tę eliminują drzewa BSP - ogólniejsza postać drzew K-d.
+
+W każdym kolejnym kroku wybierana jest dowolna płaszczyzna (zgodnie z pewną strategią np. SAH), która dzieli przestrzeń na dwie inne podprzestrzenie. Drzewo BSP buduje się dłużej (głównie ze względu na trudność wyboru płaszczyzny podziału), ale często podział sceny jest jakościowo lepszy.
+
+
+\begin{figure}[h!]
+\centering
+  \caption{Drzewo K-d dla dwóch wymiarów}
+  \includegraphics[width=10cm]{bsp.png}
+\end{figure}
+
+
+\subsection{Wybór drzewa do implementacji}
+
+Spośród opisanych drzew, drzewa BSP i BVH intuicyjnie wydają się być najodpowiedniejszym wyborem dla metody śledzenia promieni. Na poparcie tej tezy warto zajrzeć do źródeł. Według \cite{bvhvsoctee} drzewo BVH jest wydajniejsze od drzewa ósemkowego (biorąc pod uwagę czas generowania sceny, a nie budowy drzewa). Jeżeli porównywać ze sobą drzewa BVH i KD warto zajrzeć do \cite{bvhvskd1, bvhvskd2}. Autorzy wskazują na przewagę drzewa BVH, jednak uzależniają wyniki od rodzaju promieni (pierwotne, wtóre) i od definicji sceny. Wygląda na to, że jeżeli promienie często nie trafiają w żaden obiekt, to drzewo BVH jest dużo skuteczniejsze (ma to związek ze sposobem przeglądania drzew K-d). Sytuacja nie jest już taka oczywista, przy scenach zamkniętych składających się z wielu trójkątów (dla mniejszych scen BVH jest najczęściej lepsze) - tendencja się odwraca. Zgodnie z intuicją i \cite{bspvskd} dobrze zoptymalizowane drzewo BSP jest znacznie wydajniejsze od drzewa K-d, zwłaszcza jeżeli chodzi o czas spędzony na testach przecięć trójkątów z promieniami. W artykule zostały również przedstawione badania BVH - tutaj trudniej jest wykazać jednoznaczną wyższość jednego rozwiązania nad drugim. Podobnie jak było to opisane wyżej, drzewa BVH dużo lepiej działają w zamkniętych scenach (mało promieni, które nie trafiają w żaden obiekt). 
+
+Z powyższymi badaniami zdaje się zgadzać współczesna literatura i współczesne metody optymalizacji generowania grafiki. W \cite{trees} autor proponuje rozwiązania hybrydowe, w których duże otwarte przestrzenie i poruszające się obiekty zamyka się w drzewach BVH (drzewa BVH przyspieszają wykrycie kolizji, a poruszające się modele nie wymuszają przebudowy drzewa), z kolei zamknięte, spójne i statyczne elementy hierarchizuje się stosując drzewa BSP.
+
+Na potrzebę tej pracy zostało zaimplementowane drzewo BSP. W związku z tym zostanie one dokładniej omówione niż miało to miejsce wyżej.
+
+\paragraph{Budowa drzewa BSP}
+
+Drzewo BSP zostało w szczególe opisane w \cite{trees}, jednak warto równie polecić adres serwera ftp \cite{bspfaq}, na którym można znaleźć wiele użytecznych informacji na temat drzewa (między innymi przykładową implementację jego elementów), poniższa treść w dużej mierze bazuje na ostatnio wspomnianej pozycji.
+
+\subparagraph{Budowa drzewa}
+
+Podstawową wersję algorytmu budowania drzewa BSP można przedstawić przy użyciu pseudokodu:
+
+\begin{algorithmic}
+\\
+\Function{Build}{*node, list$<$polygon$>$}
+\\
+\State node.plane = getBestPlane()
+\State frontlist$<$polygon$>$, backlist$<$polygon$>$
+\\
+\For{polygon in list$<$plygons$>$}
+	 \If {polygon.inFrontOf(node.plane)}
+    		frontlist.add(polygon)
+     \ElsIf {polygon.inBackOf(node.plane)}
+     		backlist.add(polygon)
+     \Else
+     		...
+     \EndIf
+\EndFor
+\\
+\State Build(node.front, frontlist)
+\State Build(node.back, backlist)
+\\
+\EndFunction
+
+\end{algorithmic}
+
+Pierwszym ważnym krokiem, którego powyższy algorytm nie wyjaśnia jest wybór płaszczyzny podziału. Najczęściej kandydatami są płaszczyzny wyznaczane przez prymitywy w wierzchołku (zgodnie z nimi, lub prostopadłe do nich i styczne do krawędzi). W najprostszym modelu wybiera się płaszczyznę, która dzieli zbiór trójkątów na jak najrówniejsze części - w ten sposób powstaje dobrze zbilansowane drzewo binarne. Popularną alternatywą takiego postępowania jest heurystyka SAH \cite{zuk2008, sah1, sah2} (ang. Surface Area Heuristic), która faworyzuje podziały na podprzestrzenie, z których jedna jest duża i zawiera niewielką liczbę prymitywów, a druga jest mała i zawiera ich dużo. Takie podejście jest uzasadnione, biorąc pod uwagę prawdopodobieństwo trafienia promienia w taką przestrzeń - może się okazać, że mniej zbilansowane drzewo będzie przeglądane krócej (mimo tego, że najgorszy przypadek jest jest dużo poważniejszy). Zastosowanie funkcji SAH zostało zaproponowane w \cite{sah1} i wydaje się najlepszym rozwiązaniem, jednak znacząco wydłuża ono czas budowania drzewa i jest jest trudniejsze programistycznie ze względu na potrzebę liczenia objętości w drzewie BSP, co nie jest tak proste jak w przypadku drzew K-d i wymaga dodatkowo zamknięcia całej sceny w bryle otaczającej (co pozytywnie wpływa na czas wykonania programu). Najczęściej objętości podprzestrzeni w drzewach BSP są aproksymowane graniastosłupami.
+
+Kolejnym pytaniem jest co zrobić gdy prymityw leży na płaszczyźnie dzielącej przestrzeń lub jest przez nią przecinany. W przypadku figury leżącej na płaszczyźnie jest ona albo przypisywana do obu podprzestrzeni, albo przechowywana w danym wierzchołku. Jeżeli chodzi o poligony, które zostały przecięte to zazwyczaj dzieli się je na dwie części i przypisuje do odpowiednich potomków wierzchołka (można ich również nie dzielić i przypisać do danego wierzchołka).
+
+Ostatnim elementem do omówienia jest warunek stopu rekurencji. Jeżeli zastosowano funkcję SAH, to jest to moment w którym dalszy podział jest nieopłacalny. W przeciwnym przypadku najczęściej stosuje się technikę, w której wierzchołki są zamieniane w liście, jeżeli zbiór ich prymitywów jest odpowiednio mały. Można również ograniczyć drzewo co do głębokości. 
+
+Bardzo łatwo popełnić błąd skutkujący nieskończoną rekurencją. Wybierając płaszczyzny podziału wg. prymitywów może się zdarzyć, że któryś z otrzymanych zbiorów będzie wypukły. W takiej sytuacji podział może nie być możliwy - wszystkie prymitywy mogą znaleźć się albo przed, albo za płaszczyzną dzielącą. Należy wprowadzić mechanizmy zabezpieczające.
+
+
+\subparagraph{Przeglądanie drzewa}
+
+
+Przeglądanie drzewa polega na rekurencyjnym sprawdzaniu po której stronie płaszczyzny danego wierzchołka znajduje się początek promienia - od tej strony zaczniemy. Jeżeli nie znaleziono przecięcia z żadną figurą po danej stronie, a promień przecina płaszczyznę dzielącą, należy sprawdzić drugą stronę. Najgorszy przypadek to taki w którym nie znaleziono przecięcia - algorytm trawersowania drzewa odwiedzi większość wierzchołków, co może wydłużyć czas działania programu w stopniu większym niż ma to miejsce w przeglądzie zupełnym prymitywów. Więcej informacji o przeglądzie drzewa można znaleźć w \cite{bspfaq, trees}.
