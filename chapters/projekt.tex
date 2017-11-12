@@ -15,72 +15,58 @@
 	
 	\subsection{Opis klas}
 
-
-\begin{center}
-    \begin{tabular}{|l|}
-    \hline
-    BoundingBox \\ \hline
+\begin{longtable}{|p{16cm}|}
+	\caption{BoundingBox} \label{tab:BoundingBox} \\ \hline
+	\multicolumn{1}{|c|}{BoundingBox} \\ \hline
     +minX : float \\
     +maxX : float \\
     +minY : float \\
     +maxY : float \\
     +minZ : float \\
-    +maxZ : float \\ 
-    \hline
-	+intersect(start: Vector3, dir: Vector3 \\ 
-	\hline
-    \end{tabular}
-\end{center}
+    +maxZ : float \\ \hline
+    +intersect(start: Vector3, dir: Vector3 \\ \hline
+\end{longtable}
 
 
-\begin{center}
-    \begin{tabular}{|l|}
-    \hline
-    BSP \\ \hline
+\begin{longtable}{|p{16cm}|}
+	\caption{BSP} \label{tab:BSP} \\ \hline
+	\multicolumn{1}{|c|}{BSP} \\ \hline
     +tree : node* \\
     -polygons : SceneObject* \\
-    -box : BoundingBox \\ 
-	\hline
-	+build(root : node*, polygons : SceneObject*, depth : int) \\ 
+    -box : BoundingBox \\ \hline
+    +build(root : node*, polygons : SceneObject*, depth : int) \\ 
 	-getBestPlane(polygons : list$<$SceneObject*$>$) : Plane \\
-	+getClosest(crossPoint : Vector3\&, startingPoint : Vector3\&, directionVector : Vector3\&) : SceneObject* \\
-	+isInShadow(crossPoint : Vector3\&, directionVector : Vector3\&, lightPos : Vector3\&) : bool \\
+	+getClosest(cross : Vector3, start : Vector3, dir : Vector3) : SceneObject* \\
+	+isInShadow(cross : Vector3, dir : Vector3, light : Vector3) : bool \\
 	-getBoundingBox(polygons : list$<$SceneObject*$>$) : BoundingBox \\
-	-intersect(root : node*, crossPoint : Vector3\&, startingPoint : Vector3\&, directionVector : Vector3\&) : SceneObject * \\
-	-getClosestInNode(polygons : list$<$SceneObject*$>$, crossPoint : Vector3\&, startingPoint : Vector3\&, directionVector : Vector3\&) : SceneObject * \\
-	-isInShadow\_tree(root : node*, crossPoint : Vector3\&, directionVector : Vector3\&, LightDistance : float) : bool \\
+	-intersect(root : node*, cross : Vector3, start : Vector3, dir : Vector3) : SceneObject* \\
 	-deleteTree(root : node*) : void \\
-	\hline
-    \end{tabular}
-\end{center}
-
-\begin{center}
-    \begin{tabular}{|l|}
     \hline
-    Node \\ \hline
+\end{longtable}
+
+\begin{longtable}{|p{16cm}|}
+    \caption{Node} \label{tab:Node} \\ \hline
+    \multicolumn{1}{|c|}{Node} \\ \hline
     partitionPlane : Plane \\
     polygons : list$<$SceneObject*$>$ \\
     front : node*  \\
     back : node*  \\ \hline
-    \end{tabular}
-\end{center}
+\end{longtable}
 
 
-\begin{center}
-    \begin{tabular}{|l|}
-    \hline
-    GLwidget \\ \hline
+
+\begin{longtable}{|p{16cm}|}
+    \caption{GLwidget} \label{tab:GLwidget} \\ \hline
+    \multicolumn{1}{|c|}{GLwidget} \\ \hline
     scene : Scene*  \\ \hline
     initializeGL() : void \\ 
     resizeGL(int w, int h) : void \\
     paintGL() : void \\ \hline
-    \end{tabular}
-\end{center}
+\end{longtable}
 
-\begin{center}
-    \begin{tabular}{|l|}
-    \hline
-    FileLoader \\ \hline
+\begin{longtable}{|p{16cm}|}
+    \caption{FileLoader} \label{tab:FileLoader} \\ \hline
+    \multicolumn{1}{|c|}{FileLoader} \\ \hline
     -readCameraSettings(line : char const*) : bool \\
     -readSceneSettings(line : char const*) : bool \\
     -readSphere(line : char const*) : bool \\
@@ -88,42 +74,36 @@
     -readTriangle(line : char const*) : bool \\
     -readObj(line : char const*) : bool \\
 	+ReadFile(fname : char const*) : bool \\ \hline
-    \end{tabular}
-\end{center}
+\end{longtable}
 
 
-\begin{center}
-    \begin{tabular}{|l|}
-    \hline
-    InputParser \\ \hline
+\begin{longtable}{|p{16cm}|}
+    \caption{InputParser} \label{tab:InputParser} \\ \hline
+    \multicolumn{1}{|c|}{InputParser} \\ \hline
     tokens : vector$<$string$>$  \\ \hline
-    +getCmdOption(option : string const\&) : string const\&) \\
-    +cmdOptionExists(option : string const\&) : bool \\ \hline
-    \end{tabular}
-\end{center}
+    +getCmdOption(option : string const) : string const) \\
+    +cmdOptionExists(option : string const) : bool \\ \hline
+\end{longtable}
 
 
-\begin{center}
-    \begin{tabular}{|l|}
-    \hline
-    Light \\ \hline
+\begin{longtable}{|p{16cm}|}
+    \caption{Light} \label{tab:Light} \\ \hline
+    \multicolumn{1}{|c|}{Light} \\ \hline
     +pos : Vector3* \\ 
     +amb : Vector3* \\
     +dif : Vector3* \\
     +spec : Vector3* \\
     \hline
 	+serialize(bytes : vector$<$char$>$*) : void \\ 
-	+deserialize(bytes : vector$<$char$>$ const\&) : void \\
+	+deserialize(bytes : vector$<$char$>$ const) : void \\
 	+getType() : char \\
 	\hline
-    \end{tabular}
-\end{center}
+\end{longtable}
 
 
-\begin{center}
-    \begin{tabular}{|l|}
-    \hline
-    MainWindow  \\ \hline
+\begin{longtable}{|p{16cm}|}
+    \caption{MainWindow} \label{tab:MainWindow} \\ \hline
+    \multicolumn{1}{|c|}{MainWindow} \\ \hline
     ui : MainWindow* \\
     statisticWindow : StatisticsWindow* \\
     masterThread : MasterThread* \ \
@@ -133,14 +113,12 @@
     setSpeed(double time) \\
     on\_actionStatistics\_triggered() \\
     onQuit(); \\ \hline
-    \end{tabular}
-\end{center}
+\end{longtable}
 
 
-\begin{center}
-    \begin{tabular}{|l|}
-    \hline
-    MasterThread  \\ \hline
+\begin{longtable}{|p{16cm}|}
+    \caption{MasterThread} \label{tab:MasterThread} \\ \hline
+    \multicolumn{1}{|c|}{MasterThread} \\ \hline
     isAlive : bool \\
     camera : Camera* \\
     scene : Scene* \\
@@ -155,14 +133,14 @@
     \hline
 	run() \\
 	splitToChunks(int num) \\
-	clearQueue(queue$<$Chunk$>$ \&q) \\
+	clearQueue(queue$<$Chunk$>$ q) \\
     sendCameraBcast() \\
     sendCameraPointToPoint() \\
     sendScene() \\
     sendDepth(int depth) \\
     sendNextChunk(int dest) \\
     sendExitSignal() \\
-    recvPixels(MPI\_Status \&stat) : int \\
+    recvPixels(MPI\_Status stat) : int \\
     recvMessage() : int \\
     finishPending() \\
     updateProcessSpeed() \\
@@ -171,27 +149,23 @@
     getNames() \\
     emitNames() \\
 	\hline
-    \end{tabular}
-\end{center}
+\end{longtable}
 
 
-\begin{center}
-    \begin{tabular}{|l|}
-    \hline
-    Chunk \\ \hline
+\begin{longtable}{|p{16cm}|}
+    \caption{Chunk} \label{tab:Chunk} \\ \hline
+    \multicolumn{1}{|c|}{Chunk} \\ \hline
     startx : int \\
     stopx : int \\
     starty : int \\
     stopy : int \\
     \hline
-    \end{tabular}
-\end{center}
+\end{longtable}
 
 
-\begin{center}
-    \begin{tabular}{|l|}
-    \hline
-    Pixels \\ \hline
+\begin{longtable}{|p{16cm}|}
+    \caption{Pixels} \label{tab:Pixels} \\ \hline
+    \multicolumn{1}{|c|}{Pixels} \\ \hline
     +data : unsigned char* \\
     +x : int \\
     +y : int \\ 
@@ -199,18 +173,16 @@
     +starty : int \\
     \hline
 	+serialize(bytes : vector$<$char$>$*) : void \\
-	+deserialize(bytes : vector$<$char$>$ const\&) : void \\
+	+deserialize(bytes : vector$<$char$>$ const) : void \\
 	+getType() : char \\
 	+setStartXY(x : int, y : int) : void \\
-	+setPixel(posX : int, posY : int, vec : Vector3\&) : void \\
+	+setPixel(posX : int, posY : int, vec : Vector3) : void \\
 	\hline
-    \end{tabular}
-\end{center}
+\end{longtable}
 
-\begin{center}
-    \begin{tabular}{|l|}
-    \hline
-    Plane \\ \hline
+\begin{longtable}{|p{16cm}|}
+    \caption{Plane} \label{tab:Plane} \\ \hline
+    \multicolumn{1}{|c|}{Plane} \\ \hline
     +a : float \\ 
     +b : float \\
     +c : float \\
@@ -224,13 +196,11 @@
 	+getNormal() : Vector3 \\
 	+isValid() : bool \\
 	\hline
-    \end{tabular}
-\end{center}
+\end{longtable}
 
-\begin{center}
-    \begin{tabular}{|l|}
-    \hline
-    RayTracer \\ \hline
+\begin{longtable}{|p{16cm}|}
+    \caption{RayTracer} \label{tab:RayTracer} \\ \hline
+    \multicolumn{1}{|c|}{RayTracer} \\ \hline
     +camera : Camera* \\
     +scene : Scene* \\
     +buffer : Vector3*** \\ \hline
@@ -238,13 +208,11 @@
 	+recursiveRayTracer(depth : int) : void \\
 	+getColorRecursive(startPoint : Vector3, directionVector : Vector3, depth : int) : Vector3 \\
 	\hline
-    \end{tabular}
-\end{center}
+\end{longtable}
 
-\begin{center}
-    \begin{tabular}{|l|}
-    \hline
-    Scene \\ \hline
+\begin{longtable}{|p{16cm}|}
+    \caption{Scene} \label{tab:Scene} \\ \hline
+    \multicolumn{1}{|c|}{Scene} \\ \hline
     +numOfLights : int \\
     +numOfObjects : int \\
     +useShadows : bool \\
@@ -262,20 +230,18 @@
 	+addObject(sceneObject : SceneObject*) : void \\
 	+addLight(light : Light*) : void \\
 	+setUpPixels(x : int, y : int) : void \\
-	+getClosest(crossPoint : Vector3\&, startPoint : Vector3\&, directionVector : Vector3\&) : SceneObject * \\
-	+isInShadow(crossPoint : Vector3\&, directionVector : Vector3\&, lightPos : Vector3\&) : bool \\
+	+getClosest(crossPoint : Vector3, startPoint : Vector3, directionVector : Vector3) : SceneObject * \\
+	+isInShadow(crossPoint : Vector3, directionVector : Vector3, lightPos : Vector3) : bool \\
 	+setPixelColor(x : int, y : int, color : Vector3) : void \\
 	+serialize(bytes : vector$<$char$>$*) : void \\
-	+deserialize(bytes : vector$<$char$>$ const\&) : void \\
+	+deserialize(bytes : vector$<$char$>$ const) : void \\
 	+getType() : char \\
 	\hline
-    \end{tabular}
-\end{center}
+\end{longtable}
 
-\begin{center}
-    \begin{tabular}{|l|}
-    \hline
-    SceneObject \\ \hline
+\begin{longtable}{|p{16cm}|}
+    \caption{SceneObject} \label{tab:SceneObject} \\ \hline
+    \multicolumn{1}{|c|}{SceneObject} \\ \hline
     \#specShin : float \\
     \#transparency : float \\
     \#mirror : float \\
@@ -285,30 +251,26 @@
     \#dif : Vector3* \\
     \#spec : Vector3* \\
     \hline
-	+getLocalColor(normalVector : Vector3\&, crossPoint : Vector3\&, observationVector : Vector3\&) : Vector3 \\
-	+trace(crossPoint : Vector3\&, startPoint : Vector3\&, directionVector : Vector3\&, dist : float\&) : bool \\
-	+getNormalVector(crossPoint : Vector3\&) : Vector3 \\
+	+getLocalColor(normalVector : Vector3, crossPoint : Vector3, observationVector : Vector3) : Vector3 \\
+	+trace(crossPoint : Vector3, startPoint : Vector3, directionVector : Vector3, dist : float) : bool \\
+	+getNormalVector(crossPoint : Vector3) : Vector3 \\
 	+getBoundingBox() : BoundingBox \\
 	\hline
-    \end{tabular}
-\end{center}
+\end{longtable}
 
-\begin{center}
-    \begin{tabular}{|l|}
-    \hline
-    Serializable \\ \hline
+\begin{longtable}{|p{16cm}|}
+    \caption{Serializable} \label{tab:Serializable} \\ \hline
+    \multicolumn{1}{|c|}{Serializable} \\ \hline
     +serializedSize : int \\ \hline
 	+serialize(bytes : vector$<$char$>$*) : void \\ 
-	+deserialize(bytes : vector$<$char$>$ const\&) : void \\
+	+deserialize(bytes : vector$<$char$>$ const) : void \\
 	+getType() : char \\
 	\hline
-    \end{tabular}
-\end{center}
+\end{longtable}
 
-\begin{center}
-    \begin{tabular}{|l|}
-    \hline
-    SlaveMPI \\ \hline
+\begin{longtable}{|p{16cm}|}
+    \caption{SlaveMPI} \label{tab:SlaveMPI} \\ \hline
+    \multicolumn{1}{|c|}{SlaveMPI} \\ \hline
     +x : int \\ 
 	+y : int \\
 	+depth : int \\
@@ -327,13 +289,11 @@
 	+sendName() : void \\
 	+sendRdy() : void \\
 	\hline
-    \end{tabular}
-\end{center}
+\end{longtable}
 
-\begin{center}
-    \begin{tabular}{|l|}
-    \hline
-    StatisticsWindow \\ \hline
+\begin{longtable}{|p{16cm}|}
+    \caption{StatisticsWindow} \label{tab:StatisticsWindow} \\ \hline
+    \multicolumn{1}{|c|}{StatisticsWindow} \\ \hline
     Ui::StatisticsWindow *ui; \\
     int worldSize; \\
     \hline
@@ -347,26 +307,23 @@
     void setProccessSpeed(double **speed); \\
     void setUpList(); \\
     \hline
-    \end{tabular}
-\end{center}
+\end{longtable}
 
 
 TINY OBJECTY LOADER!!!!!!!!!
 
-\begin{center}
-    \begin{tabular}{|l|}
-    \hline
-    Sphere \\ \hline
+\begin{longtable}{|p{16cm}|}
+    \caption{Sphere} \label{tab:Sphere} \\ \hline
+    \multicolumn{1}{|c|}{Sphere} \\ \hline
     +radius : float \\
     +pos : Vector3* \\
     \hline
-    \end{tabular}
-\end{center}
+\end{longtable}
 
-\begin{center}
-    \begin{tabular}{|l|}
-    \hline
-    Triangle \\ \hline
+
+\begin{longtable}{|p{16cm}|}
+    \caption{Triangle} \label{tab:Triangle} \\ \hline
+    \multicolumn{1}{|c|}{Triangle} \\ \hline
     +pointA : Vector3* \\
     +pointB : Vector3* \\
     +pointC : Vector3* \\
@@ -374,7 +331,7 @@ TINY OBJECTY LOADER!!!!!!!!!
     +normalB : Vector3* \\
     +normalC : Vector3* \\
     \hline
-	+split(plane : Plane, front : list$<$Triangle*$>$\&, back : list$<$Triangle*$>$\&) : void \\ 
+	+split(plane : Plane, front : list$<$Triangle*$>$, back : list$<$Triangle*$>$) : void \\ 
 	+getPointbyNum(a : int) : Vector3 * \\
 	+getPlanes() : list$<$Plane$>$ \\
 	+getPerpendicularPlane(i : int) : Plane \\
@@ -382,32 +339,29 @@ TINY OBJECTY LOADER!!!!!!!!!
 	+Area(a : Vector3, b : Vector3) : float \\
 	+getBoundingBox() : BoundingBox \\
 	\hline
-    \end{tabular}
-\end{center}
+\end{longtable}
 
 
-\begin{center}
-    \begin{tabular}{|l|}
-    \hline
-    Vector3 \\ \hline
+\begin{longtable}{|p{16cm}|}
+    \caption{Vector3} \label{tab:Vector3} \\ \hline
+    \multicolumn{1}{|c|}{Vector3} \\ \hline
     +x : type \\
     +y : type \\
     +z : type \\
      \hline
 	+normalize() : Vector3 \\ 
-	+scalarProduct(v : Vector3\&) : float \\
-	+vectorProduct(v : Vector3\&) : Vector3 \\
+	+scalarProduct(v : Vector3) : float \\
+	+vectorProduct(v : Vector3) : Vector3 \\
 	+rotateX(alpha : float) : void \\
 	+rotateY(alpha : float) : void \\
 	+rotateZ(alpha : float) : void \\
-	+distanceFrom(v : Vector3\&) : float \\
-	+powDistanceFrom(v : Vector3\&) : float \\
-	+reflect(n : Vector3\&) : Vector3 \\
-	+refract(normalVector : Vector3\&, a : float, b : float) : Vector3 \\
+	+distanceFrom(v : Vector3) : float \\
+	+powDistanceFrom(v : Vector3) : float \\
+	+reflect(n : Vector3) : Vector3 \\
+	+refract(normalVector : Vector3, a : float, b : float) : Vector3 \\
 	+isZeroVector() : bool \\
 	+length() : float \\
 	\hline
-    \end{tabular}
-\end{center}
+\end{longtable}
 
 
