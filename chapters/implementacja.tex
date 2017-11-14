@@ -1,5 +1,7 @@
-\section{Szczegółowy opis klas}
+\section{Szczegółowy opis wybranych fragmentów kodu}
 	\subsection{RayTracer}
+
+Klasa \emph{RayTracer} implementuje zestaw metod realizujących algorytm śledzenia promieni. Korzysta ona z interfejsu udostępnianego przez klasy tj. \emph{Scene}, czy \emph{Camera} aby generować kolejne promienie do wysłania. Poniżej zostały omówione dwa najważniejsze fragmenty kodu zawarte w tej klasie
 	
 \begin{lstlisting}
 
@@ -18,6 +20,8 @@ for(int i = 0; i < scene->getWidth(); i++) {
 }
 }
 \end{lstlisting}	
+
+Powyższy fragment kodu implementuje algorytm, który można znaleźć w rozdziale !TU WSTAW RODZIAŁ!. Dla każdego piksela sceny zostaje wygenerowany promień pierwotny (\emph{directionVector}), który następnie jest wysyłany w scenę - funkcja \emph{getColorRecursive} (opisana niżej) zwraca kolor jaki należy przypisać danemu punktowi ekranu. Każdy z węzłów wykonawczych posiada swój egzemplarz obiektu klasy \emph{Scene} (wykorzystywany w powyższym kodzie) zmodyfikowany w taki sposób, aby przechowywał on jedynie fragment obrazu (\emph{Pixels)} - początek wycinka jest określany zmiennymi \emph{startX} i \emph{startY}, a zmodyfikowane wymiary obrazu pozwalają określić jego koniec. Więcej o komunikacji Master/Slave można przeczytać w rozdziałach !TU WSTAW RODZIAŁY!. 
 
 \begin{lstlisting}
 
@@ -73,8 +77,71 @@ return localColor*sceneObject->getLocal() + reflectedColor*sceneObject->getMirro
 
 \end{lstlisting}
 	
-	\subsection{BSP}
-	
+Powyższa metoda jest rekurencyjnie wywoływaną metodą pozwalającą określić ostateczny kolor piksela, z którego został wysłany promień pierwotny (wysłanie promienia pierwotnego następuje w funkcji \emph{recursiveRayTracer}. Przyjmuje ona promień (w postaci punktu początkowego i wektora kierunku) oraz zmienną określającą głębokość drzewa - jest ona dekrementowana z każdym kolejnym rekurencyjnym wywołaniem funkcji, a kiedy osiągnie zero, rekurencja jest przerywana. Pierwszym krokiem algorytmu jest określenie, czy promień przeciął się z jakimś obiektem (jest tutaj wykorzystywany albo przegląd zupełny, albo drzewo BSP). Jeżeli nie to ostateczny kolor piksela (lub jego składowa na danym poziomie) przyjmuje wartość koloru tła. Jeżeli tak, to algorytm wybiera obiekt będący najbliżej początku promienia (obiekt widoczny z perspektywy tego punktu) i (w zależności od modelu Phonga i parametrów powierzchni omówionych w rozdziałach !TU WSTAW ROZDZIAŁ!) ustala lokalną barwę obiektu oraz wysyła dwa kolejne promienie mające wpływ na barwę ostateczną - promień odbity od powierzchni i promień przez nią przechodzący (jest tutaj uwzględnianie złamanie światła).
+Ostateczny kolor piksela jest sumą kolorów lokalnych osiągniętych przez wszystkie promienie powstałe w wyniku wysłania promienia pierwotnego.	Niezrozumiały może wydawać się następujący fragment:
+
+\begin{lstlisting}
+if (observationVector.scalarProduct(normalVector) < 0) {
+    normalVector = normalVector*-1;
+}
+
+crossPoint = crossPoint + normalVector*EPSILON;
+\end{lstlisting}
+
+Biorąc pod uwagę, że kierunek wektora normalnego ma wpływ na otrzymany kolor lokalny powierzchni (jeżeli jego kierunek jest niezgodny z kierunkiem światła to znaczy, że powierzchnia nie jest oświetlona) należy go odwrócić tak aby był on zgodny z kierunkiem obserwacji - np w sytuacji w której obserwator znajdowałby się w kuli (wraz ze światłem oświetlającym scenę), a wektor normalny do powierzchni kuli skierowany byłby na zewnątrz, oświetlenie i tak nie miałoby na nią wpływu. Przesunięcie punktu początkowego w kierunku wskazywanego przez wektor normalny do powierzchni (o jakiś epsilon) jest wymagana z powodu niedokładności algorytmów badania przecięć - zdarzało się, że dla promienia wtórnego wysyłanego z dowolnego punktu przecięcia wykrywały one kolizję z obiektem, z którego powierzchni były one wysłane.
+
+\subsection{BSP}
+
+W tym punkcie zostanie przedstawione w jaki sposób zaimplementowano budowę drzewa BSP oraz jego przeglądanie.
+
+\begin{lstlisting}
+
+root->partitionPlane = getBestPlane(polygons);
+while(!polygons.empty()) {
+    object = polygons.back();
+    polygons.pop_back();
+    result = root->partitionPlane.classifyObject(object);
+    switch (result) {
+        case FRONT:
+            frontList.push_back(object);
+        break;
+
+        case BACK:
+            backList.push_back(object);
+        break;
+
+        case COINCIDENT:
+            backList.push_back(object);
+            frontList.push_back(object);
+        break;
+
+        case SPANNING: {
+            if (object->getType() == 's') {
+                root->polygons.push_back(object);
+            } else {
+                Triangle *triangle = static_cast<Triangle*>(object);
+                std::list<Triangle*> tempFrontList, tempBackList;
+                triangle->split(root->partitionPlane, tempFrontList, tempBackList);
+                while (!tempBackList.empty()) {
+                    backList.push_back(tempBackList.back());
+                    tempBackList.pop_back();
+                }
+                while (!tempFrontList.empty()) {
+                    frontList.push_back(tempFrontList.back());
+                    tempFrontList.pop_back();
+            }
+            }
+        }
+        break;
+
+        default:
+            break;
+        }
+    }
+\end{lstlisting}
+
+Powyższy fragment kodu jest fragmentem kodu funkcji budującej drzewo, który nie został do końca uwzględniony w rozdziale (!TU WSTAW ROZDZIAŁ Z PSEUDOKODEM!). Pierwszym krokiem każdej kolejnej rekurencji budowy drzewa jest ustalenie płaszczyzny podziału - brane są pod uwagę wszystkie te, które są wyznaczane przez trójkąty zawarte w danym wierzchołku i te które są do tych trójkątów prostopadłe (styczne z krawędziami). Poprzez najlepszą płaszczyznę rozumie się taką, która dzieli trójkąty na równe ilościowo grupy. Następnie, w pętli, algorytm sprawdza, po której stronie wybranej płaszczyzny znajduje się dany obiekt z listy - w zależności od sytuacji trafia on do listy, która zostanie przekazana kolejnym dzieciom (,,przedniemu'' i ,,tylnemu''). W przypadku gdy trójkąt leży na płaszczyźnie podziału jest on umieszczany w obu listach, z kolejki jeżeli płaszczyzna przecina trójkąt to jest on dzielony na dwa (w przypadku powstania trójkąta i czworokąta, czworokąt jest dzielony na dwa trójkąty) - każda z połówek trafi do odpowiedniego ,,dziecka''. Biorąc pod uwagę, że program uwzględnia sfery przechowywane w postaci równania (a więc prosty podział takiego obiektu nie jest możliwy), w przypadku w którym płaszczyzna przecina sferę, trafia ona tylko do listy obiektów rozpatrywanego wierzchołka. Zaimplementowanie sfer wymagało takiej niekonwencjonalnej modyfikacji algorytmu, która będzie miała wpływ na sposób przeglądania drzewa. Rekurencja kończy się, kiedy zostanie osiągnięty maksymalna wysokość drzewa (określana przez parametr przekazywany do funkcji przy pierwszym wywołaniu), lub w sytuacji, w której dalszy podział jest niemożliwy (wierzchołek otrzymuje jeden trójkąt lub dalszy podział nie przynosi efektów). Wtedy wierzchołek jest zamieniany w liść (wskaźniki na potomstwo są puste), a wejściowa lista obiektów zostaje do niego przypisana. Pomijając sfery wszystkie wierzchołki niebędące liśćmi są puste.
+
 \begin{lstlisting}
 
 SceneObject *BSP::intersect(BSP::node *root, Vector3<float> &crossPoint, Vector3<float> &startingPoint, Vector3<float> &directionVector) {
@@ -147,6 +214,14 @@ return hit;
 }
 
 \end{lstlisting}
+
+Powyżej przedstawiono rekurencyjny algorytm przeszukiwania drzewa. Funkcja ta przyjmuje wskaźnik na sprawdzany wierzchołek drzewa i promień, a zwraca wskaźnik na znaleziony obiekt i punkt przecięcia (zmienna \emph{crossPoint} widoczna w liście parametrów).
+
+Pierwszym krokiem algorytmu jest sprawdzenie czy dany wierzchołek jest liściem Jeżeli tak to zostaje przeprowadzony test przecięcia na każdym obiekcie znajdującym się w wierzchołku - wybieramy najbliższy trafiony i zwracamy go do funkcji wywołującej. Następnie należy sprawdzić, czy dany wierzchołek rzeczywiście jest pusty (komplikacje spowodowane nietypowym obiektem nie będącym poligonem - sferą). Jeżeli nie jest, to ponownie zostaną przeprowadzone testy przecięć dla każdego obiektu znajdującego się w wierzchołku - znaleziony obiekt przechowujemy w zmiennej \emph{thisNodeHit}.
+
+Następnie, w zależności od tego, po której części płaszczyzny znajduje się punkt początkowy promienia, zostają ustawione zmienne ,,near'' (połowa, w której znajduje się punkt początkowy) i ,,far'' (alternatywa). W przypadku, w którym punkt startowy zawiera się w płaszczyźnie dzielącej, sprawdzamy czy wektor kierunku nie jest równoległy do płaszczyzny - jeżeli jest ,,near'' i ,,far'' nie ma znaczenia; jeżeli nie jest, to jako ,,near'' wybieramy tę połowę wskazywaną przez wektor.
+
+Kolejnym krokiem jest rekurencyjne wywołanie tej funkcji dla potomka ,,near''. Jeżeli nie zwróci ono żadnego obiektu, a promień przecina płaszczyznę dzielącą to rozwiązanie może znajdować się jeszcze w drugim potomku (,,far''). Ostatni fragment kodu sprawdza, czy jeżeli znaleziono obiekt w danym węźle i obiekt w jednym z dzieci to który z nich jest bliżej - ten zostanie zwrócony jako wynik.
 
 \subsection{MasterThread}
 	
