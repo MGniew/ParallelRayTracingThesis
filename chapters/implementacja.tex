@@ -56,7 +56,6 @@ if (observationVector.scalarProduct(normalVector) < 0) {
     normalVector = normalVector*-1;
 }
 
-crossPoint = crossPoint + normalVector*EPSILON;
 if(sceneObject->getTransparency()>0) {
     transparencyRay = directionVector.refract(normalVector, sceneObject->getDensity(), 1);
     transparencyColor = getColorRecursive(crossPoint, transparencyRay, depth);
@@ -77,18 +76,16 @@ return localColor*sceneObject->getLocal() + reflectedColor*sceneObject->getMirro
 
 \end{lstlisting}
 	
-Powyższa metoda jest rekurencyjnie wywoływaną metodą pozwalającą określić ostateczny kolor piksela, z którego został wysłany promień pierwotny (wysłanie promienia pierwotnego następuje w funkcji \emph{recursiveRayTracer}. Przyjmuje ona promień (w postaci punktu początkowego i wektora kierunku) oraz zmienną określającą głębokość drzewa - jest ona dekrementowana z każdym kolejnym rekurencyjnym wywołaniem funkcji, a kiedy osiągnie zero, rekurencja jest przerywana. Pierwszym krokiem algorytmu jest określenie, czy promień przeciął się z jakimś obiektem (jest tutaj wykorzystywany albo przegląd zupełny, albo drzewo BSP). Jeżeli nie to ostateczny kolor piksela (lub jego składowa na danym poziomie) przyjmuje wartość koloru tła. Jeżeli tak, to algorytm wybiera obiekt będący najbliżej początku promienia (obiekt widoczny z perspektywy tego punktu) i (w zależności od modelu Phonga i parametrów powierzchni omówionych w rozdziałach !TU WSTAW ROZDZIAŁ!) ustala lokalną barwę obiektu oraz wysyła dwa kolejne promienie mające wpływ na barwę ostateczną - promień odbity od powierzchni i promień przez nią przechodzący (jest tutaj uwzględnianie złamanie światła).
+Powyższa metoda jest rekurencyjnie wywoływaną metodą pozwalającą określić ostateczny kolor piksela, z którego został wysłany promień pierwotny (wysłanie promienia pierwotnego następuje w funkcji \emph{recursiveRayTracer}. Przyjmuje ona promień (w postaci punktu początkowego i wektora kierunku) oraz zmienną określającą głębokość drzewa - jest ona dekrementowana z każdym kolejnym rekurencyjnym wywołaniem funkcji, a kiedy osiągnie zero, rekurencja jest przerywana. Pierwszym krokiem algorytmu jest określenie, czy promień przeciął się z jakimś obiektem (jest tutaj wykorzystywany albo przegląd zupełny, albo drzewo BSP). Jeżeli nie to ostateczny kolor piksela (lub jego składowa na danym poziomie) przyjmuje wartość koloru tła. Jeżeli tak, to algorytm wybiera obiekt będący najbliżej początku promienia (obiekt widoczny z perspektywy tego punktu) i (w zależności od modelu \emph{Phonga} i parametrów powierzchni omówionych w rozdziałach !TU WSTAW ROZDZIAŁ!) ustala lokalną barwę obiektu oraz wysyła dwa kolejne promienie mające wpływ na barwę ostateczną - promień odbity od powierzchni i promień przez nią przechodzący (jest tutaj uwzględnianie złamanie światła).
 Ostateczny kolor piksela jest sumą kolorów lokalnych osiągniętych przez wszystkie promienie powstałe w wyniku wysłania promienia pierwotnego.	Niezrozumiały może wydawać się następujący fragment:
 
 \begin{lstlisting}
 if (observationVector.scalarProduct(normalVector) < 0) {
     normalVector = normalVector*-1;
 }
-
-crossPoint = crossPoint + normalVector*EPSILON;
 \end{lstlisting}
 
-Biorąc pod uwagę, że kierunek wektora normalnego ma wpływ na otrzymany kolor lokalny powierzchni (jeżeli jego kierunek jest niezgodny z kierunkiem światła to znaczy, że powierzchnia nie jest oświetlona) należy go odwrócić tak aby był on zgodny z kierunkiem obserwacji - np w sytuacji w której obserwator znajdowałby się w kuli (wraz ze światłem oświetlającym scenę), a wektor normalny do powierzchni kuli skierowany byłby na zewnątrz, oświetlenie i tak nie miałoby na nią wpływu. Przesunięcie punktu początkowego w kierunku wskazywanego przez wektor normalny do powierzchni (o jakiś epsilon) jest wymagana z powodu niedokładności algorytmów badania przecięć - zdarzało się, że dla promienia wtórnego wysyłanego z dowolnego punktu przecięcia wykrywały one kolizję z obiektem, z którego powierzchni były one wysłane.
+Biorąc pod uwagę, że kierunek wektora normalnego ma wpływ na otrzymany kolor lokalny powierzchni (jeżeli jego kierunek jest niezgodny z kierunkiem światła to znaczy, że powierzchnia nie jest oświetlona) należy go odwrócić tak aby był on zgodny z kierunkiem obserwacji - np w sytuacji w której obserwator znajdowałby się w kuli (wraz ze światłem oświetlającym scenę), a wektor normalny do powierzchni kuli skierowany byłby na zewnątrz, oświetlenie i tak nie miałoby na nią wpływu.
 
 \subsection{BSP}
 
@@ -230,25 +227,13 @@ Kolejnym krokiem jest rekurencyjne wywołanie tej funkcji dla potomka ,,near''. 
 
 void MasterThread::run() {
 
-double time = 0; double bsp = 0;
-int n = test;
-double t1, t2;
-emitNames();
-
-t1 = MPI_Wtime();
-waitUntillRdy();
-t2 = MPI_Wtime();
-bsp = t2 - t1;
-
 while (true) {
 
     splitToChunks(numChunks);
 
-    t1 = MPI_Wtime();
     pending = 0;
     for (int i=1; i<worldSize; i++) {
         if (!sendNextChunk(i)) break;
-        processSpeed[i][2] = MPI_Wtime();
         pending++;
         }
 
@@ -258,36 +243,20 @@ while (true) {
             case EXIT: return; break;
             case PIXELS:
                 dest = recvPixels(status);
-                updateProcessSpeed();
                 if (!sendNextChunk(dest))
                     pending--;
                 break;
             default: break;
         }
-        // emit workIsReady();
         emit processInfo(processSpeed);
     }
-    t2 = MPI_Wtime();
 
-    emit setTime(t2-t1);
-    time += t2 - t1;
-
-    //update camera pos
     camera->rotate();
-    //broadcast camera
     sendCameraPointToPoint();
 
     emit workIsReady();
 
-    if (n > 0) {
-        n --;
-        if (n == 0) break;
-    }
-
 }
-
-printResult(time/test, bsp);
-emit close();
 }
 
 \end{lstlisting}
@@ -309,8 +278,6 @@ while(true) {
             recvChunk();
             rayTracer.recursiveRayTracer(depth);
             sendPixels(); break;
-        case DEPTH:
-            recvDepth(); break;
         case CAMERA:
             recvCameraPointToPoint(); break;
         default: break;
