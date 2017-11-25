@@ -112,7 +112,6 @@ Klasa BoundingBox reprezentuje prostopadłościany, które w założeniu mają o
 \begin{longtable}{|p{14cm}|}
 	\caption{BSP} \label{tab:BSP} \\ \hline
 	\multicolumn{1}{|c|}{BSP} \\ \hline
-
     +tree : node* \\
     -polygons : SceneObject* \\
     -box : BoundingBox \\ \hline
@@ -129,7 +128,7 @@ Klasa BoundingBox reprezentuje prostopadłościany, które w założeniu mają o
 
 \footnotesize
 \begin{longtable}{|p{14cm}|}
-    \caption{Node} \label{tab:Node} \\ \hline
+    \caption{Node} \label{tab:Node (struktura)} \\ \hline
     \multicolumn{1}{|c|}{Node} \\ \hline
     partitionPlane : Plane \\
     polygons : list$<$SceneObject*$>$ \\
@@ -148,22 +147,22 @@ Podstawowym elementem drzewa jest struktura Node, która zawiera pola takie jak 
 \begin{longtable}{|p{14cm}|}
     \caption{Camera} \label{tab:Camera} \\ \hline
     \multicolumn{1}{|c|}{Camera} \\ \hline
-    +zNear : float \\
-    +zFar : float \\
-    +pixWidth : int \\
-    +pixHeight : int \\
-    +povy : float \\
-    +aspect : float \\
-    +worldWidth : float \\
-    +worldHeight : float \\
-    +R : float \\
-    +ver : float \\
-    +hor : float \\
-    +instance : Camera* \\ 
-    +eye : Vector3<float>* \\
-    +look : Vector3<float>* \\
-    +up : Vector3<float>* \\
-    +lookAt : Vector3<float>* \\
+    -zNear : float \\
+    -Far : float \\
+    -pixWidth : int \\
+    -pixHeight : int \\
+    -povy : float \\
+    -aspect : float \\
+    -worldWidth : float \\
+    -worldHeight : float \\
+    -R : float \\
+    -ver : float \\
+    -hor : float \\
+    -instance : Camera* \\ 
+    -eye : Vector3<float>* \\
+    -look : Vector3<float>* \\
+    -up : Vector3<float>* \\
+    -lookAt : Vector3<float>* \\
     \hline
     +setUp(pixWidth : int, pixHeight : int) : void \\
     +getInstance() : Camera * \\
@@ -181,10 +180,10 @@ Podobnie jak obiekt klasy Scene, obiekt klasy Camera jest zbudowany według wzor
 \begin{longtable}{|p{14cm}|}
     \caption{GLwidget} \label{tab:GLwidget} \\ \hline
     \multicolumn{1}{|c|}{GLwidget} \\ \hline
-    scene : Scene*  \\ \hline
-    initializeGL() : void \\ 
-    resizeGL(int w, int h) : void \\
-    paintGL() : void \\ \hline
+    -scene : Scene*  \\ \hline
+    \#initializeGL() : void \\ 
+    \#resizeGL(int w, int h) : void \\
+    \#paintGL() : void \\ \hline
 \end{longtable}
 \normalsize
 
@@ -214,7 +213,7 @@ FileLoader jest klasą odpowiedzialną za wczytanie definicji sceny z pliku (st�
 \begin{longtable}{|p{14cm}|}
     \caption{InputParser} \label{tab:InputParser} \\ \hline
     \multicolumn{1}{|c|}{InputParser} \\ \hline
-    tokens : vector$<$string$>$  \\ \hline
+    -tokens : vector$<$string$>$  \\ \hline
     +getCmdOption(option : string const) : string const) \\
     +cmdOptionExists(option : string const) : bool \\ \hline
 \end{longtable}
@@ -228,14 +227,10 @@ Klasa InputParser jest prostą klasą pozwalająca na obróbkę danych wejściow
 \begin{longtable}{|p{14cm}|}
     \caption{Light} \label{tab:Light} \\ \hline
     \multicolumn{1}{|c|}{Light} \\ \hline
-    +pos : Vector3* \\ 
-    +amb : Vector3* \\
-    +dif : Vector3* \\
-    +spec : Vector3* \\
-    \hline
-	+serialize(bytes : vector$<$char$>$*) : void \\ 
-	+deserialize(bytes : vector$<$char$>$ const) : void \\
-	+getType() : char \\
+    -pos : Vector3* \\ 
+    -amb : Vector3* \\
+    -dif : Vector3* \\
+    -spec : Vector3* \\
 	\hline
 \end{longtable}
 \normalsize
@@ -248,15 +243,15 @@ Klasa Light określa obiekty światła. Więcej o świetle i jego znaczeniu na s
 \begin{longtable}{|p{14cm}|}
     \caption{MainWindow} \label{tab:MainWindow} \\ \hline
     \multicolumn{1}{|c|}{MainWindow} \\ \hline
-    ui : MainWindow* \\
-    statisticWindow : StatisticsWindow* \\
-    masterThread : MasterThread* \ \
-    statusLabel : QLabel* \\ \hline
-    createMaster() \\
-    ShowStats() \\
-    setSpeed(double time) \\
-    on\_actionStatistics\_triggered() \\
-    onQuit(); \\ \hline
+    -ui : MainWindow* \\
+    -statisticWindow : StatisticsWindow* \\
+    -masterThread : MasterThread* \ \
+    -statusLabel : QLabel* \\ \hline
+    -createMaster() \\
+    -ShowStats() \\
+    -setSpeed(double time) \\
+    -on\_actionStatistics\_triggered() \\
+    -onQuit(); \\ \hline
 \end{longtable}
 \normalsize
 
@@ -268,35 +263,41 @@ Klasa MainWindow reprezentuje główne okno aplikacji. Ze względów projektowyc
 \begin{longtable}{|p{14cm}|}
     \caption{MasterThread} \label{tab:MasterThread} \\ \hline
     \multicolumn{1}{|c|}{MasterThread} \\ \hline
-    isAlive : bool \\
-    camera : Camera* \\
-    scene : Scene* \\
-    processSpeed : double** \\
-    worldSize : int \\
-    status : MPI\_Status \\
-    names : vector$<$string$>$ \\
-    pending : int \\
-    numChunks : int \\
-    queue : queue$<$Chunk$>$ \\
-    test : int \\
+    -isAlive : bool \\
+    -camera : Camera* \\
+    -scene : Scene* \\
+    -processSpeed : double** \\
+    -worldSize : int \\
+    -status : MPI\_Status \\
+    -names : vector$<$string$>$ \\
+    -pending : int \\
+    -numChunks : int \\
+    -queue : queue$<$Chunk$>$ \\
+    -test : int \\
     \hline
 	run() \\
-	splitToChunks(int num) \\
-	clearQueue(queue$<$Chunk$>$ q) \\
-    sendCameraBcast() \\
-    sendCameraPointToPoint() \\
-    sendScene() \\
-    sendDepth(int depth) \\
-    sendNextChunk(int dest) \\
-    sendExitSignal() \\
-    recvPixels(MPI\_Status stat) : int \\
-    recvMessage() : int \\
-    finishPending() \\
-    updateProcessSpeed() \\
-    waitUntillRdy() \\
-    printResult(double spf, double bsp) \\
-    getNames() \\
-    emitNames() \\
+	-splitToChunks(int num) \\
+	-clearQueue(queue$<$Chunk$>$ q) \\
+    -sendCameraBcast() \\
+    -sendCameraPointToPoint() \\
+    -sendScene() \\
+    -sendDepth(int depth) \\
+    -sendNextChunk(int dest) \\
+    -sendExitSignal() \\
+    -recvPixels(MPI\_Status stat) : int \\
+    -recvMessage() : int \\
+    -finishPending() \\
+    -updateProcessSpeed() \\
+    -waitUntillRdy() \\
+    -printResult(double spf, double bsp) \\
+    -getNames() \\
+    -emitNames() \\
+    +getNumOfChunks() : int \\
+    +workIsReady() : void \\
+    +setTime(double time) : void \\
+    +processInfo(double **speeds) : void \\
+    +close() : void \\
+    +setName(int num, QString name) : void \\
 	\hline
 \end{longtable}
 \normalsize
@@ -307,7 +308,7 @@ Głównym zadaniem MasterThread jest zarządzanie węzłami wykonawczymi (sam st
 
 \footnotesize
 \begin{longtable}{|p{14cm}|}
-    \caption{Chunk} \label{tab:Chunk} \\ \hline
+    \caption{Chunk} \label{tab:Chunk (struktura} \\ \hline
     \multicolumn{1}{|c|}{Chunk} \\ \hline
     startx : int \\
     stopx : int \\
@@ -332,9 +333,6 @@ Chunk jest prostą strukturą wykorzystywaną w komunikacji Master/Slave (Master
     +startx : int \\
     +starty : int \\
     \hline
-	+serialize(bytes : vector$<$char$>$*) : void \\
-	+deserialize(bytes : vector$<$char$>$ const) : void \\
-	+getType() : char \\
 	+setStartXY(x : int, y : int) : void \\
 	+setPixel(posX : int, posY : int, vec : Vector3) : void \\
 	\hline
@@ -372,8 +370,8 @@ Klasa reprezentuje obiekty płaszczyzn, wykorzystywane przy podziale podprzestrz
 \begin{longtable}{|p{14cm}|}
     \caption{RayTracer} \label{tab:RayTracer} \\ \hline
     \multicolumn{1}{|c|}{RayTracer} \\ \hline
-    +camera : Camera* \\
-    +scene : Scene* \\ \hline
+    -camera : Camera* \\
+    -scene : Scene* \\ \hline
 	+basicRayTracer() : void \\
 	+recursiveRayTracer(depth : int) : void \\
 	+getColorRecursive(start : Vector3, dir : Vector3, depth : int) : Vector3 \\
@@ -389,17 +387,17 @@ Klasa RayTracer zawiera w sobie zestaw metod, które pozwalają na realizację a
 \begin{longtable}{|p{14cm}|}
     \caption{Scene} \label{tab:Scene} \\ \hline
     \multicolumn{1}{|c|}{Scene} \\ \hline
-    +numOfLights : int \\
-    +numOfObjects : int \\
-    +useShadows : bool \\
-    +useBSP : bool \\
-    +instance : Scene* \\
-    +lights : Light** \\
-    +sceneObjects : SceneObject** \\
-    +pixels : Pixels* \\
-    +backgroundColor : Vector3* \\
-    +globalAmbient : Vector3* \\
-    +bsp : BSP* \\
+    -numOfLights : int \\
+    -numOfObjects : int \\
+    -useShadows : bool \\
+    -useBSP : bool \\
+    -instance : Scene* \\
+    -lights : Light** \\
+    -sceneObjects : SceneObject** \\
+    -pixels : Pixels* \\
+    -backgroundColor : Vector3* \\
+    -globalAmbient : Vector3* \\
+    -bsp : BSP* \\
     \hline
 	+getInstance() : Scene * \\
 	+buildBSP(depth : int) : void \\
@@ -409,9 +407,6 @@ Klasa RayTracer zawiera w sobie zestaw metod, które pozwalają na realizację a
 	+getClosest(cross : Vector3, start : Vector3, dir : Vector3) : SceneObject * \\
 	+isInShadow(cross : Vector3, dir : Vector3, lightPos : Vector3) : bool \\
 	+setPixelColor(x : int, y : int, color : Vector3) : void \\
-	+serialize(bytes : vector$<$char$>$*) : void \\
-	+deserialize(bytes : vector$<$char$>$ const) : void \\
-	+getType() : char \\
 	\hline
 \end{longtable}
 \normalsize
@@ -467,21 +462,21 @@ Klasa Serializable jest właściwie Interfejsem - dziedziczą po niej wszystkie 
     \multicolumn{1}{|c|}{SlaveMPI} \\ \hline
     +x : int \\ 
 	+y : int \\
-	+depth : int \\
-	+status : MPI\_Status \\
-	+pixels : Vector3*** \\
-	+camera : Camera* \\
-	+scene : Scene* \\ \hline
+	-depth : int \\
+	-status : MPI\_Status \\
+	-pixels : Vector3*** \\
+	-camera : Camera* \\
+	-scene : Scene* \\ \hline
 	+exec() : int \\
-	+recvCameraBcast() : void \\
-	+recvCameraPointToPoint() : void \\
-	+recvScene() : void \\
-	+recvDepth() : void \\
-	+recvChunk() : void \\
-	+recvMessage() : int \\
-	+sendPixels() : void \\
-	+sendName() : void \\
-	+sendRdy() : void \\
+	-recvCameraBcast() : void \\
+	-recvCameraPointToPoint() : void \\
+	-recvScene() : void \\
+	-recvDepth() : void \\
+	-recvChunk() : void \\
+	-recvMessage() : int \\
+	-sendPixels() : void \\
+	-sendName() : void \\
+	-sendRdy() : void \\
 	\hline
 \end{longtable}
 \normalsize
@@ -494,18 +489,18 @@ SlaveMPI jest klasą analogiczną do klasy MasterThraed, jednak jej obiekt jest 
 \begin{longtable}{|p{14cm}|}
     \caption{StatisticsWindow} \label{tab:StatisticsWindow} \\ \hline
     \multicolumn{1}{|c|}{StatisticsWindow} \\ \hline
-    Ui::StatisticsWindow *ui; \\
-    int worldSize; \\
+    -Ui::StatisticsWindow *ui; \\
+    -int worldSize; \\
     \hline
-	resizeEvent(QResizeEvent *event) : void \\
-    setTime(double time) : void  \\
-    setChunks(int i) : void \\
-    setXY(int x, int y) : void \\
-    setObj(int i) : void \\
-    setLights(int i) : void  \\
-    setProccessName(int num, QString str) : void \\
-    setProccessSpeed(double **speed) : void \\
-    setUpList() : void \\
+	+resizeEvent(QResizeEvent *event) : void \\
+    +setTime(double time) : void  \\
+    +setChunks(int i) : void \\
+    +setXY(int x, int y) : void \\
+    +setObj(int i) : void \\
+    +setLights(int i) : void  \\
+    +setProccessName(int num, QString str) : void \\
+    +setProccessSpeed(double **speed) : void \\
+    -setUpList() : void \\
     \hline
 \end{longtable}
 \normalsize
@@ -518,8 +513,8 @@ StatisticWindow jest oknem, które (jak sama nazwa wskazuje) ma prezentować sta
 \begin{longtable}{|p{14cm}|}
     \caption{Sphere} \label{tab:Sphere} \\ \hline
     \multicolumn{1}{|c|}{Sphere} \\ \hline
-    +radius : float \\
-    +pos : Vector3* \\
+    -radius : float \\
+    -pos : Vector3* \\
     \hline
 \end{longtable}
 \normalsize
@@ -532,12 +527,12 @@ Klasa Sphere jest klasą reprezentującą sferę. Dziedziczy ona po SceneObject,
 \begin{longtable}{|p{14cm}|}
     \caption{Triangle} \label{tab:Triangle} \\ \hline
     \multicolumn{1}{|c|}{Triangle} \\ \hline
-    +pointA : Vector3* \\
-    +pointB : Vector3* \\
-    +pointC : Vector3* \\
-    +normalA : Vector3* \\
-    +normalB : Vector3* \\
-    +normalC : Vector3* \\
+    -pointA : Vector3* \\
+    -pointB : Vector3* \\
+    -pointC : Vector3* \\
+    -normalA : Vector3* \\
+    -normalB : Vector3* \\
+    -normalC : Vector3* \\
     \hline
 	+split(plane : Plane, front : list$<$Triangle*$>$, back : list$<$Triangle*$>$) : void \\ 
 	+getPointbyNum(a : int) : Vector3 * \\

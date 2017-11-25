@@ -235,7 +235,7 @@ while (true) {
     for (int i=1; i<worldSize; i++) {
         if (!sendNextChunk(i)) break;
         pending++;
-        }
+    }
 
     int dest;
     while(pending>0) {
@@ -248,19 +248,21 @@ while (true) {
                 break;
             default: break;
         }
-        emit processInfo(processSpeed);
     }
-
+ 	emit workIsReady();
     camera->rotate();
     sendCameraPointToPoint();
-
-    emit workIsReady();
-
 }
 }
 
 \end{lstlisting}
 
+
+Powyższy kod przedstawia główną pętlę programu węzła zarządzającego. Zanim zostanie ona wywołana \emph{MasterThread} rozsyła informacje o wczytanej scenie, kamerze i głębokości drzewa śledzenia promieni, do każdego z węzłów wykorzystując komunikację typu \emph{broadcast} (dzieje się to w konstruktorze klasy). Rodzaje komunikatów możliwe do wysłania  
+
+Zgodnie z założeniami, rozpoczyna się ona od podziału generowanego obrazu na fragmenty, których definicje trafiają na kolejkę oczekujących zadań. Następnie algorytm zdejmuje zadania z kolejki i wysyła je do kolejnych węzłów wykonawczych (zostaje tutaj ustalona liczba zadań aktualnie wykonywanych). W momencie, w którym master otrzyma wyniki działań (tablicę pikseli) któregokolwiek węzła następuje sprawdzenie, czy istnieją jeszcze jakieś zadania do wykonania. Jeżeli tak to jedno z nich zostanie wysłane do węzła, od którego otrzymaliśmy właśnie fragment obrazu, jeżeli nie to liczba aktualnie wykonywanych zadań zmniejsza się.
+
+W chwili, w której liczba wykonywanych zadań spadnie do zera zostaje wysłany sygnał do wątku GUI informujący go o tym, że generowana klatka animacji jest gotowa. Zostaje również uaktualniona pozycja kamery, która następnie jest wysyłana do każdego z węzłów wykonawczych.
 
 \subsection{SlaveMPI}
 
@@ -288,8 +290,12 @@ return 0;
 
 \end{lstlisting}
 
-\section{Serializacja}
 
+Powyższa metoda pokazuje jak działa pętla główna węzłów wykonawczych. Zanim zostanie ona uruchomiona wszelkie niezbędne informacje dot. sceny zostają odebrane przez każdy z węzłów (dzieje się to w konstruktorze). 
+
+Zgodnie z opisem w rozdziale (!ROZDZIAŁ!) program czeka na polecenia mogące nadejść od węzła zarządzającego - może być to żądanie zakończenia programu, definicja fragmentu obrazu, który należy wyznaczyć, czy definicja kamery (jest ona aktualizowana co klatkę animacji). Do wyznaczenia tablicy pikseli program wykorzystuje klasę \emph{RayTracer}, która dokładniej została opisana wyżej. 
+
+\section{Serializacja}
 
 \begin{lstlisting}
 
@@ -314,58 +320,4 @@ public:
 
 \end{lstlisting}
 
-
-
-\begin{lstlisting}
-void Sphere::serialize(std::vector<char> *bytes)
-{
-    bytes->resize(serializedSize);
-    char *ptr = bytes->data();
-    std::vector<char> vec;
-
-    amb->serialize(&vec);
-    memcpy(ptr, vec.data(), vec.size()); ptr += vec.size();
-    dif->serialize(&vec);
-    memcpy(ptr, vec.data(), vec.size()); ptr += vec.size();
-    spec->serialize(&vec);
-    memcpy(ptr, vec.data(), vec.size()); ptr += vec.size();
-
-    memcpy(ptr, &specShin, sizeof(specShin)); ptr += sizeof(specShin);
-
-    pos->serialize(&vec);
-    memcpy(ptr, vec.data(), vec.size()); ptr += vec.size();
-
-    memcpy(ptr, &radius, sizeof(radius)); ptr += sizeof(radius);
-    memcpy(ptr, &transparency, sizeof(transparency)); ptr += sizeof(transparency);
-    memcpy(ptr, &mirror, sizeof(mirror)); ptr += sizeof(mirror);
-    memcpy(ptr, &local, sizeof(local)); ptr += sizeof(local);
-    memcpy(ptr, &density, sizeof(density));
-}
-\end{lstlisting}
-
-
-\begin{lstlisting}
-void Sphere::deserialize(const std::vector<char> &bytes)
-{
-    const char* ptr = bytes.data();
-    std::vector<char> vec;
-    vec.resize(Vector3<float>::serializedSize);
-    memcpy(vec.data(), ptr, vec.size()); ptr += vec.size();
-    amb->deserialize(vec);
-    memcpy(vec.data(), ptr, vec.size()); ptr += vec.size();
-    dif->deserialize(vec);
-    memcpy(vec.data(), ptr, vec.size()); ptr += vec.size();
-    spec->deserialize(vec);
-
-    memcpy(&specShin, ptr, sizeof(specShin)); ptr += sizeof(specShin);
-
-    memcpy(vec.data(), ptr, vec.size()); ptr += vec.size();
-    pos->deserialize(vec);
-
-    memcpy(&radius, ptr, sizeof(radius)); ptr += sizeof(radius);
-    memcpy(&transparency, ptr, sizeof(transparency)); ptr += sizeof(transparency);
-    memcpy(&mirror, ptr, sizeof(mirror)); ptr += sizeof(mirror);
-    memcpy(&local, ptr, sizeof(local)); ptr += sizeof(local);
-    memcpy(&density, ptr, sizeof(density));
-}
-\end{lstlisting}
+Kluczowym elementem programu jest potrzeba wysyłania obiektów pomiędzy węzłami. W tym celu potrzebny jest zestaw metod umożliwiających ich serializację i deserializację do strumienia bajtów (tak aby było możliwe wysyłanie obiektów funkcjami udostępnianymi przez \emph{MPI}). Jest on zdefiniowany poprzez interfejs \emph{Serializable}, który wymusza w klasach dziedziczących zdefiniowanie metod \emph{serialize} (serializacja obiektu do wektora bajtów), \emph{deserialize} (deserializacja obiektu ze strumienia bajtów) i \emph{getType} (metoda umożliwiająca ustalenie z jakim typem obiektu mamy do czynienia).
