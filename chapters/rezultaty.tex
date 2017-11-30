@@ -2,6 +2,18 @@
 
 \subsection{Zależność czasowa od liczby pikseli}
 
+W niniejszym podrozdziale pokazano w jaki sposób zależy czas generowania obrazu od jego rozmiarów. Testy zostały przeprowadzone dla kilku różnych ujęć scen zaprezentowanych wyżej (kilka takich samych ujęć dla różnej liczby pikseli). Parametrom niebędącym przedmiotami tego badania zostały arbitralnie przypisane niniejsze wartości:
+
+\begin{itemize}
+
+\item liczba świateł - 1
+\item cieniowanie - nie
+\item głębokość drzewa śledzenia promieni - 3
+\item użycie drzewa BSP - nie
+
+\end{itemize}
+
+Obliczenia dotyczące tego punktu nie zostały zrównoleglone.
 
 \begin{figure}[!ht]
 \advance\leftskip-2cm
@@ -74,7 +86,7 @@
 \begin{subfigure}{.5\textwidth}
 		\begin{longtable}{|c|c|} \hline
 	    liczba pikseli & spf \\ \hline
-	    3600 & 0,00764382 \\ 
+	    3600 & 2.67767 \\ 
 	    14400 & 9,73898 \\
 		57600 & 40,1629 \\
 		230400 & 150,539 \\
@@ -112,7 +124,30 @@
 \end{subfigure}
 \end{figure}
 
+Podstawowym wnioskiem jaki nasuwa się na podstawie otrzymanych wykresów jest to, że zależność między czasem generowania obrazu a liczbą pikseli jest liniowa, mimo że czas generowania koloru poszczególnych pikseli może być różny - w momencie, w którym promień nie trafi w żaden obiekt nie zostanie wysłany żaden promień wtórny co znacząco skraca czas działania algorytmu. Dzieje się tak dlatego, ponieważ gdy zwiększamy rozmiar obrazu liczba promieni, które trafią w obiekt i takich które nie trafią rośnie proporcjonalnie według skali powiększenia.
+
+Wiedząc jak zbudowane są sceny, należy zwrócić uwagę na wzrost czasu generowania obrazu w zależności od liczby obiektów. Wykres (!wykres ze stosunkami!) pokazuje, że sceny \emph{Glass} i \emph{Suzzane}, które są podobne do siebie ze względu na budowę (zbudowane są wyłącznie z trójkątów, a generowany obraz jest obrazem zamkniętym - żaden z trójkątów nie wychodzi poza kadr) mają zbliżony stosunek liczby obiektów do czasu generowania klatki. Oznacza to, że ze względu na swoje podobieństwo wzrost liczby obiektów powoduje proporcjonalny wzrost czasu generowania obrazu - jak pokazują pozostałe proste nie jest to jednak regułą. Dla sceny \emph{Spheres} stosunek liczby obiektów do czasu generowania jest najmniej opłacalny. Jest to spowodowane równomiernym rozrostem drzewa śledzenia promieni - każdy promień trafia w jakiś obiekt przez co liczba promieni wtórnych rośnie równomiernie. Podobna sytuacja ma miejsce w przypadku sceny \emph{Kid}, jednak tutaj rozrost drzewa jest hamowany przez brak ściany znajdującej się za obserwatorem (część promienie trafia w przestrzeń, przez co nie są generowane promienie wtórne).
+
+Widzimy, że wzrost czasu generowania obrazu jest w oczywisty sposób zależny od liczby obiektów znajdujących się na scenie, jednak w dużej mierze zależy on również od ich wzajemnego położenia położenia i od położenia obserwatora na scenie (położenie obserwatora również wpływa na rozrost drzewa, ponieważ to od niego wysyłane są promienie pierwotne). W związku z powyższym przewidzenie ile czasu zajmie generowanie obrazu jest zadaniem trudnym, ale nie niemożliwym - znając wszystkie parametry sceny i algorytmu możemy przewidzieć pesymistyczną wersję wydarzeń, w której każdy z promieni napotka na przeszkodę - pesymistyczna złożoność obliczeniowa proponowanego algorytmu (uwzględniającego cienie, dwa rodzaje promienie wtórnych - odbite i przechodzące przez obiekt) przedstawia się funkcją $T(d,n,o) = (2^d - 1) * o^2 * n$ gdzie:
+\\
+$d$ - maksymalna głębokość drzewa \\
+$o$ - liczba obiektów \\
+$n$ - liczba promieni pierwotnych \\ 
+\\
 \subsection{Zależność czasowa od głębokości drzewa}
+
+W niniejszym podrozdziale zaprezentowano w jaki sposób zależy czas generowania obrazu od głębokości drzewa śledzenia promieni. Testy zostały przeprowadzone dla kilku różnych ujęć scen zaprezentowanych wyżej (kilka takich samych ujęć dla różnej głębokości drzewa). Parametrom niebędącym przedmiotami tego badania zostały arbitralnie przypisane niniejsze wartości:
+
+\begin{itemize}
+
+\item liczba świateł - 1
+\item cieniowanie - nie
+\item liczba pikseli - 640x360 (230400)
+\item użycie drzewa BSP - nie
+
+\end{itemize}
+
+Obliczenia dotyczące tego punktu nie zostały zrównoleglone.
 
 \begin{figure}[!ht]
 \advance\leftskip-2cm
@@ -223,10 +258,21 @@
 \end{subfigure}
 \end{figure}
 
-
-
+Na powyższych wykresach widzimy, że wzrost czasu w zależności od głębokości jest logarytmiczny - jest to spowodowane spadkiem liczby promieni do przeanalizowania wraz z głębokością drzewa (promienie trafiają w próżnię, więc nie są generowane promienie wtórne). Najbardziej wyróżnia się zależność dla sceny \emph{Spheres}, która sprawia wrażenie liniowej. Jest to spowodowane tym, że na tej scenie każdy promień trafia w jakiś obiekt. Teoretycznie funkcje mogłyby rosnąć wykładniczo, ponieważ algorytm dopuszcza generowanie dwóch promieni wtórnych z danego punktu - dzieje się tak gdy powierzchnia obiektu jest półprzezroczysta - zostaje wysłany promień odbity i promień załamany. W definicji sceny \emph{Scene} występuje jeden taki obiekt, jednak (jak widać na wykresie) jednak promienie trafiają w niego na tyle rzadko (związane jest to z jeggo rozmiarami i umiejscowieniem), że nie widzimy tego na wykresie. W przypadku sceny \emph{Glass} przezroczysta jest szklanka, jednak liczba promieni, które w nic nie trafiają przeważa, powodując taki wygląd funkcji.
 
 \subsection{Zależność czasowa od światła}
+
+W niniejszym podrozdziale zaprezentowano w jaki sposób zależy czas generowania obrazu od głębokości drzewa śledzenia promieni. Testy zostały przeprowadzone dla kilku różnych ujęć scen zaprezentowanych wyżej, na których losowo rozrzucono zadaną liczbę źródeł światła. Parametrom niebędącym przedmiotami tego badania zostały arbitralnie przypisane poniższe wartości:
+
+\begin{itemize}
+
+\item głębokość drzewa śledzenia promieni - 3
+\item liczba pikseli - 640x360 (230400)
+\item użycie drzewa BSP - nie
+
+\end{itemize}
+
+Obliczenia dotyczące tego punktu nie zostały zrównoleglone.
 
 \begin{figure}[!ht]
 \advance\leftskip-2cm
@@ -256,6 +302,7 @@
 		\end{longtable}
 \end{subfigure}
 \end{figure}
+
 
 \begin{figure}[!ht]
 \advance\leftskip-2cm
@@ -345,8 +392,20 @@
 \end{subfigure}
 \end{figure}
 
+Z powyższych wykresów wynika, że wpływ liczby źródeł światła na czas generowania obrazu jest znaczny, zwłaszcza w przypadku, w którym śledzimy promień od punktu przecięcia promienia z obiektem do źródła światła (w celu sprawdzenia czy punkt znajduje się w cieniu). Uwzględnienie cieni wymaga przeglądu wszystkich obiektów tak długo, aż nie znajdzie się jakiś między punktem a źródłem światła. W najgorszym przypadku, czyli takim w którym nic nie rzuca cienia, musimy przejrzeć wszystkie obiekty. W przypadku skomplikowanych scen znacznie wydłuża to czas generowania obrazu (zwłaszcza, że należy to zrobić dla każdego ze źródeł światła - stąd liniowy wzrost czasu generowania obrazu). Wyjątek stanowi scena \emph{Spheres} zawierająca niewielką liczbę obiektów. W sytuacji, w której jakiś obiekt znajduje się w cieniu, nie musimy dla danego punktu wyliczać koloru korzystając z \emph{Modelu Phonha} <!ROZDZIAŁ!> - liczy się tylko światło otoczenia. W związku z tym przy niewielkiej liczbie obiektów, gdzie koszt szukania obiektu jest niewielki, oszczędzamy czas procesora, dzięki temu, że nie musimy korzystać ze skomplikowanego modelu światła - paradoksalnie bardziej realistyczny obraz generuje się szybciej.
 
 \subsection{Zależność czasowa w zależności od zrównoleglenia}
+
+W niniejszym podrozdziale pokazano w jakim stopniu zrównoleglenie pozwala na przyspieszenie generowania obrazu. Testy zostały przeprowadzone dla pięciu różnych ilości wycinków obrazu (ziarnistość zadania) i dla trzech różnych ilości zaangażowanych procesorów. Testy dla pięciu procesorów zostały przeprowadzone na jednym fizycznym komputerze, dla dziesięciu dla dwóch i dla piętnastu dla trzech. Każdy z komputerów był maszyną wirtualną, której udostępniono 6 procesorów wirtualnych. Połączenia pomiędzy komputerami były realizowane poprzez technologię \emph{Fast Ethernet}. Na całkowitą liczbę procesów składa się jeden proces zarządzający, który nie wykonuje obliczeń bezpośrednio związanych z generowaniem obrazu. Parametrom niebędącym przedmiotami tego badania zostały arbitralnie przypisane niniejsze wartości:
+
+\begin{itemize}
+
+\item liczba świateł - 1
+\item cieniowanie - tak
+\item głębokość drzewa śledzenia promieni - 3
+\item użycie drzewa BSP - nie
+
+\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure}[!ht]
@@ -577,7 +636,7 @@
 \advance\leftskip-2cm
 	\begin{subfigure}{.5\textwidth}
 \begin{tabular}{|c|c|c|c|} \hline
-	    \multirow{2}{*}{chunks} & \multicolumn{3}{|c|}{czas generowania klatki} \\ \cline{2-4}
+	    \multirow{2}{*}{liczba wycinków} & \multicolumn{3}{|c|}{czas generowania klatki} \\ \cline{2-4}
 	 	& 5 proc. & 10 proc. & 15 proc. \\ \hline
 	    16 & 413,106 & 161,703 & 105,727 \\ 
 	    36 & 408,233 & 140,451 & 91,9709 \\
@@ -591,7 +650,7 @@
 	\hspace{2cm}
 	\begin{subfigure}{.5\textwidth}
 \begin{tabular}{|c|c|c|c|} \hline
-	    \multirow{2}{*}{chunks} & \multicolumn{3}{|c|}{czas generowania klatki} \\ \cline{2-4}
+	    \multirow{2}{*}{liczba wycinków} & \multicolumn{3}{|c|}{czas generowania klatki} \\ \cline{2-4}
 	 	& 5 proc. & 10 proc. & 15 proc. \\ \hline
 	    16 & 1634,56 & 647,817 & 439,232 \\ 
 	    36 & 1624,21 & 565,67 & 375,321 \\
