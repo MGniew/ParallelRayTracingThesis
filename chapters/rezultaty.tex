@@ -1,4 +1,41 @@
-\section{Testy wydajnościowe}
+\section{Testy wydajnościowe i wnioski}
+
+W niniejszym rozdziale zostały zaprezentowane wyniki badań nad efektywnością zaimplementowanego algorytmu. Przedstawiono tutaj zależność czasową między definicją sceny, na podstawie której generowany jest obraz oraz zastosowanym podejściem do problemu. Testy były przeprowadzane dla czterech różnych scen (specyficzne ich cechy, jak i ustawienia programu zostały przedstawione na początku każdego podrozdziału).
+
+\begin{figure}[htb!]
+\centering
+  \caption{Spheres}
+  \includegraphics[width=\textwidth]{spheres.png}
+\end{figure}
+
+Powyższa scena składa się z pięciu sfer o różnych parametrach powierzchniowych - jedna z nich jest półprzezroczysta, inne odbijają światło w podobny sposób co lustro. Największa z nich otacza pozostałe dzięki czemu każdy promień wysłany w scenę trafia w przynajmniej jedną z kul.
+
+\begin{figure}[htb!]
+\centering
+  \caption{Glass, źródło: }
+  \includegraphics[width=\textwidth]{glass.png}
+\end{figure}
+
+Scena autorstwa (!autor!). Składa się ona z 366 trójkątów. Obserwator ustawiony jest pod takim kątem, żeby dobrze widzieć całą scenę. Większość promienie pierwotnych nie trafi żaden obiekt, a szklanka będąca centralną częścią sceny nie jest przezroczysta (definicje materiałów nie zawierają informacji o przezroczystości.
+\pagebreak
+
+\begin{figure}[htb!]
+\centering
+  \caption{Suzanne, źródło: }
+  \includegraphics[width=\textwidth]{suzanne.png}
+\end{figure}
+
+
+\emph{Suzanne} jest popularnym model wykorzystywanym w badaniach dotyczących grafiki komputerowej. Składa się ona z 15488 trójkątów. Definicja materiału została dostarczona przez autorów (MIT) i nie zawiera informacji o przezroczystości. Jak na obiekt takich rozmiarów jest on bardzo skomplikowany.
+
+\begin{figure}[htb!]
+\centering
+  \caption{Kid, źródło}
+  \includegraphics[width=\textwidth]{kid.png}
+\end{figure}
+
+Scena została pobrana ze strony (strona). Składa się ona z 27946 trójkątów. Autor nie dostarcza definicji materiałów (w założeniu obiekty mają być teksturowane), więc każdy obiekt będzie miał domyślne parametry. To czego nie widać na powyższym obrazku, to brak istnienia ściany znajdującej się bezpośrednio za obserwatorem - większość promieni wtórnych w nic nie trafi.
+
 
 \subsection{Zależność czasowa od liczby pikseli}
 
@@ -15,7 +52,7 @@ W niniejszym podrozdziale pokazano w jaki sposób zależy czas generowania obraz
 
 Obliczenia dotyczące tego punktu nie zostały zrównoleglone.
 
-\begin{figure}[!ht]
+\begin{figure}[!htb]
 \advance\leftskip-2cm
 \begin{subfigure}{.5\textwidth}
     \begin{tikzpicture}
@@ -42,7 +79,7 @@ Obliczenia dotyczące tego punktu nie zostały zrównoleglone.
 \end{subfigure}
 \end{figure}
 
-\begin{figure}[!ht]
+\begin{figure}[!htb]
 \advance\leftskip-2cm
 \begin{subfigure}{.5\textwidth}
 \begin{tikzpicture}
@@ -69,7 +106,7 @@ Obliczenia dotyczące tego punktu nie zostały zrównoleglone.
 \end{subfigure}
 \end{figure}
 
-\begin{figure}[!ht]
+\begin{figure}[!htb]
 \advance\leftskip-2cm
 \begin{subfigure}{.5\textwidth}
 \begin{tikzpicture}
@@ -97,7 +134,7 @@ Obliczenia dotyczące tego punktu nie zostały zrównoleglone.
 \end{figure}
 
 
-\begin{figure}[!ht]
+\begin{figure}[!htb]
 \advance\leftskip-2cm
 \begin{subfigure}{.5\textwidth}
 \begin{tikzpicture}
@@ -134,6 +171,18 @@ $d$ - maksymalna głębokość drzewa \\
 $o$ - liczba obiektów \\
 $n$ - liczba promieni pierwotnych \\ 
 \\
+\begin{tikzpicture}
+  \begin{axis}[
+    title=\emph{Kid} - zależność od liczby pikseli,
+    xlabel=liczba pikseli,
+    ylabel=czas \lbrack s\rbrack,]
+    \addplot coordinates {(3600,0.001528764) (14400,0.00514248) (57600,0.0187734) (230400,0.0675754) (921600,0.26868)};
+    \addplot coordinates {(3600,0.000154579) (14400,0.000520455) (57600,0.001921302) (230400,0.007573433) (921600,0.030291826)};
+    \addplot coordinates {(3600,0.000172887) (14400,0.000628808) (57600,0.002593162) (230400,0.009719718) (921600,0.038358148)};
+    \addplot coordinates {(3600,0.000396253) (14400,0.001580337) (57600,0.006394046) (230400,0.024636012) (921600,0.095432262)};
+  \end{axis}
+\end{tikzpicture}
+
 \subsection{Zależność czasowa od głębokości drzewa}
 
 W niniejszym podrozdziale zaprezentowano w jaki sposób zależy czas generowania obrazu od głębokości drzewa śledzenia promieni. Testy zostały przeprowadzone dla kilku różnych ujęć scen zaprezentowanych wyżej (kilka takich samych ujęć dla różnej głębokości drzewa). Parametrom niebędącym przedmiotami tego badania zostały arbitralnie przypisane niniejsze wartości:
@@ -149,7 +198,7 @@ W niniejszym podrozdziale zaprezentowano w jaki sposób zależy czas generowania
 
 Obliczenia dotyczące tego punktu nie zostały zrównoleglone.
 
-\begin{figure}[!ht]
+\begin{figure}[!htb]
 \advance\leftskip-2cm
 \begin{subfigure}{.5\textwidth}
 \begin{tikzpicture}
@@ -177,7 +226,7 @@ Obliczenia dotyczące tego punktu nie zostały zrównoleglone.
 \end{figure}
 
 
-\begin{figure}[!ht]
+\begin{figure}[!htb]
 \advance\leftskip-2cm
 \begin{subfigure}{.5\textwidth}
 \begin{tikzpicture}
@@ -204,7 +253,7 @@ Obliczenia dotyczące tego punktu nie zostały zrównoleglone.
 \end{subfigure}
 \end{figure}
 
-\begin{figure}[!ht]
+\begin{figure}[!htb]
 \advance\leftskip-2cm
 \begin{subfigure}{.5\textwidth}
 \begin{tikzpicture}
@@ -231,7 +280,7 @@ Obliczenia dotyczące tego punktu nie zostały zrównoleglone.
 \end{subfigure}
 \end{figure}
 
-\begin{figure}[!ht]
+\begin{figure}[!htb]
 \advance\leftskip-2cm
 \begin{subfigure}{.5\textwidth}
 \begin{tikzpicture}
@@ -258,7 +307,7 @@ Obliczenia dotyczące tego punktu nie zostały zrównoleglone.
 \end{subfigure}
 \end{figure}
 
-Na powyższych wykresach widzimy, że wzrost czasu w zależności od głębokości jest logarytmiczny - jest to spowodowane spadkiem liczby promieni do przeanalizowania wraz z głębokością drzewa (promienie trafiają w próżnię, więc nie są generowane promienie wtórne). Najbardziej wyróżnia się zależność dla sceny \emph{Spheres}, która sprawia wrażenie liniowej. Jest to spowodowane tym, że na tej scenie każdy promień trafia w jakiś obiekt. Teoretycznie funkcje mogłyby rosnąć wykładniczo, ponieważ algorytm dopuszcza generowanie dwóch promieni wtórnych z danego punktu - dzieje się tak gdy powierzchnia obiektu jest półprzezroczysta - zostaje wysłany promień odbity i promień załamany. W definicji sceny \emph{Scene} występuje jeden taki obiekt, jednak (jak widać na wykresie) jednak promienie trafiają w niego na tyle rzadko (związane jest to z jeggo rozmiarami i umiejscowieniem), że nie widzimy tego na wykresie. W przypadku sceny \emph{Glass} przezroczysta jest szklanka, jednak liczba promieni, które w nic nie trafiają przeważa, powodując taki wygląd funkcji.
+Na powyższych wykresach widzimy, że wzrost czasu w zależności od głębokości jest logarytmiczny - jest to spowodowane spadkiem liczby promieni do przeanalizowania wraz z głębokością drzewa (promienie trafiają w próżnię, więc nie są generowane promienie wtórne). Najbardziej wyróżnia się zależność dla sceny \emph{Spheres}, która sprawia wrażenie liniowej. Jest to spowodowane tym, że na tej scenie każdy promień trafia w jakiś obiekt. Teoretycznie funkcje mogłyby rosnąć wykładniczo, ponieważ algorytm dopuszcza generowanie dwóch promieni wtórnych z danego punktu - dzieje się tak gdy powierzchnia obiektu jest półprzezroczysta - zostaje wysłany promień odbity i promień załamany. W definicji sceny \emph{Spheres} występuje jeden taki obiekt, jednak (jak widać na wykresie) jednak promienie trafiają w niego na tyle rzadko (związane jest to z jego rozmiarami i umiejscowieniem), że nie widzimy tego na wykresie. W przypadku sceny \emph{Kid} każdy obiekt jest w pewnym stopniu przezroczysty, jednak brak ściany pomieszczenia za obserwatorem i tak powoduje spadek promieni wtórnych (jednak jest on wolniejszy niż w przypadku scen \emph{Glass} i \emph{Suzanne}).
 
 \subsection{Zależność czasowa od światła}
 
@@ -274,7 +323,7 @@ W niniejszym podrozdziale zaprezentowano w jaki sposób zależy czas generowania
 
 Obliczenia dotyczące tego punktu nie zostały zrównoleglone.
 
-\begin{figure}[!ht]
+\begin{figure}[!htb]
 \advance\leftskip-2cm
 \begin{subfigure}{.5\textwidth}
 \begin{tikzpicture}
@@ -304,7 +353,7 @@ Obliczenia dotyczące tego punktu nie zostały zrównoleglone.
 \end{figure}
 
 
-\begin{figure}[!ht]
+\begin{figure}[!htb]
 \advance\leftskip-2cm
 \begin{subfigure}{.5\textwidth}
 \begin{tikzpicture}
@@ -333,7 +382,7 @@ Obliczenia dotyczące tego punktu nie zostały zrównoleglone.
 \end{subfigure}
 \end{figure}
 
-\begin{figure}[!ht]
+\begin{figure}[!htb]
 \advance\leftskip-2cm
 \begin{subfigure}{.5\textwidth}
 \begin{tikzpicture}
@@ -363,7 +412,7 @@ Obliczenia dotyczące tego punktu nie zostały zrównoleglone.
 \end{figure}
 
 
-\begin{figure}[!ht]
+\begin{figure}[!htb]
 \advance\leftskip-2cm
 \begin{subfigure}{.5\textwidth}
 \begin{tikzpicture}
@@ -394,9 +443,9 @@ Obliczenia dotyczące tego punktu nie zostały zrównoleglone.
 
 Z powyższych wykresów wynika, że wpływ liczby źródeł światła na czas generowania obrazu jest znaczny, zwłaszcza w przypadku, w którym śledzimy promień od punktu przecięcia promienia z obiektem do źródła światła (w celu sprawdzenia czy punkt znajduje się w cieniu). Uwzględnienie cieni wymaga przeglądu wszystkich obiektów tak długo, aż nie znajdzie się jakiś między punktem a źródłem światła. W najgorszym przypadku, czyli takim w którym nic nie rzuca cienia, musimy przejrzeć wszystkie obiekty. W przypadku skomplikowanych scen znacznie wydłuża to czas generowania obrazu (zwłaszcza, że należy to zrobić dla każdego ze źródeł światła - stąd liniowy wzrost czasu generowania obrazu). Wyjątek stanowi scena \emph{Spheres} zawierająca niewielką liczbę obiektów. W sytuacji, w której jakiś obiekt znajduje się w cieniu, nie musimy dla danego punktu wyliczać koloru korzystając z \emph{Modelu Phonha} <!ROZDZIAŁ!> - liczy się tylko światło otoczenia. W związku z tym przy niewielkiej liczbie obiektów, gdzie koszt szukania obiektu jest niewielki, oszczędzamy czas procesora, dzięki temu, że nie musimy korzystać ze skomplikowanego modelu światła - paradoksalnie bardziej realistyczny obraz generuje się szybciej.
 
-\subsection{Zależność czasowa w zależności od zrównoleglenia}
+\subsection{Zależność czasowa od zrównoleglenia}
 
-W niniejszym podrozdziale pokazano w jakim stopniu zrównoleglenie pozwala na przyspieszenie generowania obrazu. Testy zostały przeprowadzone dla pięciu różnych ilości wycinków obrazu (ziarnistość zadania) i dla trzech różnych ilości zaangażowanych procesorów. Testy dla pięciu procesorów zostały przeprowadzone na jednym fizycznym komputerze, dla dziesięciu dla dwóch i dla piętnastu dla trzech. Każdy z komputerów był maszyną wirtualną, której udostępniono 6 procesorów wirtualnych. Połączenia pomiędzy komputerami były realizowane poprzez technologię \emph{Fast Ethernet}. Na całkowitą liczbę procesów składa się jeden proces zarządzający, który nie wykonuje obliczeń bezpośrednio związanych z generowaniem obrazu. Parametrom niebędącym przedmiotami tego badania zostały arbitralnie przypisane niniejsze wartości:
+W niniejszym podrozdziale pokazano w jakim stopniu zrównoleglenie pozwala na przyspieszenie generowania obrazu. Testy zostały przeprowadzone dla pięciu różnych ilości wycinków obrazu (ziarnistość zadania) i dla trzech różnych ilości zaangażowanych procesorów. Testy dla pięciu procesorów zostały przeprowadzone na jednej maszynie, dla dziesięciu na dwóch i dla piętnastu na trzech (wartość podana w tabelach uwzględnia tylko węzły wykonawcze). Każdy z komputerów był maszyną wirtualną, której udostępniono 6 procesorów wirtualnych. Połączenia pomiędzy komputerami były realizowane poprzez technologię \emph{Fast Ethernet}. W dolnej części tabeli z wynikami podano maksymalne osiągnięte przyspieszenie względem podejścia niezrównoleglonego (jeden proces wykonawczy). Czas generowania obrazu z wykorzystaniem pojedynczego procesora został wyliczony na nowo i nie ma nic wspólnego z czasami podanymi wyżej. Powodem takiego podejścia jest to, że testy omówione wyżej były wykonywane na fizycznej maszynie o innej specyfikacji. Parametrom niebędącym przedmiotami tego badania zostały arbitralnie przypisane niniejsze wartości:
 
 \begin{itemize}
 
@@ -408,18 +457,18 @@ W niniejszym podrozdziale pokazano w jakim stopniu zrównoleglenie pozwala na pr
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{figure}[!ht]
+\begin{figure}[!htb]
 \advance\leftskip-2cm
 	\begin{subfigure}{.5\textwidth}
 	\begin{tikzpicture}
 	  \begin{axis}[
-	    title=\emph{Spheres} - zależność od zrównoleglenia (320x180),
+	    title=\emph{Spheres} - zależność od zrównoleglenia (640x360),
 	    xlabel=głębokość,
 	    ylabel=czas \lbrack s\rbrack,]
-	    \addplot coordinates {(16,0.0574393) (36,0.0716171) (64,0.0925856) (100,0.192079) (144,0.208692)};
-	    \addplot coordinates {(16,0.0383637) (36,0.0636916) (64,0.10683) (100,0.145227) (144,0.221282)};
-	    \addplot coordinates {(16,0.0270853) (36,0.0619941) (64,0.0969651) (100,0.165164) (144,0.204808)};
-	    % if you want the plot to be RED, instead write: \addplot [red,mark=*] coordinates ...
+	    \addplot coordinates {(16,0.179093) (36,0.170406) (64,0.206508) (100,0.213478) (144,0.252288)};
+	    \addplot coordinates {(16,0.0881486) (36,0.0854354) (64,0.103843) (100,0.145735) (144,0.218693)};
+	    \addplot coordinates {(16,0.0619428) (36,0.063786) (64,0.0976417) (100,0.145701) (144,0.217703)};
+	    \addplot coordinates {(16,0.279) (36,0.279) (64,0.279) (100,0.279) (144,0.279)};
 	  \end{axis}
 	\end{tikzpicture}
 	\end{subfigure}
@@ -430,65 +479,27 @@ W niniejszym podrozdziale pokazano w jakim stopniu zrównoleglenie pozwala na pr
 	    title=\emph{Spheres} - zależność od zrównoleglenia (640x360),
 	    xlabel=głębokość,
 	    ylabel=czas \lbrack s\rbrack,]
-	    \addplot coordinates {(16,0.179093) (36,0.170406) (64,0.206508) (100,0.213478) (144,0.252288)};
-	    \addplot coordinates {(16,0.0881486) (36,0.0854354) (64,0.103843) (100,0.145735) (144,0.218693)};
-	    \addplot coordinates {(16,0.0619428) (36,0.063786) (64,0.0976417) (100,0.145701) (144,0.217703)};
-	    % if you want the plot to be RED, instead write: \addplot [red,mark=*] coordinates ...
+	    \addplot coordinates {(1,0.279) (4,0.170406) (9,0.0854354) (14,0.063786)};
 	  \end{axis}
 	\end{tikzpicture}
-	\end{subfigure}
+\end{subfigure}
 \end{figure}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%
-%Spheres 
-\begin{figure}[!ht]
-\advance\leftskip-2cm
-	\begin{subfigure}{.5\textwidth}
-\begin{tabular}{|c|c|c|c|} \hline
-	    \multirow{2}{*}{chunks} & \multicolumn{3}{|c|}{czas generowania klatki} \\ \cline{2-4}
-	 	& 5 proc. & 10 proc. & 15 proc. \\ \hline
-	    16 & 0,0574393 & 0,0383637 & 0,0270853 \\ 
-	    36 & 0,0716171 & 0,0636916 & 0,0619941 \\
-		64 & 0,0925856 & 0,10683 & 0,0969651 \\
-		100 & 0,192079 & 0,145227 & 0,165164 \\
-		144 & 0,208692 & 0,221282 & 0,204808 \\ \hline
-		max przysp. & & & \\
-		\hline
-\end{tabular}
-	\end{subfigure}
-	\hspace{2cm}
-	\begin{subfigure}{.5\textwidth}
-\begin{tabular}{|c|c|c|c|} \hline
-	    \multirow{2}{*}{chunks} & \multicolumn{3}{|c|}{czas generowania klatki} \\ \cline{2-4}
-	 	& 5 proc. & 10 proc. & 15 proc. \\ \hline
+
+\begin{longtable}{|c|c|c|c|} \hline
+	    \multirow{2}{*}{liczba fragmentów} & \multicolumn{3}{|c|}{czas generowania klatki} \\ \cline{2-4}
+	 	& 4 proc. & 9 proc. & 14 proc. \\ \hline
 	    16 & 0,179093 & 0,0881486 & 0,0619428 \\ 
 	    36 & 0,170406 & 0,0854354 & 0,063786 \\
 		64 & 0,206508 & 0,103843 & 0,0976417 \\
 		100 & 0,213478 & 0,145735 & 0,145701 \\
 		144 & 0,252288 & 0,218693 & 0,217703 \\ \hline
-		max przysp. & & & \\
+		max przysp. & 164\% & 327\% & 450\% \\
 		\hline
-\end{tabular}
-	\end{subfigure}
-\end{figure}
-%%%%
+\end{longtable}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{figure}[!ht]
+\begin{figure}[!htb]
 \advance\leftskip-2cm
-	\begin{subfigure}{.5\textwidth}
-	\begin{tikzpicture}
-	  \begin{axis}[
-	    title=\emph{Glass} - zależność od zrównoleglenia (320x180),
-	    xlabel=głębokość,
-	    ylabel=czas \lbrack s\rbrack,]
-	    \addplot coordinates {(16,0.313794) (36,0.308252) (64,0.327707) (100,0.376798) (144,0.411532)};
-	    \addplot coordinates {(16,0.156765) (36,0.130717) (64,0.15545) (100,0.170898) (144,0.237513)};
-	    \addplot coordinates {(16,0.156044) (36,0.106895) (64,0.110286) (100,0.174972) (144,0.229939)};
-	    % if you want the plot to be RED, instead write: \addplot [red,mark=*] coordinates ...
-	  \end{axis}
-	\end{tikzpicture}	
-	\end{subfigure}
-	\hspace{2cm}
 	\begin{subfigure}{.5\textwidth}
 	\begin{tikzpicture}
 	  \begin{axis}[
@@ -498,60 +509,39 @@ W niniejszym podrozdziale pokazano w jakim stopniu zrównoleglenie pozwala na pr
 	    \addplot coordinates {(16,1.09964) (36,1.05298) (64,1.03611) (100,1.02236) (144,1.05367)};
 	    \addplot coordinates {(16,0.742264) (36,0.548189) (64,0.513832) (100,0.507293) (144,0.544521)};
 	    \addplot coordinates {(16,0.479671) (36,0.407425) (64,0.311017) (100,0.322993) (144,0.344262)};
+	    \addplot coordinates {(16,2.401) (36,2.401) (64,2.401) (100,2.401) (144,2.401)};
 	    % if you want the plot to be RED, instead write: \addplot [red,mark=*] coordinates ...
 	  \end{axis}
 	\end{tikzpicture}
 	\end{subfigure}
-\end{figure}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%glass
-\begin{figure}[!ht]
-\advance\leftskip-2cm
-	\begin{subfigure}{.5\textwidth}
-\begin{tabular}{|c|c|c|c|} \hline
-	    \multirow{2}{*}{chunks} & \multicolumn{3}{|c|}{czas generowania klatki} \\ \cline{2-4}
-	 	& 5 proc. & 10 proc. & 15 proc. \\ \hline
-	    16 & 0,313794 & 0,156765 & 0,156044 \\ 
-	    36 & 0,308252 & 0,130717 & 0,106895 \\
-		64 & 0,327707 & 0,15545 & 0,110286 \\
-		100 & 0,376798 & 0,170898 & 0,174972 \\
-		144 & 0,411532 & 0,237513 & 0,229939 \\ \hline
-		max przysp. & & & \\
-		\hline
-\end{tabular}
+		\hspace{2cm}
+		\begin{subfigure}{.5\textwidth}
+	\begin{tikzpicture}
+	  \begin{axis}[
+	    title=\emph{Spheres} - zależność od zrównoleglenia (640x360),
+	    xlabel=głębokość,
+	    ylabel=czas \lbrack s\rbrack,]
+	    \addplot coordinates {(1,2.401) (4,1.02236) (9,0.507293) (14,0.311017)};
+	  \end{axis}
+	\end{tikzpicture}
 	\end{subfigure}
-	\hspace{2cm}
-	\begin{subfigure}{.5\textwidth}
-\begin{tabular}{|c|c|c|c|} \hline
-	    \multirow{2}{*}{chunks} & \multicolumn{3}{|c|}{czas generowania klatki} \\ \cline{2-4}
-	 	& 5 proc. & 10 proc. & 15 proc. \\ \hline
+\end{figure}
+
+
+\begin{longtable}{|c|c|c|c|} \hline
+	    \multirow{2}{*}{liczba fragmentów} & \multicolumn{3}{|c|}{czas generowania klatki} \\ \cline{2-4}
+	 	& 4 proc. & 9 proc. & 14 proc. \\ \hline
 	    16 & 1,09964 & 0,742264 & 0,479671 \\ 
 	    36 & 1,05298 & 0,548189 & 0,407425 \\
 		64 & 1,03611 & 0,513832 & 0,311017 \\
 		100 & 1,02236 & 0,507293 & 0,322993 \\
 		144 & 1,05367 & 0,544521 & 0,344262 \\ \hline
-		max przysp. & & & \\
+		max przysp. & 235\% & 473\% & 772\%  \\
 		\hline
-\end{tabular}
-	\end{subfigure}
-\end{figure}
+\end{longtable}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{figure}[!ht]
+\begin{figure}[!htb]
 \advance\leftskip-2cm
-	\begin{subfigure}{.5\textwidth}
-	\begin{tikzpicture}
-	  \begin{axis}[
-	    title=\emph{Suzanne} - zależność od zrównoleglenia (320x180),
-	    xlabel=głębokość,
-	    ylabel=czas \lbrack s\rbrack,]
-	    \addplot coordinates {(16,52.4239) (36,50.7791) (64,51.7074) (100,51.8617) (144,51.0035)};
-	    \addplot coordinates {(16,18.8889) (36,17.8706) (64,18.3656) (100,18.1192) (144,17.5219)};
-	    \addplot coordinates {(16,14.092) (36,9.19942) (64,9.82458) (100,9.43981) (144,9.47942)};
-	    % if you want the plot to be RED, instead write: \addplot [red,mark=*] coordinates ...
-	  \end{axis}
-	\end{tikzpicture}
-	\end{subfigure}
-	\hspace{2cm}
 	\begin{subfigure}{.5\textwidth}
 	\begin{tikzpicture}
 	  \begin{axis}[
@@ -561,109 +551,228 @@ W niniejszym podrozdziale pokazano w jakim stopniu zrównoleglenie pozwala na pr
 	    \addplot coordinates {(16,205.605) (36,206.972) (64,209.42) (100,217.794) (144,205.472)};
 	    \addplot coordinates {(16,75.4728) (36,70.136) (64,71.2841) (100,70.7879) (144,71.007)};
 	    \addplot coordinates {(16,52.8091) (36,37.398) (64,39.9895) (100,37.832) (144,37.0606)};
-	    % if you want the plot to be RED, instead write: \addplot [red,mark=*] coordinates ...
+	    \addplot coordinates {(16,336.1612) (36,336.1612) (64,336.1612) (100,336.1612) (144,336.1612)};
+	  \end{axis}
+	\end{tikzpicture}
+	\end{subfigure}
+	\hspace{2cm}
+		\begin{subfigure}{.5\textwidth}
+	\begin{tikzpicture}
+	  \begin{axis}[
+	    title=\emph{Spheres} - zależność od zrównoleglenia (640x360),
+	    xlabel=głębokość,
+	    ylabel=czas \lbrack s\rbrack,]
+	    \addplot coordinates {(1,336.1612) (4,205.472) (9,70.136) (14,37.0606)};
 	  \end{axis}
 	\end{tikzpicture}
 	\end{subfigure}
 \end{figure}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Suzanne
-\begin{figure}[!ht]
-\advance\leftskip-2cm
-	\begin{subfigure}{.5\textwidth}
-\begin{tabular}{|c|c|c|c|} \hline
-	    \multirow{2}{*}{chunks} & \multicolumn{3}{|c|}{czas generowania klatki} \\ \cline{2-4}
-	 	& 5 proc. & 10 proc. & 15 proc. \\ \hline
-	    16 & 52,4239 & 18,8889 & 14,092 \\ 
-	    36 & 50,7791 & 17,8706 & 9,19942 \\
-		64 & 51,7074 & 18,3656 & 9,82458 \\
-		100 & 51,8617 & 18,1192 & 9,43981 \\
-		144 & 51,0035 & 17,5219 & 9,47942 \\ \hline
-		max przysp. & & & \\
-		\hline
-\end{tabular}
-	\end{subfigure}
-	\hspace{2cm}
-	\begin{subfigure}{.5\textwidth}
-\begin{tabular}{|c|c|c|c|} \hline
-	    \multirow{2}{*}{chunks} & \multicolumn{3}{|c|}{czas generowania klatki} \\ \cline{2-4}
-	 	& 5 proc. & 10 proc. & 15 proc. \\ \hline
+
+\begin{longtable}{|c|c|c|c|} \hline
+	    \multirow{2}{*}{liczba fragmentów} & \multicolumn{3}{|c|}{czas generowania klatki} \\ \cline{2-4}
+	 	& 4 proc. & 9 proc. & 14 proc. \\ \hline
 	    16 & 205,605 & 75,4728 & 52,8091 \\ 
 	    36 & 206,972 & 70,136 & 37,398 \\
 		64 & 209,42 & 71,2841 & 39,9895 \\
 		100 & 217,794 & 70,7879 & 37,3832 \\
 		144 & 205,472 & 71,007 & 37,0606 \\ \hline
-		max przysp. & & & \\
+		max przysp. & 164\% & 479\% & 907\% \\
 		\hline
-\end{tabular}
-	\end{subfigure}
-\end{figure}
+\end{longtable}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{figure}[!ht]
+\begin{figure}[!htb]
 \advance\leftskip-2cm
-	\begin{subfigure}{.5\textwidth}
-	\begin{tikzpicture}
-	  \begin{axis}[
-	    title=\emph{Kid} - zależność od zrównoleglenia (320x180),
-	    xlabel=głębokość,
-	    ylabel=czas \lbrack s\rbrack,]
-	    \addplot coordinates {(16,413.106) (36,408.233) (64,405.206) (100,409.176) (144,414.665)};
-	    \addplot coordinates {(16,161.703) (36,140.451) (64,142.523) (100,139.948) (144,144.349)};
-	    \addplot coordinates {(16,105.727) (36,91.9709) (64,76.8887) (100,79.4187) (144,76.2224)};
-	    % if you want the plot to be RED, instead write: \addplot [red,mark=*] coordinates ...
-	  \end{axis}
-	\end{tikzpicture}
-	\end{subfigure}
-	\hspace{2cm}
 	\begin{subfigure}{.5\textwidth}
 	\begin{tikzpicture}
 	  \begin{axis}[
 	    title=\emph{Kid} - zależność od zrównoleglenia (640x360),
 	    xlabel=głębokość,
 	    ylabel=czas \lbrack s\rbrack,]
-	    \addplot coordinates {(16,1634.56) (36,1624.21) (64,1616.771) (100,1620.153) (144,1
-	    647.817)};
+	    \addplot coordinates {(16,1634.56) (36,1624.21) (64,1616.771) (100,1620.153) (144,1647.817)};
 	    \addplot coordinates {(16,647.817) (36,565.67) (64,567.067) (100,563.411) (144,575.474)};
 	    \addplot coordinates {(16,439.232) (36,375.321) (64,318.538) (100,311.411) (144,306.143)};
-	    % if you want the plot to be RED, instead write: \addplot [red,mark=*] coordinates ...
+	    \addplot coordinates {(16,2677.71) (36,2677.71) (64,2677.71) (100,2677.71) (144,2677.71)};
+	  \end{axis}
+	\end{tikzpicture}
+	\end{subfigure}
+		\hspace{2cm}
+	\begin{subfigure}{.5\textwidth}
+	\begin{tikzpicture}
+	  \begin{axis}[
+	    title=\emph{Spheres} - zależność od zrównoleglenia (640x360),
+	    xlabel=głębokość,
+	    ylabel=czas \lbrack s\rbrack,]
+	    \addplot coordinates {(1,2677.71) (4,1616.771) (9,563.411) (14,306.143)};
 	  \end{axis}
 	\end{tikzpicture}
 	\end{subfigure}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Kid
-\begin{figure}[!ht]
-\advance\leftskip-2cm
-	\begin{subfigure}{.5\textwidth}
-\begin{tabular}{|c|c|c|c|} \hline
-	    \multirow{2}{*}{liczba wycinków} & \multicolumn{3}{|c|}{czas generowania klatki} \\ \cline{2-4}
-	 	& 5 proc. & 10 proc. & 15 proc. \\ \hline
-	    16 & 413,106 & 161,703 & 105,727 \\ 
-	    36 & 408,233 & 140,451 & 91,9709 \\
-		64 & 405,206 & 142,523 & 76,8887 \\
-		100 & 409,176 & 139,948 & 79,4187 \\
-		144 & 414,665 & 144,349 & 76,2224 \\ \hline
-		max przysp. & & & \\
-		\hline
-\end{tabular}
-	\end{subfigure}
-	\hspace{2cm}
-	\begin{subfigure}{.5\textwidth}
-\begin{tabular}{|c|c|c|c|} \hline
-	    \multirow{2}{*}{liczba wycinków} & \multicolumn{3}{|c|}{czas generowania klatki} \\ \cline{2-4}
-	 	& 5 proc. & 10 proc. & 15 proc. \\ \hline
+
+\begin{longtable}{|c|c|c|c|} \hline
+	    \multirow{2}{*}{liczba fragmentów} & \multicolumn{3}{|c|}{czas generowania klatki} \\ \cline{2-4}
+	 	& 4 proc. & 9 proc. & 14 proc. \\ \hline
 	    16 & 1634,56 & 647,817 & 439,232 \\ 
 	    36 & 1624,21 & 565,67 & 375,321 \\
 		64 & 1616,771 & 567,067 & 318,538 \\
 		100 & 1620,153 & 563,411 & 311,411 \\
 		144 & 1639,121 & 575,474 & 306,143 \\ \hline
-		max przysp. & & & \\
+		max przysp. & 166\% & 475\% & 875\%  \\
 		\hline
-\end{tabular}
+\end{longtable}
+
+Najważniejszym wnioskiem płynącym z powyższych badań jest to, że wraz ze wzrostem liczby węzłów czas generowania maleje logarytmicznie. Oznacza to, że w pewnym momencie zwiększania rozmiarów klastra, nie uzyskamy żadnego przyspieszenia obliczeń. Jest to wniosek zgodny z oczekiwaniami - maksymalna liczba komputerów, której moc obliczeniową można by wykorzystać nie będzie większa od liczby pikseli obrazu (przynajmniej dla tej metody zrównoleglenia). Górne ograniczenie rozmiarów klastra (dla zadanej wielkości obrazu) jest oczywiście niższe ze względu na czas potrzebny do przesłania informacji pomiędzy węzłami.
+
+Zastanówmy się teraz nad optymalną ziarnistością zadania (liczbą wycinków obrazu). Najciekawiej prezentuje się wykres dotyczący sceny \emph{Spheres} - widzimy, że wraz ze wzrostem liczby wycinków, drastycznie spada wydajność klastra. Dzieje się tak dlatego, że więcej czasu zajmuje liczenie przesyłanie danych pomiędzy węzłami niż rzeczywiste obliczenia. Na pozostałych wykresach liczba wycinków zdaje się nie mieć takiego znaczenia, jednak jest to spowodowane zastosowaną skalą. Wg. danych z tabeli <!numer tabeli!>, optymalną liczba wycinków dla 14 procesów oscyluje wokół wartości 64. Dla pozostałych scen czas generowania klatki spada wraz ze wzrostem ziarnistości. Warto zwrócić uwagę, że dla 14 procesów czas działania algorytmu dla 16 fragmentów jest najdłuższy - jest to spowodowane tym, że po policzeniu pierwszej partii zadań wiele węzłów pozostaje bezczynnych. Dane pokazują również, że optymalna ziarnistość zmienia się wraz ze zmianą rozmiaru klastra.
+
+\subsection{Wykorzystanie drzewa BSP}
+
+W niniejszym podrozdziale pokazano w jakim stopniu wykorzystanie drzewa BSP pozwala na przyspieszenie generowania obrazu.
+Parametrom niebędącym przedmiotami tego badania zostały arbitralnie przypisane poniższe wartości:
+
+\begin{itemize}
+
+\item głębokość drzewa śledzenia promieni - 3
+\item liczba pikseli - 640x360 (230400)
+\item użycie drzewa BSP - nie
+\item liczba świateł - 1
+\item cieniowanie - tak
+\item liczba węzłów wykonawczych - 14 
+
+\end{itemize}
+
+
+
+\begin{figure}[!htb]
+\advance\leftskip-2cm
+	\begin{subfigure}{.5\textwidth}
+	\begin{tikzpicture}
+	  \begin{axis}[
+	    title=\emph{Glass} - BSP 0.107058,
+	    xlabel=głębokość,
+	    ylabel=czas \lbrack s\rbrack,]
+	    \addplot coordinates {(16,5.21946) (36,3.8034) (64,3.57917) (100,3.40521) (144,3.53286)};
+	    \addplot coordinates {(16,4.99529) (36,2.71377) (64,2.48849) (100,2.2844) (144,2.33781)};
+	  \end{axis}
+	\end{tikzpicture}
 	\end{subfigure}
+	\hspace{2cm}
+	\begin{subfigure}{.5\textwidth}
+	\begin{longtable}{|c|c|c|} \hline
+	    \multirow{2}{*}{liczba fragmentów} & \multicolumn{2}{|c|}{czas generowania klatki} \\ \cline{2-3}
+	    & brak bryły ot. & z bryłą ot. \\ \hline
+	    16 & 5,21946 & 4,99529 \\ 
+	    36 & 3,8034 & 2,71377 \\
+		64 & 3,57917 & 2,48849 \\
+		100 & 3,40521 & 2,2844 \\
+		144 & 3,53286 & 2,33781 \\ \hline
+		max przysp. & TODO & TODO \\ \hline
+	\end{longtable}
+\end{subfigure}
+\end{figure}
+\pagebreak
+\begin{figure}[!htb]
+\advance\leftskip-2cm
+	\begin{subfigure}{.5\textwidth}
+	\begin{tikzpicture}
+	  \begin{axis}[
+	    title=\emph{Suzzane} - BSP 317.279,
+	    xlabel=głębokość,
+	    ylabel=czas \lbrack s\rbrack,]
+	    \addplot coordinates {(16,14.3402) (36,10.0665) (64,9.23015) (100,8.29159) (144,8.06655)};
+	    \addplot coordinates {(16,16.6061) (36,9.51138) (64,8.03645) (100,7.68939) (144,8.03335)};
+	  \end{axis}
+	\end{tikzpicture}
+	\end{subfigure}
+	\hspace{2cm}
+	\begin{subfigure}{.5\textwidth}
+	\begin{longtable}{|c|c|c|} \hline
+	    \multirow{2}{*}{liczba fragmentów} & \multicolumn{2}{|c|}{czas generowania klatki} \\ \cline{2-3}
+	    & brak bryły ot. & z bryłą ot. \\ \hline
+	    16 & 14,3402 & 16,6061 \\ 
+	    36 & 10,0665 & 9,51138 \\
+		64 & 9,23015 & 8,03645 \\
+		100 & 8,29159 & 7,68939 \\
+		144 & 8,06655 & 8,03335 \\ \hline
+		max przysp. & TODO & TODO \\ \hline
+	\end{longtable}
+\end{subfigure}
 \end{figure}
 
-\section{Omówienie wyników}
-	\subsection{Przyspieszenie obliczeń}
-	\subsection{Obliczenia w czasie rzeczywistym}
+Metoda śledzenia promieni wykorzystująca drzewo BSP pozwoliła na zmniejszenie czasu generowania obliczeń sceny \emph{Suzanne} do kilku sekund. Początkowy (i co ważne jednorazowy) koszt budowy drzewa przyniósł pożądane rezultaty. Inaczej ma się sytuacja ma się w przypadku sceny \emph{Glass}, która, jak wynika z powyższych danych, jest przypadkiem sceny, dla której korzystanie z drzewa BSP jest nieopłacalne - nie dość, że musieliśmy ponieść koszt związany z jego budową, to jeszcze generowanie kolejnych klatek trwa dłużej niż w przypadku zastosowania przeglądu zupełnego. Jakie cechy musi posiadać scena żeby korzystanie z drzewa BSP było opłacalne i w jaki sposób możemy poprawić jego działanie?
+
+Podstawową problemem sceny \emph{Glass} jest duża liczba promieni pierwotnych, które w nic nie trafiają. Biorąc pod uwagę, że obserwator widzi całą scenę to najprawdopodobniej wszystkie płaszczyzny dzielące są przez te promienie przecinane. W takiej sytuacji algorytm szukania najbliższego obiektu więcej czasu spędza na trawersowaniu drzewa niż miałoby to miejsce w przypadku przeglądu zupełnego - odwiedzi on większość węzłów drzewa. Kolejnym czynnikiem mogącym powodować problemu jest wzajemne ułożenie prymitywów na scenie. W sytuacji, w której tworzą one zbiór wypukły, wybieranie płaszczyzny dzielącej spośród tych wyznaczanych przez te wielokąty, sprawia, że żadna z nich podzieli przestrzeni. Częściowym rozwiązaniem tego problemu jest szukanie kandydatów na płaszczyzny dzielące wśród płaszczyzn prostopadłych do wieloboków sceny - takie podejście zostało zaimplementowane w testowanym algorytmie.
+
+W celu polepszenia wydajności drzew BSP należy się skupić na czterech elementach: wprowadzeniu brył otaczających (redukcja liczby promieni nietrafiających w żaden obiekt dla których trzeba by było przeprowadzać testy z wykorzystaniem drzewa BSP), poszukiwaniu lepszej metody wybory kandydatów na płaszczyzny dzielące, ulepszenie funkcji oceny płaszczyzny (np. zastosowanie funkcji SAH - !ROZDZIAŁ!) lub poprawie algorytmu trawersowanie drzewa.
+
+W celu pokazania w jakim stopniu wprowadzenie brył otaczających może poprawić rezultaty, testowane sceny zostały zamknięte w prostopadłościanach. Jak widać na wykresie (!wykres szklanka!) zysk czasowy wynikający z zastosowania bryły otaczającej jest znaczący, jednak czas generowania obrazu ciągle jest lepszy dla przeglądu zupełnego. W przypadku \emph{Suzanne} różnica zdaje się być niewielka. Wynika to z położenia obserwatora - w sytuacji, w której znajdujemy się blisko obiektu (stosunkowo mało promieni pierwotnych nie trafia w nic) zastosowanie bryły otaczającej w kształcie prostopadłościanu redukuje niewielką liczbę testów. Gdybyśmy się zaczynali oddalać od obiektu, to czas generowania obrazu z wykorzystaniem drzewa BSP by rósł, jednak dzięki wykorzystaniu bryły otaczającej tendencja się odwróci. Niżej przedstawiono mapy cieplne obrazujące problem. Im jaśniejszy obszar tym jego wygenerowanie zajęło więcej czasu. Szum pojawiający się na obrazach jest najprawdopodobniej spowodowany przełączaniem się procesów.
+
+\begin{figure}[h!]
+\centering
+  \caption{Przegląd zupełny}
+  \includegraphics[width=15cm]{normal.png}
+\end{figure}
+
+Na powyższej mapie cieplnej widzimy, że najwięcej czasu algorytm spędził na generowaniu pikseli zawierających model.
+
+\begin{figure}[h!]
+\centering
+  \caption{Brak wykorzystanie bryły otaczającej}
+  \includegraphics[width=15cm]{noaabb.png}
+\end{figure}
+
+W przypadku zastosowania drzewa BSP ciężar obliczeń spadł na otoczenie modelu, a nie na sam model. Powyższy obraz w bardzo interesujący sposób przedstawia płaszczyzny dzielące przestrzeń. Proszę zwrócić uwagę, że elementy znajdujące się za większą liczbą płaszczyzn są jaśniejsze. 
+
+\begin{figure}[h!]
+\centering
+  \caption{Z wykorzystaniem bryły otaczającej}
+  \includegraphics[width=15cm]{aabb.png}
+\end{figure}
+
+Zastosowanie bryły otaczającej sprawia, że czas liczenia promienie nie trafiających w żaden obiekt maleje właściwie do zera (koszt badania przecięcia promienia z bryłą otaczająca). Wbrew temu co może sugerować powyższy obraz, każda ze ścian bryły otaczającej jest styczna do modelu - wrażenie, że jest inaczej powoduje rzut perspektywiczny (elementy, które są bliżej nas zdają się być większe). Nie byłoby tak gdyby został zastosowany rzut prosty.
+
+Na podstawie powyższych informacji łatwo dojść do wniosku, że zastosowanie brył otaczających, które lepiej przylegały by do modeli zmniejszy czas wykonywania obliczeń. Dodatkowo, chcąc wprowadzić funkcję SAH niezbędne jest zamknięcie całej sceny w jakimś obiektem, ponieważ ta wymaga liczenia objętości podprzestrzeni (musi więc istnieć jakieś ograniczenie). Naturalnym rozwinięciem wydaje się również wprowadzenie hierarchii brył otaczających - na podstawie powyższej analizy zdaje się, że każdy integralny i nieruchomy obiekt powinien być najpierw zamknięty w bryle, a następnie dzielony z wykorzystaniem drzewa BSP. Rozwiązania hybrydowe są szeroko stosowane w grafice, zwłaszcza, że drzewo BVH ma tą wyższość nad drzewem BSP, że przemieszczanie się obiektów nie wymaga przebudowania całego drzewa.
+
 \section{Przykładowe obrazy}
+
+
+\begin{figure}[htb!]
+\centering
+  \caption{Spheres}
+  \includegraphics[width=\textwidth]{psycho.png}
+\end{figure}
+
+
+\begin{figure}[htb!]
+\centering
+  \caption{Spheres}
+  \includegraphics[width=\textwidth]{mirror.png}
+\end{figure}
+
+
+\begin{figure}[htb!]
+\centering
+  \caption{Spheres}
+  \includegraphics[width=\textwidth]{glasssphere.png}
+\end{figure}
+
+\begin{figure}[htb!]
+\centering
+  \caption{Spheres}
+  \includegraphics[width=\textwidth]{light8s.png}
+\end{figure}
+
+
+\begin{figure}[htb!]
+\centering
+  \caption{Spheres}
+  \includegraphics[width=\textwidth]{water.png}
+\end{figure}
+
+\begin{figure}[htb!]
+\centering
+  \caption{Spheres}
+  \includegraphics[width=\textwidth]{mask.png}
+\end{figure}
+
