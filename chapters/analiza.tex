@@ -3,27 +3,26 @@
 \subsection{Podstawowy algorytm śledzenia promieni}
 
 Metoda śledzenia promieni pozwala określić widoczność obiektów znajdujących
-się na scenie (a tym samym na generowanie obrazu) na zasadzie śledzenia umownych promieni świetlnych biegnących od obserwatora w scenę. W perspektywicznym rozumieniu sceny (a takiego dotyczy algorytm zaimplementowany na potrzeby tej pracy), pierwszym krokiem algorytmu jest wybranie środka rzutowania (nazywanego okiem obserwatora) oraz rzutni (powierzchnia, na której zostanie odwzorowana trójwymiarowa scena). Rzutnię (a właściwie interesujący nas wycinek rzutni - abstrakcyjne okno obserwatora) można podzielić na regularną siatkę, w której każde pole odpowiada jednemu pikselowi ekranu urządzenia (tzw. układ urządzenia). Kolejnym krokiem algorytmu jest wypuszczenie promienia wychodzącego z oka obserwatora, przechodzącego przez dany piksel ekranu i lecącego dalej - w scenę. Kolor piksela jest ustalany na podstawie barwy i oświetlenia najbliższego obiektu (więcej o metodach oświetlenia można przeczytać w rozdziale !TU WSTAW ROZDZIAŁ!), który został przecięty przez wysłany promień. W przypadku braku kolizji piksel przybiera barwę otoczenia. 
+się na scenie (a tym samym na generowanie obrazu) na zasadzie śledzenia umownych promieni świetlnych biegnących od obserwatora w scenę. W perspektywicznym rozumieniu sceny (a takiego dotyczy algorytm zaimplementowany na potrzeby tej pracy), pierwszym krokiem algorytmu jest wybranie środka rzutowania (nazywanego okiem obserwatora) oraz rzutni (powierzchnia, na której zostanie odwzorowana trójwymiarowa scena). Rzutnię (a właściwie interesujący nas wycinek rzutni - abstrakcyjne okno obserwatora) można podzielić na regularną siatkę, w której każde pole odpowiada jednemu pikselowi ekranu urządzenia (tzw. układ urządzenia). Kolejnym krokiem algorytmu jest wypuszczenie promienia wychodzącego z oka obserwatora, przechodzącego przez dany piksel ekranu i lecącego dalej - w scenę. Kolor piksela jest ustalany na podstawie barwy i oświetlenia najbliższego obiektu (więcej o metodach oświetlenia można przeczytać w punkcie 2.1.3), który został przecięty przez wysłany promień. W przypadku braku kolizji piksel przybiera barwę otoczenia. Więcej na temat podstaw śledzenia promieni można przeczytać w \cite{foley95, suffern2007, scratch}.
 
 \begin{figure}[H]
 \centering
-  \caption{Rzut perspektywiczny, źródło: http://www.zsk.ict.pwr.wroc.pl}
-  \includegraphics[width=10cm]{perspective_view.jpg}
+\includegraphics[width=10cm]{perspective_view.jpg}
+\caption{Rzut perspektywiczny, źródło: http://www.zsk.ict.pwr.wroc.pl}
 \end{figure}
 
+\pagebreak
 \noindent
 Poniżej przedstawiono pseudokod podstawowego śledzenia promieni
 
-\begin{algorithm}
+\begin{algorithm}[H]
 \begin{algorithmic}
 \State piksele, obiekty
 \State obj = null
 \State dist = max
 \\
-\State wybór środka rzutowania i rzutni
-\\
 \For{piksel in piksele}
-	 \State wyznacz promień
+	 \State wyznaczenie promienia
 	 \For{obiekt in obiekty}
 	 \If {promień przecina obiekt i dystans $<$ dist}
     		\State obj = obiekt
@@ -32,12 +31,10 @@ Poniżej przedstawiono pseudokod podstawowego śledzenia promieni
 	 \EndFor
 \EndFor
 \\
-\State ustal kolor piksela na podstawie obj
+\State ustalenie kolor piksela na podstawie obj
+\caption{Podstawowy algorytm metody śledzenia promieni}
 \end{algorithmic}
 \end{algorithm}
-
-\noindent
-Więcej na temat podstaw śledzenia promieni można przeczytać w \cite{foley95, suffern2007, scratch}
 
 \subsection{Obliczanie przecięć}
 
@@ -45,7 +42,7 @@ Kluczowym elementem metody śledzenia promieni jest obliczanie przecięć promie
 
 \begin{enumerate}
 
-\item Zmniejszenie kosztu wyznaczenia punktu przecięcia promienia z obiektem (stosowanie optymalnych czasowo algorytmów badania przecięcia)
+\item Zmniejszenie kosztu wyznaczenia przecięcia promienia z obiektem (stosowanie optymalnych czasowo algorytmów badania przecięcia)
 
 \item Zmniejszenie liczby obiektów, dla których należy zbadać, czy dany promień je przecina (np. poprzez zastosowanie metody brył otaczających, czy wprowadzenie hierarchii sceny)
 
@@ -57,13 +54,13 @@ Wyznaczenie przecięcia promienia z obiektem polega na rozwiązaniu szeregu rów
 Dane są równania promienia i kuli mające następującą postać:
 $$p = p_0 + tv$$
 $$(x - x_s)^2 + (y - y_s)^2 + (z - z_s)^2 - r^2 = 0$$
-gdzie
+gdzie:
 \\
-$p_0$ - punkt początkowy promienia $(x_0, y_0, z_0)$ \\
-$v$ - wektor kierunkowy promienia o długości 1 $(x_v, y_v, z_v)$ \\
-$t$ - parametr określający odległość danego punktu, należącego do promienia, od jego początku tego promienia \\
-$(x_s, y_s, z_s)$ - współrzędne środka kuli \\
-$r$ - promień kuli \\
+$p_0$ - punkt początkowy promienia $(x_0, y_0, z_0)$, \\
+$v$ - wektor kierunkowy promienia o długości 1 $(x_v, y_v, z_v)$, \\
+$t$ - parametr określający odległość danego punktu, należącego do promienia, od jego początku tego promienia, \\
+$(x_s, y_s, z_s)$ - współrzędne środka kuli, \\
+$r$ - promień kuli. \\
 \\
 Po podstawieniu równania promienia do równania kuli otrzymujemy równianie kwadratowe zależne od współczynnika t:
 $$a = x_v^2 + y_v^2 + z_v^2 = 1$$
@@ -73,23 +70,23 @@ Jeżeli istnieją rozwiązania ($\Delta \geq 0$) to $t_{1,2} = -b \pm \sqrt{\Del
 
 \subsubsection{Przecięcie promienia z płaszczyzną}
 
-Płaszczyzna nie jest prymitywem, gdyż z definicji jest ona nieskończona, jednak wyliczenie przecięcia promienia z płaszczyzną jest najczęściej pierwszym krokiem znalezienia przecięcia z dowolnym poligonem (najpierw znajduje się przecięcie z płaszczyzną wyznaczoną przez dany wielokąt, a następnie sprawdza się, czy zawiera się w nim wyliczony punkt przecięcia). Dodatkowo algorytm przecięcia promienia z płaszczyzną jest wykorzystywany w tworzeniu drzewa BSP (o którym więcej w rozdziale !TU WSTAW ROZDZIAŁ!). \\
+Płaszczyzna nie jest prymitywem, gdyż z definicji jest ona nieskończona, jednak wyliczenie przecięcia promienia z płaszczyzną jest najczęściej pierwszym krokiem znalezienia przecięcia z dowolnym poligonem (najpierw znajduje się przecięcie z płaszczyzną wyznaczoną przez dany wielokąt, a następnie sprawdza się, czy zawiera się w nim wyliczony punkt przecięcia). Dodatkowo algorytm przecięcia promienia z płaszczyzną jest wykorzystywany w tworzeniu drzewa BSP (o którym więcej w punkcie 2.2.3). \\
 \noindent
 Dane są równania promienia i równanie płaszczyzny:
 $$p = p_0 + tv$$
-$$Ax + By + Cz + D = P \bullet N + D = 0$$
-gdzie
+$$Ax + By + Cz + D = P \circ N + D = 0$$
+gdzie:
 \\
-$p_0$ - punkt początkowy promienia $(x_0, y_0, z_0)$ \\
-$v$ - wektor kierunkowy promienia o długości 1 $(x_v, y_v, z_v)$ \\
-$t$ - parametr określający odległość danego punktu, należącego do promienia, od jego początku tego promienia \\
-$P$ - dowolny punkt płaszczyzny \\
-$N$ - wektor normalny do płaszczyzny \\
+$p_0$ - punkt początkowy promienia $(x_0, y_0, z_0)$, \\
+$v$ - wektor kierunkowy promienia o długości 1 $(x_v, y_v, z_v)$, \\
+$t$ - parametr określający odległość danego punktu, należącego do promienia, od jego początku tego promienia, \\
+$P$ - dowolny punkt płaszczyzny, \\
+$N$ - wektor normalny do płaszczyzny. \\
 \\
 Podstawiając równanie promienia (dowolny punkt promienia) za punkt płaszczyzny otrzymujemy:
-$$(p_0 + tv) \bullet N + D = 0$$
-$$t = -(p_0 \bullet N + D)/(v \bullet N)$$
-Podstawiając $t$ do równania promienia otrzymujemy punkt przecięcia. Jeżeli $t < 0$ to płaszczyzna znajduje się za promieniem, w przeciwnym przypadku przed (gdy $t = 0$ punkt początkowy zawiera się w płaszczyźnie). Należy zwrócić uwagę, że $v \bullet N$ nie może być równe zero - jeżeli jest, znaczy to, że promień nigdy nie przecina płaszczyzny (jest do niej równoległy).
+$$(p_0 + tv) \circ N + D = 0$$
+$$t = \frac{-(p_0 \circ N + D)}{(v \circ N)}$$
+Podstawiając $t$ do równania promienia otrzymujemy punkt przecięcia. Jeżeli $t < 0$ to płaszczyzna znajduje się za promieniem, w przeciwnym przypadku przed (gdy $t = 0$ punkt początkowy zawiera się w płaszczyźnie). Należy zwrócić uwagę, że $v \circ N$ nie może być równe zero - jeżeli jest, znaczy to, że promień nigdy nie przecina płaszczyzny (jest do niej równoległy).
 
 \subsubsection{Przecięcie promienia z trójkątem}
 
@@ -103,7 +100,7 @@ Poniżej przedstawiono dwa sposoby na znalezienie punktu przecięcia promienia z
 \1 Wyznaczenie równania płaszczyzny z trójkąta:
 \2 Obliczenie wektora normalnego do trójkąta:
 	$$v = (b - a) \times (c - a)$$
-	$$n = v/|v|$$
+	$$n = \frac{v}{|v|}$$ 
 \2 Wyznaczenie płaszczyzny poprzez podstawienie do równania ogólnego  dowolnego punktu będącego kątem trójkąta i wektora normalnego.
 
 \1 Znalezienie punktu przecięcia płaszczyzny z promieniem - punkt ten nazwijmy $x$.
@@ -111,9 +108,9 @@ Poniżej przedstawiono dwa sposoby na znalezienie punktu przecięcia promienia z
 \1 Sprawdzenie, czy punkt przecięcia z płaszczyzną leży wewnątrz trójkąta:
 
 \2 Punkt leży wewnątrz trójkąta, jeżeli znajduje po tej samej stronie każdej krawędzi, co punkt nie należący do tej krawędzi:
-$$(b - a) \times (x - a) \bullet n > 0$$
-$$(c - b) \times (x - b) \bullet n > 0$$
-$$(a - c) \times (x - c) \bullet n > 0$$
+$$(b - a) \times (x - a) \circ n > 0$$
+$$(c - b) \times (x - b) \circ n > 0$$
+$$(a - c) \times (x - c) \circ n > 0$$
 
 \end{outline}
 \paragraph{2. Algorytm Möller – Trumbore}\mbox{} \\
@@ -132,13 +129,13 @@ Wartości parametrów t, v i u można w prosty sposób wyliczyć stosując ilocz
 
 $$pvec = d \times (c - a)$$
 $$qvec = (p - a) \times (b - a)$$
-$$invDet = 1/((b - a) \bullet pvec)$$
-$$u = ((p - a) \bullet pvec)) * invDet$$
-$$v = (d \bullet qvec) * invDet$$
-$$t = ((c - a) \bullet qvec) * invDet$$
+$$invDet = \frac{1}{(b - a) \circ pvec}$$
+$$u = ((p - a) \circ pvec)) * invDet$$
+$$v = (d \circ qvec) * invDet$$
+$$t = ((c - a) \circ qvec) * invDet$$
 Poniżej przedstawiono przykładową implementację algorytmu ,,Möller – Trumbore'' zaczerpniętą z \cite{wikiMoll}:
 
-\begin{lstlisting}
+\begin{lstlisting}[caption={Algorytm \emph{Möller – Trumbore}}]
 
 bool RayIntersectsTriangle(Vector3D rayOrigin, 
                            Vector3D rayVector, 
@@ -195,18 +192,18 @@ W powyższym wzorze $I_{amb}$ oznacza intensywność światła otoczenia, a $k_{
 
 
 Bardziej zaawansowanym modelem, bo wykorzystującym światło rozproszone (diffuse light), jest tzw. model Lamberta - dodatkowo uwzględnia on punktowe źródła światła, których promienie padają pod pewnym kątem na daną powierzchnię. Model Lamberta zakłada, że oświetlane powierzchnie są idealnie matowe, zatem światło odbite od nich rozchodzi się tak samo we wszystkich kierunkach (odbicie lambertowskie). W związku z tym nie ma możliwości otrzymania odblasków widocznych na powierzchniach błyszczących.
-$$I = I_{amb} * k_{amb} + I_{dif} * d_{amb} * (N \bullet L)$$
+$$I = I_{amb} * k_{amb} + I_{dif} * k_{amb} * (N \circ L)$$
 W powyższym wzorze $N$ i $L$ są kolejno: wektorem normalnym do powierzchni, wektorem wskazującym kierunek padania światła.
 
 
 Ostatnim omawianym w tym dokumencie modelem światła jest model Phonga. Wprowadza on tzw. światło kierunkowe (specular light), które uwzględnia odblaski. Model Phonga wyraża się wzorem:
-$$I = I_{amb} * k_{amb} + 1/(a + bd + c^2d)(I_{dif} * d_{amb} * (N \bullet L) + k_{spec} * I_{spec} * (R \bullet V)^n)$$
-gdzie $R$ i $V$ oznaczają kolejno kierunek odbicia promienia i kierunek obserwacji. Ułamek $1/(a + bd + c^2d)$ określa intensywność padającego światła w zależności od odległości od źródła ($d$ to odległość od źródła światła, pozostałe parametry są dobieranie empirycznie).
+$$I = I_{amb} * k_{amb} + \frac{1}{a + bd + cd^2} * k_{amb} * (N \circ L) + k_{spec} * I_{spec} * (R \circ V)^n)$$
+gdzie $R$ i $V$ oznaczają kolejno kierunek odbicia promienia i kierunek obserwacji. Ułamek $\frac{1}{a + bd + cd^2}$ określa intensywność padającego światła w zależności od odległości od źródła ($d$ to odległość od źródła światła). Pozostałe parametry są dobieranie empirycznie.
 
 \begin{figure}[h!]
 \centering
-  \caption{Model Phonga, źródło: https://pl.wikipedia.org/wiki/Cieniowanie\_Phonga}
   \includegraphics[width=10cm]{phong.png}
+  \caption{Model Phonga, źródło: https://pl.wikipedia.org/wiki/Cieniowanie\_Phonga}
 \end{figure}
 
 \subsubsection{Cieniowanie}
@@ -215,8 +212,8 @@ Cieniowanie ma na celu stworzenie złudzenia, w którym siatka trójkątów spra
 
 \begin{figure}[h!]
 \centering
-  \caption{,,Cieniowanie Gourauda'' i ,,Cieniowanie Phonga'', źródło: http://www.csc.villanova.edu/~mdamian, 02.11.2017}
   \includegraphics[width=10cm]{gouraudvsphong.png}
+  \caption{,,Cieniowanie Gourauda'' i ,,Cieniowanie Phonga'', źródło: http://www.csc.villanova.edu/~mdamian, 02.11.2017}
 \end{figure}
 
 
@@ -224,51 +221,49 @@ Cieniowanie ma na celu stworzenie złudzenia, w którym siatka trójkątów spra
 
 Do interpolacji wektorów może posłużyć nam tzw. interpolacja barycentryczna. W przypadku trójkąta sytuacja prezentuje się następująco:
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
-  \caption{Interpolacja barycentryczna, źródło: nieznane}
   \includegraphics[width=10cm]{interpolacja.png}
+  \caption{Interpolacja barycentryczna, źródło: nieznane}
 \end{figure}
 
-Na powyższym trójkącie zaznaczono punkt $p$, a następnie poprowadzono do niego proste z każdego wierzchołka. W ten sposób prymityw został podzielony na trzy mniejsze trójkąty ($A_1$, $A_2$, $A_3$), których pola zależą od odległości od kolorystycznie odpowiadających im punktów. Znając wektory normalne w tych trzech punktach i pola wszystkich trzech fragmentów możemy obliczyć, jaki wpływ ma poszczególny wektor na wektor normalny w zaznaczonym punkcje:
-$$N_p = N_{x_1} * P_{A_1}/P + N_{x_2} * P_{A_2}/P + N_{x_3} * P_{A_3}/P$$
-gdzie :
-$N_x$ - wektor normalny w odpowiadającym punkcie.
-$P$ - pole całkowite
-$P_A$ - pole fragmentu
-
+Na powyższym rysunku zaznaczono punkt $p$, a następnie poprowadzono do niego proste z każdego wierzchołka. W ten sposób prymityw został podzielony na trzy mniejsze trójkąty ($A_1$, $A_2$, $A_3$), których pola zależą od odległości od kolorystycznie odpowiadających im punktów. Znając wektory normalne w tych trzech punktach i pola wszystkich trzech fragmentów możemy obliczyć, jaki wpływ ma poszczególny wektor na wektor normalny w zaznaczonym punkcje:
+$$N_p = N_{x_1} * \frac{P_{A_1}}{P} + N_{x_2} * \frac{P_{A_2}}{P} + N_{x_3} * \frac{P_{A_3}}{P}$$
+gdzie: \\
+$N_x$ - wektor normalny w odpowiadającym punkcie, \\
+$P$ - pole całkowite, \\ 
+$P_A$ - pole fragmentu. \\
+\\
 Otrzymany w ten sposób wektor należy znormalizować, ponieważ jego długość niekoniecznie wynosi jeden.
 
  
 \subsection{Rekursywny algorytm śledzenia promieni}
 
 Rekursywny algorytm śledzenia promieni \cite{foley95} jest rozwinięciem algorytmu podstawowego opisanego w poprzednim rozdziale. Uwzględnia on cienie, odbicia i załamania światła, dzięki śledzeniu dodatkowych promieni wysłanych z punktów przecięcia. W przypadku generowania cieni z każdego punktu przecięcia wysyła się promień w kierunku źródła światła. Jeżeli promień ten natrafi na przeszkodę, to znaczy, że punkt znajduje się w cieniu, a więc wyliczając barwę piksela (korzystając np. z modelu Phonga omówionego powyżej), korzystamy tylko ze światła otoczenia. Dla odbić, do wysłania promienia wtórnego, korzysta się z zasady, która mówi, że kąt padania równy jest kątowi odbicia. W przypadku załamania światła, określa się współczynniki jego załamania (wartości dla różnych materiałów są stablicowane i ogólnodostępne) i stosuje prawo Snelliusa \cite{snellius}:
-$$sin(alpha)/sin(beta) = n_2/n_1$$
+$$\frac{sin(alpha)}{sin(beta)} = \frac{n_2}{n_1}$$
 gdzie $\alpha$ - kąt padania, $\beta$ - kąt załamania, $n_1$ - współczynnik załamania pierwszego materiału, $n_2$ współczynnik załamania drugiego materiału.
 
+Nie wszystkie materiały są przezroczyste i nie wszystkie materiały odbijają światło w podobny sposób jak lustro (można w nich zobaczyć odbicia innych przedmiotów). Implementując algorytm śledzenia promieni należy wprowadzić mechanizm, który pozwala stwierdzić, jaki ułamek ostatecznego koloru piksela będzie stanowić wynik śledzenia promieni odbitych/załamanych i czy takie promienie warto wysyłać - każdy z nich znacząco wpływa na czas obliczeń, więc ich redukcja, która nie wpływa w zauważalnym stopniu na wygenerowany obraz, jest kluczowym elementem optymalizacji.
 
-W tym miejscu należy zauważyć, że nie wszystkie materiały są przezroczyste i nie wszystkie materiały odbijają światło w podobny sposób jak lustro (można w nich zobaczyć odbicia innych przedmiotów). Implementując algorytm śledzenia promieni należy wprowadzić mechanizm, który pozwala stwierdzić, jaki ułamek ostatecznego koloru piksela będzie stanowić wynik śledzenia promieni odbitych/załamanych i czy takie promienie warto wysyłać - każdy z nich znacząco wpływa na czas obliczeń, więc ich redukcja, która nie wpływa w zauważalnym stopniu na wygenerowany obraz, jest kluczowym elementem optymalizacji.
-
-
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
-  \caption{Wizualizacja algorytmu rekursywnego, źródło: \cite{scratch}}
   \includegraphics[width=10cm]{rekursywny.png}
+  \caption{Wizualizacja algorytmu rekursywnego, źródło: \cite{scratch}}
 \end{figure}
 
-Rekursywny algorytm śledzenia promieni najczęściej implementuje się korzystając z funkcji rekurencyjnej \cite{suffern2007}, która przyjmuje punkt początkowy promienia, jego kierunek, oraz aktualną głębokość drzewa rekurencyjnego. Ostatni z parametrów często jest wykorzystywany w warunku stopu - po osiągnięciu określonej głębokości funkcja zwraca osiągnięty kolor.
+Rekursywny algorytm śledzenia promieni najczęściej implementuje się korzystając z funkcji rekurencyjnej \cite{suffern2007}, która przyjmuje punkt początkowy promienia, jego kierunek, oraz aktualną głębokość drzewa promieni. Ostatni z parametrów często jest wykorzystywany w warunku stopu - po osiągnięciu określonej głębokości funkcja zwraca osiągnięty kolor.
 
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
-  \caption{Wizualizacja algorytmu rekursywnego, źródło: \cite{scratch}}
   \includegraphics[width=10cm]{rekursywny_drzewo.png}
+  \caption{Wizualizacja algorytmu rekursywnego - drzewo promieni, źródło: \cite{scratch}}
 \end{figure}
 
 
 \subsection{Równoległa wersja algorytmu śledzenia promieni}
 
-Algorytm śledzenie promieni jest bardzo kosztowny obliczeniowo. Jedną ze skuteczniejszych metod przyspieszenia generowania obrazu jest jego zrównoleglenie, które w przypadku tej metody jest bardzo proste, ponieważ wygenerowanie sceny składa się z wielu obliczeń, mogących odbywać się niezależnie od siebie. Najczęściej zrównoleglenie następuje na poziomie promieni pierwotnych - zbiór pikseli (pseudokod znajdujący się w punkcie 2.1.1) dzieli się na podzbiory, które można przeanalizować równolegle. Po obliczeniu kolorów wszystkich pikseli składa się je w jeden spójny obraz. Więcej o algorytmie równoległym można przeczytać w rozdziałach !ROZDZIAŁY!.
+Algorytm śledzenie promieni jest bardzo kosztowny obliczeniowo. Jedną ze skuteczniejszych metod przyspieszenia generowania obrazu jest jego zrównoleglenie, które w przypadku tej metody jest bardzo proste, ponieważ wygenerowanie sceny składa się z wielu obliczeń, mogących odbywać się niezależnie od siebie. Najczęściej zrównoleglenie następuje na poziomie promieni pierwotnych - zbiór pikseli (pseudokod znajdujący się w punkcie 2.1.1) dzieli się na podzbiory, które można przeanalizować równolegle. Po obliczeniu kolorów wszystkich pikseli składa się je w jeden spójny obraz. Więcej o algorytmie równoległym można przeczytać w rozdziale czwartym.
 
 \section{Optymalizacja algorytmu śledzenia promieni}
 
@@ -276,10 +271,10 @@ Tak jak to było wspomniane wcześniej, metoda śledzenia promieni jest bardzo k
 
 Hierarchia obiektów ma najczęściej postać drzewa, którego korzeniem jest całą scena. Drzewo podziału przestrzeni, które zostało opisane w poprzednim akapicie, nazywamy drzewem brył ograniczających (lub otaczających), z angielskiego: bound volume hierarchy - BVH. 
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
-  \caption{drzewo BVH, źródło: https://pl.wikipedia.org/wiki/Drzewo\_BVH}
   \includegraphics[width=10cm]{bvh.jpg}
+  \caption{drzewo BVH, źródło: https://pl.wikipedia.org/wiki/Drzewo\_BVH}
 \end{figure}
 
 Podstawową zaletą drzewa BVH jest to, że w przypadku scen dynamicznych (takich, w których obiekty poruszają się) nie trzeba przebudowywać całego drzewa od początku co klatkę animacji.
@@ -291,30 +286,30 @@ Poza drzewami BVH istnieje wiele innych metod podziału podprzestrzeni. Niżej z
 
 Budowa drzewa ósemkowego (ang. octree) polega na rekurencyjnym podziale przestrzeni na mniejsze regularne części - najczęściej sześciany.
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
-  \caption{octree, źródło: https://en.wikipedia.org/wiki/Octreee}
   \includegraphics[width=10cm]{octree.png}
+  \caption{octree, źródło: https://en.wikipedia.org/wiki/Octreee}
 \end{figure}
 
 Takie rozwiązanie ma znaczącą wadę w przypadku, kiedy obiekty sceny są daleko od siebie, jednak prostota drzewa ósemkowego i krótki (w porównaniu do alternatyw) czas jego budowy sprawia, że jest ono często wykorzystywane w grafice komputerowej \cite{octree1, octree2}.
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
+  \includegraphics[width=5cm]{badoctree.png}
   \caption{Zły przypadek dla drzewa ósemkowego}
-  \includegraphics[width=10cm]{badoctree.png}
 \end{figure}
 
 \subsection{Drzewa K-d}
 
-Budowa drzewa K-d (skrót od \emph{k-dimensional tree}) polega na podziale przestrzeni płaszczyznami równoległymi do osi układu współrzędnych (w przypadku trzech wymiarów są to osie x, y i z), w taki sposób aby po jednej i drugiej stronie ,,cięcia'' była podobna liczba prymitywów (jest to jedna z popularniejszych metod), a sama płaszczyzna przecinała jak najmniej figur. W ten sposób powstaje drzewo binarne.
+Budowa drzewa K-d (skrót od \emph{k-dimensional tree}) polega na podziale przestrzeni płaszczyznami równoległymi do osi układu współrzędnych (w przypadku trzech wymiarów są to osie x, y i z), w taki sposób, aby po jednej i drugiej stronie ,,cięcia'' była podobna liczba prymitywów (jest to jedna z popularniejszych metod), a sama płaszczyzna przecinała jak najmniej figur. W ten sposób powstaje drzewo binarne.
 
 Wybór płaszczyzny (w którym miejscu powinna ona przebiegać i do której osi powinna być równoległa) jest podstawowym elementem wpływającym na powstanie zrównoważonego drzewa. Najczęściej programiści uzależniają kierunek płaszczyzny od poziomu drzewa - w ten sposób ,,cięcie'' można wyznaczyć dzięki prostym punktom.
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
-  \caption{Drzewo K-d dla dwóch wymiarów}
   \includegraphics[width=10cm]{kd.png}
+  \caption{Drzewo K-d dla dwóch wymiarów}
 \end{figure}
 
 Można powiedzieć, że drzewo k-d jest bardziej ogólnym przypadkiem drzewa ósemkowego, w którym przestrzeń nie musi być dzielona na takie same kształty - dzięki temu obliczenia z zastosowaniem drzewa k-d są często szybsze niż przy zastosowaniu drzewa ósemkowego. Z drugiej jednak strony czas budowania takiego drzewa jest znacznie dłuższy (szukanie optymalnego ,,przecięcia'') niż w przypadku drzew ósemkowych.
@@ -326,23 +321,22 @@ Wadą drzew k-d jest możliwość cięć tylko pod trzema kątami (w przestrzeni
 
 W każdym kolejnym kroku wybierana jest dowolna płaszczyzna (zgodnie z pewną strategią np. SAH), która dzieli przestrzeń na dwie inne podprzestrzenie. Drzewo BSP buduje się dłużej (głównie ze względu na trudność wyboru płaszczyzny podziału), ale często podział sceny jest jakościowo lepszy.
 
-
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
-  \caption{Drzewo K-d dla dwóch wymiarów}
   \includegraphics[width=10cm]{bsp.png}
+  \caption{Drzewo BSP}
 \end{figure}
 
 
 \subsection{Wybór drzewa do implementacji}
 
-Spośród opisanych drzew, drzewa BSP i BVH intuicyjnie wydają się być najodpowiedniejszym wyborem dla metody śledzenia promieni. Na poparcie tej hipotezy warto zajrzeć do źródeł. Według \cite{bvhvsoctee} drzewo BVH jest wydajniejsze od drzewa ósemkowego (biorąc pod uwagę czas generowania sceny, a nie budowy drzewa). Jeżeli porównywać ze sobą drzewa BVH i K-d warto zajrzeć do \cite{bvhvskd1, bvhvskd2}. Autorzy wskazują na przewagę drzewa BVH, jednak uzależniają wyniki od rodzaju promieni (pierwotne, wtóre) i od definicji sceny. Wygląda na to, że jeżeli promienie często nie trafiają w żaden obiekt, to drzewo BVH jest dużo skuteczniejsze (ma to związek ze sposobem przeglądania drzew K-d). Przy scenach zamkniętych składających się z wielu trójkątów (dla mniejszych scen BVH jest najczęściej lepsze) sytuacje nie jest już taka oczywista - tendencja się odwraca. Zgodnie z przewidywaniami, potwierdzonymi przez \cite{bspvskd}, dobrze zoptymalizowane drzewo BSP jest znacznie wydajniejsze od drzewa K-d, zwłaszcza jeżeli chodzi o czas zużyty na testy badające przecięcia trójkątów z promieniami. We wspomnianym artykule zostały również przedstawione badania na temat drzewa BVH - w tym przypadku trudniej jest wykazać jednoznaczną wyższość jednego rozwiązania nad drugim. Podobnie jak było to opisane wyżej, drzewa BVH dużo lepiej działają w zamkniętych scenach (mało promieni, które nie trafiają w żaden obiekt). 
+Spośród opisanych drzew, drzewa BSP i BVH intuicyjnie wydają się być najodpowiedniejszym wyborem dla metody śledzenia promieni. Na poparcie tej hipotezy warto zajrzeć do źródeł. Według \cite{bvhvsoctee} drzewo BVH jest wydajniejsze od drzewa ósemkowego (biorąc pod uwagę czas generowania sceny, a nie jego budowy). Jeżeli porównywać ze sobą drzewa BVH i K-d warto zajrzeć do \cite{bspvskd, bvhvskd2}. Autorzy wskazują na przewagę drzewa BVH, jednak uzależniają wyniki od rodzaju promieni (pierwotne, wtóre) i od definicji sceny. Wygląda na to, że jeżeli promienie często nie trafiają w żaden obiekt, to drzewo BVH jest dużo skuteczniejsze (ma to związek ze sposobem przeglądania drzew K-d). Przy scenach zamkniętych składających się z wielu trójkątów (dla mniejszych scen BVH jest najczęściej lepsze) sytuacje nie jest już taka oczywista - tendencja się odwraca. Zgodnie z przewidywaniami, potwierdzonymi przez \cite{bspvskd}, dobrze zoptymalizowane drzewo BSP jest znacznie wydajniejsze od drzewa K-d, zwłaszcza jeżeli chodzi o czas zużyty na testy badające przecięcia trójkątów z promieniami. We wspomnianym artykule zostały również przedstawione badania na temat drzewa BVH - w tym przypadku trudniej jest wykazać jednoznaczną wyższość jednego rozwiązania nad drugim. Podobnie jak było to opisane wyżej, drzewa BVH dużo lepiej działają w zamkniętych scenach (mało promieni, które nie trafiają w żaden obiekt). 
 
 Powyższe badania potwierdza współczesna literatura fachowa i obecnie stosowane metody optymalizacji generowania grafiki. W \cite{trees} autor proponuje rozwiązania hybrydowe, w których duże otwarte przestrzenie i poruszające się obiekty zamykane są w drzewach BVH (drzewa BVH przyspieszają wykrycie kolizji, a poruszające się modele nie wymuszają przebudowy drzewa), z kolei zamknięte, spójne i statyczne elementy hierarchizuje się stosując drzewa BSP.
 
 Na potrzeby tej pracy zostało zaimplementowane drzewo BSP - w związku z tym zostanie one dokładniej omówione niż miało to miejsce wyżej.
 
-\paragraph{Budowa drzewa BSP}
+\paragraph{Budowa drzewa BSP}\mbox{} \\
 
 Drzewo BSP zostało szczegółowo opisane w \cite{trees}, jednak warto również polecić adres strony\cite{bspfaq}, na której można znaleźć wiele użytecznych informacji na powyższy temat (między innymi przykładową implementację jego elementów), poniższa treść w dużej mierze bazuje na tej pozycji.
 
@@ -352,6 +346,7 @@ Podstawową wersję algorytmu budowania drzewa BSP można przedstawić przy uży
 
 \begin{algorithm}
 \begin{algorithmic}
+\caption{Budowa drzewa BSP}
 \Function{Build}{*node, list$<$polygon$>$}
 \\
 \State node.plane = getBestPlane()
@@ -377,17 +372,18 @@ Podstawową wersję algorytmu budowania drzewa BSP można przedstawić przy uży
 
 Pierwszym ważnym krokiem, którego powyższy algorytm nie wyjaśnia, jest wybór płaszczyzny podziału. Najczęściej kandydatami są płaszczyzny wyznaczane przez prymitywy w wierzchołku drzewa (zgodnie z nimi, lub prostopadłe do nich i styczne do krawędzi). W najprostszym modelu wybiera się płaszczyznę, która dzieli zbiór trójkątów na jak najrówniejsze części - w ten sposób powstaje dobrze zbilansowane drzewo binarne. Popularną alternatywą takiego postępowania jest heurystyka SAH \cite{zuk2008, sah1, sah2} (ang. Surface Area Heuristic), która faworyzuje podziały na podprzestrzenie, z których jedna jest duża i zawiera niewielką liczbę prymitywów, a druga jest mała i zawiera ich dużo. Takie podejście jest uzasadnione, biorąc pod uwagę prawdopodobieństwo trafienia promienia w taką przestrzeń - może się okazać, że mniej zbilansowane drzewo będzie przeglądane krócej (mimo tego, że najgorszy przypadek jest jest dużo poważniejszy). Zastosowanie funkcji SAH zostało zaproponowane w \cite{sah1} i wydaje się najlepszym rozwiązaniem, jednak znacząco wydłuża ono czas budowy drzewa i jest trudniejsze programistycznie ze względu na potrzebę liczenia objętości w drzewie BSP; co nie jest tak proste jak w przypadku drzew K-d i wymaga dodatkowo zamknięcia całej sceny w bryle otaczającej (co pozytywnie wpływa na czas wykonania programu). Najczęściej objętości podprzestrzeni w drzewach BSP są aproksymowane prostopadłościanami.
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
-  \caption{Płaszczyzny podziału: a - SAH, b - klasyczny podział; źródło: \cite{zuk2008}}
   \includegraphics[width=10cm]{sah.png}
+  \caption{Płaszczyzny podziału: a - SAH, b - klasyczny podział; źródło: \cite{zuk2008}}
 \end{figure}
 
+\pagebreak
 Kolejnym problem pojawia się w sytuacji gdy prymityw leży na płaszczyźnie dzielącej przestrzeń lub jest przez nią przecinany. W przypadku figury leżącej na płaszczyźnie jest ona albo przypisywana do obu podprzestrzeni, albo przechowywana w danym wierzchołku. Jeżeli chodzi o poligony, które zostały przecięte to zazwyczaj dzieli się je na dwie części i przypisuje do odpowiednich potomków wierzchołka (można ich również nie dzielić i przypisać do danego wierzchołka).
 
-Ostatnim elementem do omówienia jest warunek stopu rekurencji. Jeżeli zastosowano funkcję SAH to jest to moment, w którym dalszy podział jest nieopłacalny (metoda SAH decyduje o dalszym podziale biorąc pod uwagę przewidywany koszt przeglądania podprzestrzeni powstałych w wyniku podziału i koszt przeglądania prymitywów, jeżeli taki podział nie został dokonany). W przeciwnym przypadku najczęściej stosuje się technikę, w której wierzchołki są zamieniane w liście, jeżeli zbiór ich prymitywów jest odpowiednio mały. Można również ograniczyć drzewo co do głębokości. 
+Ostatnim elementem do omówienia jest warunek stopu rekurencji. Jeżeli zastosowano funkcję SAH, to jest to moment, w którym dalszy podział jest nieopłacalny (metoda SAH decyduje o dalszym podziale biorąc pod uwagę przewidywany koszt przeglądania podprzestrzeni powstałych w wyniku podziału i koszt przeglądania prymitywów, jeżeli taki podział nie został dokonany). W przeciwnym przypadku najczęściej stosuje się technikę, w której wierzchołki są zamieniane w liście, jeżeli zbiór ich prymitywów jest odpowiednio mały. Można również ograniczyć głębokość drzewa. 
 
-Bardzo łatwo popełnić błąd skutkujący nieskończoną rekurencją. Wybierając płaszczyzny podziału wg. prymitywów może się zdarzyć, że któryś z otrzymanych zbiorów będzie wypukły. W takiej sytuacji podział może nie być możliwy - wszystkie prymitywy mogą znaleźć się albo przed, albo za płaszczyzną dzielącą. Należy więc wprowadzić mechanizmy zabezpieczające przed taką ewentualnością.
+Bardzo łatwo popełnić błąd skutkujący nieskończoną rekurencją. Wybierając płaszczyzny podziału wg. prymitywów może się zdarzyć, że któryś z otrzymanych zbiorów będzie wypukły. W takiej sytuacji podział może nie być możliwy - wszystkie prymitywy mogą znaleźć się przed, albo za płaszczyzną dzielącą. Należy więc wprowadzić mechanizmy zabezpieczające przed taką ewentualnością.
 
 \subparagraph{Przeglądanie drzewa}\mbox{} \\
 

@@ -1,31 +1,54 @@
-W tym rozdziale przedstawiono projekt systemu, który ma zostać zaimplementowany na potrzeby tej pracy. Projektowany system powinien umożliwiać uruchomienie aplikacji na dowolnie dużym klastrze obliczeniowym składającym się z maszyn o różnej specyfikacji. Na komputerze, na którym aplikacja jest uruchamiana (a więc tym wykorzystywanym przez użytkownika) powinno uruchomić się okno dające podgląd na generowaną animację. Aplikacja powinna dawać możliwość załadowania pliku opisującego scenę, która następnie będzie rozesłana do wszystkich węzłów klastra. Opis działania klastra i planowanych klas programu (powiązania między nimi i rola w systemie) został umieszczony poniżej. 
+W tym rozdziale przedstawiono projekt systemu, który ma zostać zaimplementowany na potrzeby tej pracy. Projektowany system powinien umożliwiać uruchomienie aplikacji na dowolnie dużym klastrze obliczeniowym składającym się z maszyn o różnej specyfikacji. Na komputerze, na którym aplikacja jest uruchamiana (a więc tym wykorzystywanym przez użytkownika), powinno pokazać się okno dające podgląd na generowaną animację. Aplikacja powinna dawać możliwość załadowania pliku opisującego scenę, która następnie będzie rozesłana do wszystkich węzłów klastra. Opis działania klastra i planowanych klas programu (powiązania między nimi i rola w systemie) został umieszczony w kolejnych podrozdziałach. Niżej przedstawiono listę podstawowych zadań i założeń do zrealizowania w ramach implementacji systemu (została ona ustalona na podstawie analizy znajdującej się w rozdziale 2).
+
+\begin{enumerate}
+	\item Aplikacja będzie realizowała rekursywny algorytm śledzenia promieni.
+	\item Aplikacja będzie aplikacją okienkową stworzoną przy użyciu biblioteki \emph{QT}.
+	\item Dzięki wykorzystaniu technologii \emph{MPI} obliczenia będą mogły wykonywać się równolegle (więcej szczegółów w kolejnym podrozdziale).
+	\item Zadanie realizowane przez pojedynczy węzeł wykonawczy będzie polegało na wyliczeniu kolorów pikseli pewnego fragmentu obrazu.
+	\item Musi zostać zaimplementowana możliwość definiowania parametrów sceny (pewna przestrzeń zawierająca obiekty) jak i obserwatora (określa sposób rzutowania obiektów sceny oraz miejsce z którego scena jest obserwowana oraz kierunek patrzenia).
+	\item Aplikacja będzie prezentowała animację budowaną w czasie rzeczywistym - obserwator (a więc i obraz) będzie się obracał względem pewnego ustalonego punktu. Kolejna klatka animacji będzie wyświetlana w momencie jej wygenerowania.
+	\item Aplikacja będzie wykorzystywała rzut perspektywiczny.
+	\item Zostaną stworzone dwa rodzaje obiektów mogących znajdować się na scenie - trójkąty i sfery.
+	\item Zostanie stworzona specjalna klasa definiująca punktowe źródła światła.
+	\item Wykorzystywanym modelem oświetlenia będzie \emph{Model Phonga}.
+	\item Aplikacja ma uwzględniać promienie odbite od powierzchni, przechodzące przez nie i takie wysyłane w kierunku źródeł światła w celu określenia czy dany punkt znajduje się w cieniu.
+	\item Generowanie cieni będzie opcjonalne.
+	\item Aplikacja będzie dawała możliwość zdefiniowania własnej sceny poprzez plik wejściowy.
+	\item Aplikacja będzie dawała możliwość wczytywania modeli zdefiniowanych w formacie \emph{obj}
+	\item Graficzny interfejs użytkownika powinien udostępniać informacje dotyczące poszczególnych węzłów klastra i parametrów związanych z generowanym obrazem.
+	\item Zostanie zaimplementowane drzewo BSP w celu badania w jakim stopniu może ono przyspieszyć obliczenia. Płaszczyzny dzielące będą wybierane spośród tych wyznaczanych przez trójkąty znajdujące się na scenie (takie, które zawierają w sobie wielokąt, takie które są do nich prostopadłe i styczne do krawędzi).
+	\item Funkcja oceny płaszczyzny dzielącej będzie wybierała taką płaszczyznę, która dzieli zbiór obiektów sceny na jak najrówniejsze podzbiory.
+	\item Algorytm dzielenia przestrzeni w drzewie BSP działa tak długo, aż dalszy podział stanie się niemożliwy.
+	\item Musi istnieć możliwość sterowania takimi parametrami jak: głębokość drzewa metody śledzenia promieni, rozmiary generowanego obrazu, ziarnistość zadania, sposób zrównoleglenia itp.
+	\item Korzystanie z drzewa BSP będzie opcjonalne - w przypadku, w którym nie będzie ono używane, algorytm będzie dokonywał przeglądu zupełnego obiektów (zarówno w sytuacji poszukiwania najbliższego obiektu, jak i ustalania czy dany punkt znajduje się w cieniu).
+
+\end{enumerate}
 
 \section{Projekt klastra}
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
-  \caption{Schemat systemu}
-  \includegraphics[width=10cm]{cluster.png}
+  \includegraphics[width=9cm]{cluster.png}
+    \caption{Schemat systemu}
 \end{figure}
 
-Na poniższym schemacie przedstawiono konceptualny schemat działania systemu. W założeniach, użytkownik ma komunikować się z klastrem poprzez graficzny interfejs użytkownika (zbudowany z wykorzystaniem biblioteki Qt), który udostępni mu podgląd dynamicznie budowanej animacji i wszelkich statystyk z nią związanych. Program master'a (a więc głównego węzła klastra) ma wykonywać się na tej samej maszynie, która udostępnia interfejs - główny proces zostanie podzielony na dwa wątki: jeden zajmujący się obsługą klastra (wątek master'a) i drugi związany z użytkownikiem (wątek GUI). Węzeł zarządzający komunikuje się z każdym z węzłów wykonawczych, zlecając im zadania i zbierając od nich wyniki. W chwili, w której zostanie wygenerowana cała klatka, master informuje wątek GUI, o tym że wygenerowany obraz jest gotowy do wyświetlenia. W poniższych punktach zostanie zaprezentowany proponowany algorytm zachowania węzłów.  
+Na poniższym schemacie przedstawiono konceptualny schemat działania systemu. W założeniach użytkownik ma komunikować się z klastrem poprzez graficzny interfejs użytkownika (zbudowany z wykorzystaniem biblioteki Qt), który udostępni mu podgląd dynamicznie budowanej animacji i wszelkich statystyk z nią związanych. Program master'a (a więc głównego węzła klastra) ma wykonywać się na tej samej maszynie, która udostępnia interfejs - główny proces zostanie podzielony na dwa wątki: jeden zajmujący się obsługą klastra (wątek master'a) i drugi związany z użytkownikiem (wątek GUI). Węzeł zarządzający komunikuje się z każdym z węzłów wykonawczych, zlecając im zadania i zbierając od nich wyniki. W chwili, w której zostanie wygenerowana cała klatka, master informuje wątek GUI, o tym, że wygenerowany obraz jest gotowy do wyświetlenia. W poniższych punktach zostanie zaprezentowany proponowany algorytm zachowania węzłów.  
 	
 \subsection{Master}
 
-Pierwszym i najważniejszym zadaniem węzła zarządzającego jest wczytanie pliku zawierającego definicję generowanego obrazu. Na podstawie pliku wejściowego ma on stworzyć scenę, kamerę, obiekty i światła. Następnie musi on rozesłać informacje na temat obiektów do wszystkich węzłów wykonawczych, tak aby każdy z nich posiadał tę samą definicję obrazu (broadcast). Gdy już każdy z węzłów zasygnalizuje gotowość, węzeł zarządzający rozsyła zadania policzenia danego wycinka obrazu do węzłów wykonawczych. Poniżej przedstawiono przykładowy pseudokod działania master'a. Warto zwrócić uwagę, że zadania umieszczane są w kolejce oczekującej - takie rozwiązanie powinno dawać lepsze rezultaty niż rozesłanie do węzłów wszystkich zadań od razu, ponieważ różne fragmenty obrazu mogą być generowane z różną prędkością. Mogłoby więc dochodzić do sytuacji, w której część węzłów zrealizowała już swoje zadania (a więc ich moc obliczeniowa nie jest wykorzystywana), a część (która dostała bardziej wymagające obliczenia) ciągle liczy.
+Pierwszym i najważniejszym zadaniem węzła zarządzającego jest wczytanie pliku zawierającego definicję generowanego obrazu. Na podstawie pliku wejściowego ma on stworzyć scenę, kamerę, obiekty i światła. Następnie musi on rozesłać informacje na temat obiektów do wszystkich węzłów wykonawczych tak, aby każdy z nich posiadał tę samą definicję sceny (broadcast). Gdy już każdy z węzłów zasygnalizuje gotowość, węzeł zarządzający rozsyła zadania policzenia danego wycinka obrazu do węzłów wykonawczych. Poniżej przedstawiono przykładowy pseudokod działania master'a. Zadania umieszczane są w kolejce oczekującej - takie rozwiązanie powinno dawać lepsze rezultaty niż rozesłanie do węzłów wszystkich zadań od razu, ponieważ różne fragmenty obrazu mogą być generowane z różną prędkością. Mogłoby więc dochodzić do sytuacji, w której część węzłów zrealizowała już swoje zadania (a więc ich moc obliczeniowa nie jest wykorzystywana), a część (która dostała bardziej wymagające obliczenia) ciągle liczy.
 
-\begin{algorithm}
+\begin{algorithm}[H]
+\caption{Działanie \emph{master'a}}
 \begin{algorithmic}
 \State readFile()
 \State sendScene()
 \State sendCamera()
 \\
 \While{true}
-\\
 \State queue = splitImageToChunks()
 \State //pending - liczba zleconych, niewykonanych zadań
 \State pending = sendChunkToEveryNode()
-\\
 \While {pending $>$ 0}
 \State msg = recvMessage()
 \If {msg == EXIT} exit()
@@ -44,12 +67,12 @@ Pierwszym i najważniejszym zadaniem węzła zarządzającego jest wczytanie pli
 \end{algorithmic}
 \end{algorithm}
 
-
 \subsection{Slave}
 
 Nawiązując do poprzedniego punktu, pierwszą czynnością, którą powinien wykonać każdy ze slave'ów, jest odebranie definicji obiektów wykorzystywanych przy generowaniu sceny. Następnie w pętli, może on czekać na zadanie, realizować je (z wykorzystaniem klasy RayTracer) i odsyłać z powrotem do węzła zarządzającego.
 
-\begin{algorithm}
+\begin{algorithm}[H]
+\caption{Działanie \emph{slave'a}}
 \begin{algorithmic}
 \State recvScene()
 \State recvCamera()
@@ -69,9 +92,16 @@ Nawiązując do poprzedniego punktu, pierwszą czynnością, którą powinien wy
 \end{algorithm}
 
 
+\subsection{Definicja zadania i rodzaje komunikatów}
+
+TODO...
+\newpage
 \section{Projekt programu}
 
 	\subsection{Diagram klas}
+	
+	Poniżej przedstawiono uproszczony diagram klas. Opis poszczególnych z nich (wraz ze spisem atrybutów i metod) znajduje się w kolejnym podrozdziale.
+	
 	\begin{figure}[H]
     \centering
               \includegraphics[angle=90,width=\textwidth,
@@ -81,7 +111,7 @@ Nawiązując do poprzedniego punktu, pierwszą czynnością, którą powinien wy
     \label{fig:classDiagram}
 	\end{figure}
 	
-	Powyżej przedstawiono uproszczony diagram klas. Opis poszczególnych z nich (wraz ze spisem atrybutów i metod) znajduje się w kolejnym podrozdziale.
+	
 	
 \subsection{Opis klas}
 
@@ -302,7 +332,7 @@ Klasa MainWindow reprezentuje główne okno aplikacji. Ze względów projektowyc
 \end{longtable}
 \normalsize
 
-Klasa MasterThread jest główną klasa aplikacji, której obiekt tworzony jest w tym samym procesie co obiekt MainWindow, jednak działa w osobnym wątku. Takie rozwiązanie pozwala zachować responsywność aplikacji. Wątek okna głównego jest odpowiedzialny za przetwarzanie zdarzeń wygenerowanych przez użytkownika czy program, a wątek MasterThread, niezależnie od niego, zajmuje się w tym czasie generowaniem kolejnej klatki animacji. Rozdzielamy w ten sposób warstwę prezentacji od warstwy biznesowej tworząc tym samym aplikację przyjaźniejszą użytkownikowi.
+Klasa MasterThread jest główną klasą aplikacji, której obiekt tworzony jest w tym samym procesie co obiekt MainWindow, jednak działa w osobnym wątku. Takie rozwiązanie pozwala zachować responsywność aplikacji. Wątek okna głównego jest odpowiedzialny za przetwarzanie zdarzeń wygenerowanych przez użytkownika czy program, a wątek MasterThread, niezależnie od niego, zajmuje się w tym czasie generowaniem kolejnej klatki animacji. Rozdzielamy w ten sposób warstwę prezentacji od warstwy biznesowej tworząc tym samym aplikację przyjaźniejszą użytkownikowi.
 
 Głównym zadaniem MasterThread jest zarządzanie węzłami wykonawczymi (sam stanowi on serce węzła nadzorującego). Posiada on szereg metod umożliwiających komunikację z innymi procesami tworzącymi aplikację. Ma on dostęp do lokalnych kopii obiektów Scene i Camera, ponieważ musi je rozesłać po klastrze i mieć możliwość modyfikacji ich parametrów (przesunięcie kamery co klatkę, aktualizacja obiektu Pixels). Więcej o zadaniach i sposobie działania MasterThread można przeczytać (!rodział z wyżej!, !rodział z implementacji!).
 
@@ -319,7 +349,6 @@ Głównym zadaniem MasterThread jest zarządzanie węzłami wykonawczymi (sam st
 \normalsize
 
 Chunk jest prostą strukturą wykorzystywaną w komunikacji Master/Slave (MasterThread, SlaveMPI). Zawiera on w sobie informacje o tym, jaki wycinek obrazu powinien być wyznaczany przez dany węzeł wykonawczy.
-
 
 \subsubsection{Pixels}
 
@@ -411,7 +440,7 @@ Klasa RayTracer zawiera w sobie zestaw metod, które pozwalają na realizację a
 \end{longtable}
 \normalsize
 
-Obiekt klasy Scene zawiera definicję całej sceny. Jest on napisany według wzorca Singleton (może istnieć tylko jeden obiekt takiej klasy). Wywołując statyczną metodę getInstance() otrzymamy na niego wskaźnik. Obiekt Scene jest jednym z częściej wykorzystywanych obiektów, gdyż jest centralnym elementem aplikacji - zawiera pola istotne dla wielu klas. W związku z tym udostępnia on interfejs pozwalający na pobieranie interesujących daną klasę danych (np. metoda isInShadow, która bada czy dany punkt znajduje się w cieniu. Klasa, zgodnie z flagą useBSP, dokonuje przeglądu zupełnego lub wykorzystuje drzewo).
+Obiekt klasy Scene zawiera definicję całej sceny. Jest on napisany według wzorca Singleton. Wywołując statyczną metodę getInstance() otrzymamy na niego wskaźnik. Obiekt Scene jest jednym z częściej wykorzystywanych obiektów, gdyż jest centralnym elementem aplikacji - zawiera pola istotne dla wielu klas. W związku z tym udostępnia on interfejs pozwalający na pobieranie interesujących daną klasę danych (np. metoda isInShadow, która bada czy dany punkt znajduje się w cieniu. Klasa, zgodnie z flagą useBSP, dokonuje przeglądu zupełnego lub wykorzystuje drzewo).
 
 \subsubsection{SceneObject}
 
@@ -436,7 +465,7 @@ Obiekt klasy Scene zawiera definicję całej sceny. Jest on napisany według wzo
 \end{longtable}
 \normalsize
 
-SceneObject jest wirtualną klasą po której powinny dziedziczyć wszystkie obiekty sceny. Pozwala ona na wykorzystywanie wielopostaciowości (widoczne np. w klasie Scene), wymuszając na klasach potomnych implementacje metod pozwalających określić przecięcie z promieniem (trace()), oblicznie wektora normalnego w punkcie (getNormalVector()), czy pobranie koloru w punkcie (getLocalColor())
+SceneObject jest wirtualną klasą, po której powinny dziedziczyć wszystkie obiekty sceny. Pozwala ona na wykorzystywanie wielopostaciowości (widoczne np. w klasie Scene), wymuszając na klasach potomnych implementacje metod pozwalających określić przecięcie z promieniem (trace()), oblicznie wektora normalnego w punkcie (getNormalVector()), czy pobranie koloru w punkcie (getLocalColor())
 
 \subsubsection{Serializable}
 

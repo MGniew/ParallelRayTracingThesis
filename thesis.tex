@@ -16,6 +16,7 @@
 \usepackage{pgfplots}
 \usepackage{slashbox,pict2e}
 \usepackage{subcaption}
+\usepackage{ucs}
 \graphicspath{ {images/} }
 
 
@@ -33,7 +34,27 @@
   keywordstyle=\color{blue},       % keyword style
   breaklines=true,
   language=C++,
-  stringstyle=\color{mymauve}     % string literal style
+  stringstyle=\color{mymauve},    % string literal style
+  extendedchars=\true,
+  inputencoding=utf8x,
+  literate={ą}{{\k{a}}}1
+           {Ą}{{\k{A}}}1
+           {ę}{{\k{e}}}1
+           {Ę}{{\k{E}}}1
+           {ó}{{\'o}}1
+           {Ó}{{\'O}}1
+           {ś}{{\'s}}1
+           {Ś}{{\'S}}1
+           {ł}{{\l{}}}1
+           {Ł}{{\L{}}}1
+           {ż}{{\.z}}1
+           {Ż}{{\.Z}}1
+           {ź}{{\'z}}1
+           {Ź}{{\'Z}}1
+           {ć}{{\'c}}1
+           {Ć}{{\'C}}1
+           {ń}{{\'n}}1
+           {Ń}{{\'N}}1
 }
 
 \title{Generowanie obrazu metodą śledzenia promieni w czasie rzeczywistym z wykorzystaniem obliczeń równoległych}
@@ -77,6 +98,7 @@
 \input{chapters/rezultaty}
 
 \chapter{Podsumowanie}
+\input{chapters/podsumowanie}
 
 %\bibliographystyle{plain}
 %\bibliography{bibliography}{}
@@ -192,8 +214,10 @@ Comparative Study of Three Algorithms},
 	Computer Graphics Group, Saarland University Saarbrucken, Germany,
 	2004
 	
+\bibitem{gpipe}	
+	https://www.khronos.org/opengl/wiki/Rendering\_Pipeline\_Overview
+	
 \end{thebibliography}
 
-\listoffigures
 
 \end{document}
