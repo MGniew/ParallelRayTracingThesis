@@ -2,36 +2,36 @@
 
 W niniejszym rozdziale zostały zaprezentowane wyniki badań nad efektywnością zaimplementowanego algorytmu. Przedstawiono tutaj zależność czasową między definicją sceny, na podstawie której generowany jest obraz, a zastosowanym podejściem do problemu. Testy były przeprowadzane dla czterech różnych scen (specyficzne ich cechy, jak i ustawienia programu, zostały przedstawione na początku każdego podrozdziału).
 
-\begin{figure}[htb!]
+\begin{figure}[H]
 \centering
-  \caption{Spheres}
   \includegraphics[width=\textwidth]{spheres.png}
+    \caption{Spheres}
 \end{figure}
 
 Powyższa scena składa się z pięciu sfer o różnych parametrach powierzchniowych - jedna z nich jest półprzezroczysta, inne odbijają światło w podobny sposób jak lustro. Największa z nich otacza pozostałe, dzięki czemu każdy promień wysłany w scenę trafia zawszę w jakąś kulę.
 
-\begin{figure}[htb!]
+\begin{figure}[H]
 \centering
-  \caption{Glass, źródło: }
   \includegraphics[width=\textwidth]{glass.png}
+    \caption{Glass, źródło: }
 \end{figure}
 
 Scena autorstwa (!autor!). Składa się ona z 366 trójkątów. Obserwator ustawiony jest pod takim kątem, aby dobrze widzieć całą scenę. Większość promieni pierwotnych nie trafi w żaden obiekt, a szklanka będąca centralną częścią sceny, nie jest przezroczysta (definicje materiałów nie zawierają informacji o przezroczystości).
 \pagebreak
 
-\begin{figure}[htb!]
+\begin{figure}[H]
 \centering
-  \caption{Suzanne, źródło: }
   \includegraphics[width=\textwidth]{suzanne.png}
+  \caption{Suzanne, źródło: }
 \end{figure}
 
 
 \emph{Suzanne} jest popularnym modelem wykorzystywanym w badaniach dotyczących grafiki komputerowej. Składa się ona z 15488 trójkątów. Definicja materiału została dostarczona przez autorów (MIT) i nie zawiera informacji o przezroczystości. Jak na obiekt takich rozmiarów jest on bardzo skomplikowany.
 
-\begin{figure}[htb!]
+\begin{figure}[H]
 \centering
-  \caption{Kid, źródło}
   \includegraphics[width=\textwidth]{kid.png}
+  \caption{Kid, źródło}
 \end{figure}
 
 Scena została pobrana ze strony (strona). Składa się ona z 27946 trójkątów. Autor nie dostarcza definicji materiałów (w założeniu obiekty mają być teksturowane), więc każdy obiekt będzie miał domyślne parametry. To czego nie widać na powyższym obrazku, to brak ściany mającej znajdować się za obserwatorem - w związku z tym większość promieni wtórnych w nic nie trafi.

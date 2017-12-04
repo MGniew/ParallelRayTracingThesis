@@ -21,7 +21,7 @@ for(int i = 0; i < scene->getWidth(); i++) {
 }
 \end{lstlisting}	
 
-Powyższy fragment kodu implementuje algorytm, który można znaleźć w rozdziale !TU WSTAW RODZIAŁ!. Dla każdego piksela sceny zostaje wygenerowany promień pierwotny (\emph{directionVector}), który następnie jest wysyłany w scenę - funkcja \emph{getColorRecursive} (opisana niżej) zwraca kolor, jaki należy przypisać danemu punktowi ekranu. Każdy z węzłów wykonawczych posiada swój egzemplarz obiektu klasy \emph{Scene} (wykorzystywany w powyższym kodzie) zmodyfikowany w taki sposób, aby przechowywał on jedynie fragment obrazu (\emph{Pixels)} - początek wycinka jest określany zmiennymi \emph{startX} i \emph{startY}, a zmodyfikowane wymiary obrazu pozwalają określić jego koniec. Więcej o komunikacji Master/Slave można przeczytać w rozdziałach !TU WSTAW RODZIAŁY!. 
+Powyższy fragment kodu implementuje algorytm rekursywnej metody śledzenia promieni. Dla każdego piksela sceny zostaje wygenerowany promień pierwotny (\emph{directionVector}), który następnie jest wysyłany w scenę - funkcja \emph{getColorRecursive} (opisana niżej) zwraca kolor, jaki należy przypisać danemu punktowi ekranu. Każdy z węzłów wykonawczych posiada swój egzemplarz obiektu klasy \emph{Scene} (wykorzystywany w powyższym kodzie) zmodyfikowany w taki sposób, aby przechowywał on jedynie fragment obrazu (\emph{Pixels)} - początek wycinka jest określany zmiennymi \emph{startX} i \emph{startY}, a zmodyfikowane wymiary obrazu pozwalają określić jego koniec. Więcej o komunikacji Master/Slave można przeczytać w rozdziale czwartym. 
 
 \begin{lstlisting}[caption={Fragment klasy \emph{RayTracer}}]
 
@@ -76,7 +76,7 @@ return localColor*sceneObject->getLocal() + reflectedColor*sceneObject->getMirro
 
 \end{lstlisting}
 	
-Powyższa funkcja jest rekurencyjnie wywoływaną metodą pozwalającą określić ostateczny kolor piksela, z którego został wysłany promień pierwotny (wysłanie promienia pierwotnego następuje w funkcji \emph{recursiveRayTracer}). Przyjmuje ona promień (w postaci punktu początkowego i wektora kierunku) oraz zmienną określającą głębokość drzewa - jest ona dekrementowana z każdym kolejnym rekurencyjnym wywołaniem funkcji, a kiedy osiągnie zero, rekurencja jest przerywana. Pierwszym krokiem algorytmu jest stwierdzenie, czy promień przeciął się z jakimś obiektem (jest tutaj wykorzystywany albo przegląd zupełny, albo drzewo BSP). Jeżeli nie, to ostateczny kolor piksela (lub jego składowa na danym poziomie drzewa rekurencji) przyjmuje wartość koloru tła. Jeżeli tak, to algorytm wybiera obiekt będący najbliżej początku promienia (obiekt widoczny z perspektywy tego punktu) i (w zależności od modelu \emph{Phonga} i parametrów powierzchni omówionych w rozdziałach !TU WSTAW ROZDZIAŁ!) ustala lokalną barwę obiektu oraz wysyła dwa kolejne promienie mające wpływ na barwę ostateczną - promień odbity od powierzchni i promień przez nią przechodzący (jest tutaj uwzględnianie złamanie światła).
+Powyższa funkcja jest rekurencyjnie wywoływaną metodą pozwalającą określić ostateczny kolor piksela, z którego został wysłany promień pierwotny (wysłanie promienia pierwotnego następuje w funkcji \emph{recursiveRayTracer}). Przyjmuje ona promień (w postaci punktu początkowego i wektora kierunku) oraz zmienną określającą głębokość drzewa - jest ona dekrementowana z każdym kolejnym rekurencyjnym wywołaniem funkcji, a kiedy osiągnie zero, rekurencja jest przerywana. Pierwszym krokiem algorytmu jest stwierdzenie, czy promień przeciął się z jakimś obiektem (jest tutaj wykorzystywany albo przegląd zupełny, albo drzewo BSP). Jeżeli nie, to ostateczny kolor piksela (lub jego składowa na danym poziomie drzewa rekurencji) przyjmuje wartość koloru tła. Jeżeli tak, to algorytm wybiera obiekt będący najbliżej początku promienia (obiekt widoczny z perspektywy tego punktu) i (w zależności od modelu \emph{Phonga} i parametrów powierzchni omówionych w rozdziale drugim) ustala lokalną barwę obiektu oraz wysyła dwa kolejne promienie mające wpływ na barwę ostateczną - promień odbity od powierzchni i promień przez nią przechodzący (jest tutaj uwzględnianie złamanie światła).
 Ostateczny kolor piksela jest sumą kolorów lokalnych osiągniętych przez wszystkie promienie powstałe w wyniku wysłania promienia pierwotnego.	Niezrozumiały może wydawać się następujący fragment:
 
 \begin{lstlisting}[caption={}]
@@ -137,7 +137,7 @@ while(!polygons.empty()) {
     }
 \end{lstlisting}
 
-Powyższy fragment jest fragmentem kodu funkcji budującej drzewo, który nie został do końca uwzględniony w rozdziale (!TU WSTAW ROZDZIAŁ Z PSEUDOKODEM!). Pierwszym krokiem każdej kolejnej rekurencji budowy drzewa jest ustalenie płaszczyzny podziału - brane są pod uwagę wszystkie te, które są wyznaczane przez trójkąty zawarte w danym wierzchołku i te, które są do tych trójkątów prostopadłe (styczne z krawędziami). Poprzez najlepszą płaszczyznę rozumie się taką, która dzieli trójkąty na równe ilościowo grupy. Następnie w pętli algorytm sprawdza, po której stronie wybranej płaszczyzny znajduje się dany obiekt z listy - w zależności od sytuacji trafia on do listy, która zostanie przekazana kolejnym dzieciom (,,przedniemu'' i ,,tylnemu''). W przypadku, gdy trójkąt leży na płaszczyźnie podziału, jest on umieszczany w obu listach, z kolei jeżeli płaszczyzna go przecina, to jest on dzielony na dwa (w sytuacji powstania trójkąta i czworokąta, czworokąt jest dzielony na dwa trójkąty) - każda z połówek trafi do odpowiedniego ,,dziecka''. 	Program uwzględnia sfery przechowywane w postaci równania (a więc prosty podział takiego obiektu nie jest możliwy). W momencie, w którym płaszczyzna przetnie sferę, trafia ona tylko do listy obiektów rozpatrywanego wierzchołka. Zaimplementowanie sfer wymagało takiej niekonwencjonalnej modyfikacji algorytmu, która będzie miała wpływ na sposób przeglądania drzewa. Rekurencja kończy się, kiedy zostanie osiągnięta maksymalna głębokość drzewa (określana przez parametr przekazywany do funkcji przy pierwszym wywołaniu), lub w sytuacji, w której dalszy podział jest niemożliwy. Wtedy wierzchołek jest zamieniany w liść (wskaźniki na potomstwo są puste), a wejściowa lista obiektów zostaje do niego przypisana. Nie biorąc pod uwagę sfer wszystkie wierzchołki niebędące liśćmi są puste.
+Powyższy fragment jest fragmentem kodu funkcji budującej drzewo opisane w punkcie 2.2.4. Pierwszym krokiem każdej kolejnej rekurencji budowy drzewa jest ustalenie płaszczyzny podziału - brane są pod uwagę wszystkie te, które są wyznaczane przez trójkąty zawarte w danym wierzchołku i te, które są do tych trójkątów prostopadłe (styczne z krawędziami). Poprzez najlepszą płaszczyznę rozumie się taką, która dzieli trójkąty na równe ilościowo grupy. Następnie w pętli algorytm sprawdza, po której stronie wybranej płaszczyzny znajduje się dany obiekt z listy - w zależności od sytuacji trafia on do listy, która zostanie przekazana kolejnym dzieciom (,,przedniemu'' i ,,tylnemu''). W przypadku, gdy trójkąt leży na płaszczyźnie podziału, jest on umieszczany w obu listach, z kolei jeżeli płaszczyzna go przecina, to jest on dzielony na dwa (w sytuacji powstania trójkąta i czworokąta, czworokąt jest dzielony na dwa trójkąty) - każda z połówek trafi do odpowiedniego ,,dziecka''. 	Program uwzględnia sfery przechowywane w postaci równania (a więc prosty podział takiego obiektu nie jest możliwy). W momencie, w którym płaszczyzna przetnie sferę, trafia ona tylko do listy obiektów rozpatrywanego wierzchołka. Zaimplementowanie sfer wymagało takiej niekonwencjonalnej modyfikacji algorytmu, która będzie miała wpływ na sposób przeglądania drzewa. Rekurencja kończy się, kiedy zostanie osiągnięta maksymalna głębokość drzewa (określana przez parametr przekazywany do funkcji przy pierwszym wywołaniu), lub w sytuacji, w której dalszy podział jest niemożliwy. Wtedy wierzchołek jest zamieniany w liść (wskaźniki na potomstwo są puste), a wejściowa lista obiektów zostaje do niego przypisana. Nie biorąc pod uwagę sfer wszystkie wierzchołki niebędące liśćmi są puste.
 
 \begin{lstlisting}[caption={Fragment klasy \emph{BSP} - przeglądanie drzewa}]
 
@@ -158,7 +158,6 @@ node *near;
 node *far;
 SceneObject *hit = nullptr;;
 
-
 switch (root->partitionPlane.classifyPoint(&startingPoint)) {
     case FRONT:
         near = root->front;
@@ -171,7 +170,6 @@ switch (root->partitionPlane.classifyPoint(&startingPoint)) {
     break;
 
     case COINCIDENT: {
-
         Vector3<float> point = startingPoint + directionVector;
         if (root->partitionPlane.classifyPoint(&point) == FRONT) {
             near = root->front;
@@ -293,7 +291,7 @@ return 0;
 
 Powyższa metoda pokazuje, jak działa pętla główna węzłów wykonawczych. Zanim zostanie ona uruchomiona, wszelkie niezbędne informacje dot. sceny zostają odebrane przez każdy z węzłów (dzieje się to w konstruktorze). 
 
-Zgodnie z opisem w rozdziale (!ROZDZIAŁ!) program czeka na polecenia mogące nadejść od węzła zarządzającego - może być to żądanie zakończenia programu, definicja fragmentu obrazu, który należy wyznaczyć, czy definicja kamery (jest ona aktualizowana co klatkę animacji). Do wyznaczenia tablicy pikseli program wykorzystuje klasę \emph{RayTracer}, która dokładniej została opisana wyżej. 
+Zgodnie z opisem w rozdziale czwartym program czeka na polecenia mogące nadejść od węzła zarządzającego - może być to żądanie zakończenia programu, definicja fragmentu obrazu, który należy wyznaczyć, czy definicja kamery (jest ona aktualizowana co klatkę animacji). Do wyznaczenia tablicy pikseli program wykorzystuje klasę \emph{RayTracer}, która dokładniej została opisana wyżej. 
 
 \section{Serializacja}
 

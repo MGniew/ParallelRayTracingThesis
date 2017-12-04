@@ -44,6 +44,7 @@ Pierwszym i najważniejszym zadaniem węzła zarządzającego jest wczytanie pli
 \State readFile()
 \State sendScene()
 \State sendCamera()
+\State sendDepth()
 \\
 \While{true}
 \State queue = splitImageToChunks()
@@ -69,21 +70,22 @@ Pierwszym i najważniejszym zadaniem węzła zarządzającego jest wczytanie pli
 
 \subsection{Slave}
 
-Nawiązując do poprzedniego punktu, pierwszą czynnością, którą powinien wykonać każdy ze slave'ów, jest odebranie definicji obiektów wykorzystywanych przy generowaniu sceny. Następnie w pętli, może on czekać na zadanie, realizować je (z wykorzystaniem klasy RayTracer) i odsyłać z powrotem do węzła zarządzającego.
+Nawiązując do poprzedniego punktu, pierwszą czynnością, którą powinien wykonać każdy ze slave'ów, jest odebranie definicji obiektów wykorzystywanych przy generowaniu sceny. Potem, każdy z węzłów, sam buduje drzewo BSP, z którego będzie korzystał (przesyłanie informacji dot. drzewa ma sens, jeżeli jego budowa zostanie zrównoleglona na klastrze - w przypadku tego projektu nie miało to miejsca) Następnie w pętli, może on czekać na zadanie, realizować je (z wykorzystaniem klasy RayTracer) i odsyłać z powrotem do węzła zarządzającego.
 
 \begin{algorithm}[H]
 \caption{Działanie \emph{slave'a}}
 \begin{algorithmic}
 \State recvScene()
 \State recvCamera()
-\\
+\State recvDepth()
+\State buildBSP()
 \While{true}
 \State msg = recvMessage()
 \If {msg == EXIT} exit()
 \ElsIf {msg == CHUNK}
-	recvChunk()
-	pixels = recursiveRayTracer()
-	sendPixels()
+	\State recvChunk()
+	\State pixels = recursiveRayTracer()
+	\State sendPixels()
 \ElsIf {msg == CAMERA}
 	recvCamera() //aktualizacja pozycji kamery
 \EndIf
@@ -94,8 +96,22 @@ Nawiązując do poprzedniego punktu, pierwszą czynnością, którą powinien wy
 
 \subsection{Definicja zadania i rodzaje komunikatów}
 
-TODO...
-\newpage
+Poprzez zadanie, które węzeł zarządzający ma zlecać węzłom wykonawczym, rozumie się pewien wycinek obrazu, którego piksele należy wyznaczyć. Będzie on definiowany poprzez cztery wartości - początkowe i końcowe współrzędne x i y odnoszące się do wymiarów całego obrazu. Wynikiem realizacji zadania będzie tablica pikseli. Niżej wymieniono wszystkie przewidywane komunikaty wymieniane pomiędzy węzłami:
+
+\begin{itemize}
+
+	\item CAMERA - przesyłane dane zawierają definicję kamery,
+	\item CHUNK - przesyłane dane dot. definicji fragmentu do policzenia (zlecenie zadania),
+	\item DEPTH - głębokość drzewa śledzenia promieni,
+	\item EXIT - komunikat wysyłany przez węzeł zarządzający do węzłów wykonawczych,
+	\item NAME - informacja przesyłana od węzłów wykonawczych do węzła zarządzającego dotycząca ich nazwy (nazwa komputera, na którym zostały uruchomione,
+	\item PIXELS - przesyłane dane zawierają kolory pikseli realizowanego zadania (wiadomość będzie również zawierała informacje o wycinku, którego te kolory dotyczą)
+	\item READY - informacja wysyłana do węzła zarządzającego mówiąca o gotowości węzła wykonawczego do obliczeń (zbudował własne struktury, w tym drzewo \emph{BSP},
+	\item SCENE - przesyłane dane zawierają definicję sceny
+
+\end{itemize}
+
+
 \section{Projekt programu}
 
 	\subsection{Diagram klas}
@@ -167,7 +183,7 @@ Klasa BoundingBox reprezentuje prostopadłościany, które w założeniu mają o
 \end{longtable}
 \normalsize
 
-Klasa BSP implementuje drzewo opisane w rozdziale (!RODZIAŁ!). Poza metodami związanymi z budową drzewa, zawiera ona metody analogiczne do Klasy Scene (z tą różnicą, że metody Scene wykorzystują przegląd zupełny obiektów) umożliwiające przeglądanie sceny w poszukiwaniu przeciętych obiektów i badania, czy dany punkt znajduje się w cieniu. Drzewo BSP jest składową klasy Scene, która wywołuje jego metody (jeżeli jest ustawiona flaga mówiąca o wykrzystaniu drzewa).
+Klasa BSP implementuje drzewo opisane w rozdziale drugim. Poza metodami związanymi z budową drzewa, zawiera ona metody analogiczne do Klasy Scene (z tą różnicą, że metody Scene wykorzystują przegląd zupełny obiektów) umożliwiające przeglądanie sceny w poszukiwaniu przeciętych obiektów i badania, czy dany punkt znajduje się w cieniu. Drzewo BSP jest składową klasy Scene, która wywołuje jego metody (jeżeli jest ustawiona flaga mówiąca o wykrzystaniu drzewa).
 
 Podstawowym elementem drzewa jest struktura Node, która zawiera pola takie jak płaszczyzna podziału, wskaźniki na kolejne wierzchołki drzewa (reprezentujące przestrzeń przed i za płaszczyzną) i listę obiektów należących do danego wierzchołka. Obiekt może należeć do wierzchołka np. w sytuacji gdy wierzchołek jest liściem lub obiekt leży na płaszczyźnie podziału. Klasa BSP zostanie dokładniej opisana w rozdziale 6.
 
@@ -249,7 +265,7 @@ FileLoader jest klasą odpowiedzialną za wczytanie definicji sceny z pliku (st�
 \end{longtable}
 \normalsize
 
-Klasa InputParser jest prostą klasą pozwalająca na obróbkę danych wejściowych (dokładniej opisane w rozdziale !WSTAW RODZIAŁ!). Klasa MainWindow, która w założeniach ma tworzyć wątek MasterThread, wykorzystuje ją do przekazania mu parametrów.
+Klasa InputParser jest prostą klasą pozwalająca na obróbkę danych wejściowych (dokładniej opisane w rozdziale szóstym). Klasa MainWindow, która w założeniach ma tworzyć wątek MasterThread, wykorzystuje ją do przekazania mu parametrów.
 
 \subsubsection{Light}
 
@@ -265,7 +281,7 @@ Klasa InputParser jest prostą klasą pozwalająca na obróbkę danych wejściow
 \end{longtable}
 \normalsize
 
-Klasa Light określa obiekty światła. Więcej o świetle i jego znaczeniu na scenie można przeczytać w rozdziale !ROZDZIAŁ!.
+Klasa Light określa obiekty światła. Więcej o świetle i jego znaczeniu na scenie można przeczytać w rozdziale drugim.
 
 \subsubsection{MainWindow}
 
@@ -334,7 +350,7 @@ Klasa MainWindow reprezentuje główne okno aplikacji. Ze względów projektowyc
 
 Klasa MasterThread jest główną klasą aplikacji, której obiekt tworzony jest w tym samym procesie co obiekt MainWindow, jednak działa w osobnym wątku. Takie rozwiązanie pozwala zachować responsywność aplikacji. Wątek okna głównego jest odpowiedzialny za przetwarzanie zdarzeń wygenerowanych przez użytkownika czy program, a wątek MasterThread, niezależnie od niego, zajmuje się w tym czasie generowaniem kolejnej klatki animacji. Rozdzielamy w ten sposób warstwę prezentacji od warstwy biznesowej tworząc tym samym aplikację przyjaźniejszą użytkownikowi.
 
-Głównym zadaniem MasterThread jest zarządzanie węzłami wykonawczymi (sam stanowi on serce węzła nadzorującego). Posiada on szereg metod umożliwiających komunikację z innymi procesami tworzącymi aplikację. Ma on dostęp do lokalnych kopii obiektów Scene i Camera, ponieważ musi je rozesłać po klastrze i mieć możliwość modyfikacji ich parametrów (przesunięcie kamery co klatkę, aktualizacja obiektu Pixels). Więcej o zadaniach i sposobie działania MasterThread można przeczytać (!rodział z wyżej!, !rodział z implementacji!).
+Głównym zadaniem MasterThread jest zarządzanie węzłami wykonawczymi (sam stanowi on serce węzła nadzorującego). Posiada on szereg metod umożliwiających komunikację z innymi procesami tworzącymi aplikację. Ma on dostęp do lokalnych kopii obiektów Scene i Camera, ponieważ musi je rozesłać po klastrze i mieć możliwość modyfikacji ich parametrów (przesunięcie kamery co klatkę, aktualizacja obiektu Pixels). Więcej o zadaniach i sposobie działania MasterThread można przeczytać w punkcie 4.1.
 
 \footnotesize
 \begin{longtable}{|p{14cm}|}
@@ -481,7 +497,7 @@ SceneObject jest wirtualną klasą, po której powinny dziedziczyć wszystkie ob
 \end{longtable}
 \normalsize
 
-Klasa Serializable jest właściwie Interfejsem - dziedziczą po niej wszystkie klasy, które muszą mieć możliwość serializacji (zamiana obiektu na ciąg bajtów) w związku z potrzebą wysłania ich do innych węzłów klastra. Bardziej szczegółowe informacje o serialializacji można znaleźć w rodziale 6.
+Klasa Serializable jest właściwie Interfejsem - dziedziczą po niej wszystkie klasy, które muszą mieć możliwość serializacji (zamiana obiektu na ciąg bajtów) w związku z potrzebą wysłania ich do innych węzłów klastra. Bardziej szczegółowe informacje o serializacji można znaleźć w rozdziale 6.
 
 \subsubsection{SlaveMPI}
 
@@ -510,7 +526,7 @@ Klasa Serializable jest właściwie Interfejsem - dziedziczą po niej wszystkie 
 \end{longtable}
 \normalsize
 
-SlaveMPI jest klasą analogiczną do klasy MasterThraed, jednak jej obiekt jest tworzony na każdym węźle wykonawczym. Zawiera ona w sobie metody implementujące mechanizmy komunikacji z resztą węzłów i takie pozwalające na wykonywanie zadań zleconych przez mastera. Metoda exec() implementuje algorytm opisany w rozdziale (!wstaw rozdział!) - główną pętlę programu węzłów wykonawczych. Więcej o implementacji można znaleźć w rozdziale 6.
+SlaveMPI jest klasą analogiczną do klasy MasterThraed, jednak jej obiekt jest tworzony na każdym węźle wykonawczym. Zawiera ona w sobie metody implementujące mechanizmy komunikacji z resztą węzłów i takie pozwalające na wykonywanie zadań zleconych przez mastera. Metoda exec() implementuje algorytm opisany w punkcie 4.1.2 - główną pętlę programu węzłów wykonawczych. Więcej o implementacji można znaleźć w rozdziale 6.
 
 \subsubsection{StatisticsWindow}
 
