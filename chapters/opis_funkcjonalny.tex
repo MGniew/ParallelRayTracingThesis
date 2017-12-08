@@ -2,7 +2,7 @@
 
 Do uruchomienia aplikacji niezbędne jest zainstalowanie biblioteki \emph{MPICH} na każdym komputerze będącym elementem klastra. Prawidłowe działanie programu (w przypadku, w którym chcemy, aby działał on na kilku maszynach) wymaga skonfigurowania połączenia \emph{ssh} , ponieważ ta implementacja standardu \emph{MPI} korzysta z niego jako ze sposobu komunikacji. Zarówno bibliotekę jak i instrukcje konfiguracji można znaleźć na stronie producenta \cite{mpich}. Program uruchamia się z linii komend w następujący sposób:
 \begin{center}
-\begin{lstlisting}[language=bash, deletekeywords={test}, keepspaces=true, columns=flexible]
+\begin{lstlisting}[language=bash, deletekeywords={test}, keepspaces=true, columns=flexible, caption={Uruchomienie programu}]
 mpiexec [-n liczba procesów] -H [adresy komputerów w klastrze oddzielone przecinkami]
 ./ParallelRayTracing [-s] [-b] [-f nazwa pliku wejściowego] [-w szer. w pikselach]
 [-h wys. w pikselach] [-c liczba fragmentów] [-d głębokość drzewa] [-t liczba testów]
@@ -24,77 +24,80 @@ Komenda \emph{mpiexec} jest zdefiniowana w standardzie \emph{MPI} i posiada ona 
 \end{itemize}
 
 %\caption{Przykładowe uruchomienie programu}
-\begin{lstlisting}[language=bash]
+\begin{lstlisting}[language=bash, caption={Przykładowe uruchomienie programu}]
 mpiexec -n 5 ./ParallelRayTracing -s -f spheres.txt -w 640 -h 360
 \end{lstlisting}.
 
-Po uruchomieniu programu na ekranie pojawi się okno widoczne na obrazie (!numer obrazka!). W centralnej części interfejsu widzimy podgląd generowanej animacji - obraz obraca się według punktu zdefiniowanego w pliku wejściowym co każdą klatkę animacji (opis pliku wejściowego znajduje się niżej). W dolnej części ekranu widzimy podstawowe informacje związane z czasem generowania obrazu: \emph{SPF} (ang. \emph{second per frame} - czas generowania klatki) i \emph{FPS} (ang. \emph{frames per seconds} - liczba klatek na sekundę). W górnej części interfejsu znajduje klawisz, który otwiera okno z dodatkowymi statystykami (!numer obrazka!). Tabela widoczna w lewej części dodatkowego interfejsu przedstawia średni czas, jaki danemu węzłowi zajmuje liczenie zadania (generowanie fragmentu obrazu). Czas podawany jest w sekundach. W przykładzie pokazanym na obrazku wszystkie procesy liczące znajdują się na komputerze \emph{master}. W prawej części okna podano dodatkowe parametry związane ze sceną.
+Po uruchomieniu programu na ekranie pojawi się okno widoczne na rysunku \ref{gui1}. W centralnej części interfejsu znajduje się podgląd generowanej animacji - obraz obraca się według punktu zdefiniowanego w pliku wejściowym co każdą klatkę animacji (opis pliku wejściowego znajduje się niżej). W dolnej części ekranu widzimy podstawowe informacje związane z czasem generowania obrazu: \emph{SPF} (ang. \emph{second per frame} - czas generowania klatki) i \emph{FPS} (ang. \emph{frames per seconds} - liczba klatek na sekundę). W górnej części interfejsu znajduje klawisz, który otwiera okno z dodatkowymi statystykami \ref{gui2}. Tabela widoczna w lewej części dodatkowego interfejsu przedstawia średni czas, jaki danemu węzłowi zajmuje liczenie zadania (generowanie fragmentu obrazu). Czas podawany jest w sekundach. W przykładzie pokazanym na obrazku wszystkie procesy liczące znajdują się na komputerze \emph{master}. W prawej części okna podano dodatkowe parametry związane ze sceną.
 
 \begin{figure}[htb!]
 \centering
   \includegraphics[width=\textwidth]{gui1.png}
-  \caption{GUI}
+  \caption{GUI - główny widok}
+  \label{gui1}
 \end{figure}
 
 \begin{figure}[htb!]
+
 \centering
   \includegraphics[width=\textwidth]{gui2.png}
-    \caption{GUI}
+  \caption{GUI - widok statystyk}
+  \label{gui2}
 \end{figure}
 
 \section{Opis pliku wejściowego}
 
-Plik wejściowy składa się z szeregu linii definiujących zadane obiekty. Dwa z nich są obowiązkowe i mogą wystąpić w pliku tylko raz (w przypadku podania więcej niż jednej definicji program skorzysta z ostatniej) - \emph{Scene} i \emph{Camera}. Niżej opisano jakie typu obiektów użytkownik może definiować oraz podano przykładowy plik wejściowy. Jeżeli pierwsze słowo w linii (słowo kluczowe) nie zostanie rozpoznane to zostanie on zignorowana. Jeżeli w którymś z parametrów znajduje się błąd obiekt również nie będzie wczytany, ale użytkownik dostanie informację zwrotną o tym, w którym miejscu w pliku pojawił się problem. Parametry są podawane wg. słów kluczowych - ich wartości zawierają się w nawiasach trójkątnych. Jeśli definiowany parametr jest wektorem, kolejne wartości zostają oddzielone przecinkami.
+Plik wejściowy składa się z szeregu linii definiujących zadane obiekty. Dwa z nich są obowiązkowe i mogą wystąpić w pliku tylko raz (w przypadku podania więcej niż jednej definicji program skorzysta z ostatniej) - \emph{Scene} i \emph{Camera}. Niżej opisano jakie typu obiektów użytkownik może definiować oraz podano przykładowy plik wejściowy. Jeżeli pierwsze słowo w linii (słowo kluczowe) nie zostanie rozpoznane, to będzie ono zignorowane. Jeżeli w którymś z parametrów znajduje się błąd, obiekt również nie będzie wczytany, ale użytkownik dostanie informację zwrotną o tym, w którym miejscu w pliku pojawił się problem. Parametry są podawane wg. słów kluczowych - ich wartości zawierają się w nawiasach trójkątnych. Jeśli definiowany parametr jest wektorem, kolejne wartości zostają oddzielone przecinkami.
 
 \begin{itemize}
 
 \item \emph{scene} - zawiera parametry światła globalnego i kolor tła.
-	\begin{enumerate}
+	\begin{itemize}
 		\item \emph{background} - wektor definiujący kolor tła podany w modelu \emph{RGB}. Wartości powinny zawierać się w przedziale od 0 do 1,
-		\item \emph{global} -  wektor określający natężenie światła globalnego (patrz rozdział (RODZIAŁ), \emph{Model Phonga}. Wartości powinny zawierać się w przedziale od 0 do 1,
-	\end{enumerate}
+		\item \emph{global} -  wektor określający natężenie światła globalnego (punkt 2.1.3, \emph{Model Phonga}). Wartości powinny zawierać się w przedziale od 0 do 1,
+	\end{itemize}
 	
 \item \emph{camera} - definiuje kamerę (obserwatora).
 
-	\begin{enumerate}
+	\begin{itemize}
 		\item \emph{eye} - wektor określający pozycję kamery (oka obserwatora),
 		\item \emph{lookAt} - wektor określający punkt, na który patrzy obserwator (to wokół niego będzie się on obracał),
-		\item \emph{zNear} - wartość skalarna określająca odległość obserwatora od rzutni (patrz (!rozdział!)
-		\item \emph{zFar} -	wartość skalarna określająca maksymalną odległość, na jaką widzi obserwator (patrz (!ROZDZIAŁ!)
-		\item \emph{povy} -	wartość skalarna określająca pionowy kąt widzenia obserwatora (patrz (!ROZDZIAŁ!). Jest ona podawana w stopniach.
-	\end{enumerate}
+		\item \emph{zNear} - wartość skalarna określająca odległość obserwatora od rzutni (punkt 2.1.1)
+		\item \emph{zFar} -	wartość skalarna określająca maksymalną odległość, na jaką widzi obserwator (punkt 2.1.1)
+		\item \emph{povy} -	wartość skalarna określająca pionowy kąt widzenia obserwatora (punkt 2.1.1). Jest ona podawana w stopniach.
+	\end{itemize}
 
 \item \emph{light} - definiuje właściwości i położenie punktowego źródła światła
 
-	\begin{enumerate}
+	\begin{itemize}
 		\item \emph{pos} - wektor określający pozycję światła.
-		\item \emph{amb} - wektor określający, w jaki sposób źródło światła wpływa na oświetlenie otoczenia (ang. \emph{ambient light} - patrz (!ROZDZIAŁ!))
-		\item \emph{dif} - wektor określający natężenie światła rozproszonego (ang. \emph{diffuse light} - patrz (!ROZDZIAŁ!))
-		\item \emph{spec} - wektor określający natężenie światła kierunkowego (ang. \emph{specular light} - patrz (!ROZDZIAŁ!))
-	\end{enumerate}
+		\item \emph{amb} - wektor określający, w jaki sposób źródło światła wpływa na oświetlenie otoczenia (ang. \emph{ambient light} - punkt 2.1.3)
+		\item \emph{dif} - wektor określający natężenie światła rozproszonego (ang. \emph{diffuse light} - punkt 2.1.3)
+		\item \emph{spec} - wektor określający natężenie światła kierunkowego (ang. \emph{specular light} - punkt 2.1.3)
+	\end{itemize}
 
 \item \emph{triangle}
 
-	\begin{enumerate}
+	\begin{itemize}
 		\item \emph{pointA} - wektor określający położenie jednego z wierzchołków trójkąta.
 		\item \emph{pointB} - wektor określający położenie jednego z wierzchołków trójkąta.
 		\item \emph{pointC} - wektor określający położenie jednego z wierzchołków trójkąta.
-		\item \emph{amb} - wektor określający procentowy wpływ światła otoczenia na powierzchnię (ang. \emph{ambient light} - patrz (!ROZDZIAŁ!)). Wartości powinny zawierać się w przedziale od 0 do 1,
-		\item \emph{dif} - wektor określający procentowy wpływ światła rozproszonego na powierzchnię (ang. \emph{diffuse light} - patrz (!ROZDZIAŁ!). Wartości powinny zawierać się w przedziale od 0 do 1,
-		\item \emph{spec} - wektor określający procentowy wpływ światła kierunkowego na powierzchnię (ang. \emph{specular light} - patrz (!ROZDZIAŁ!)). Wartości powinny zawierać się w przedziale od 0 do 1,
+		\item \emph{amb} - wektor określający procentowy wpływ światła otoczenia na powierzchnię (ang. \emph{ambient light} - punkt 2.1.3). Wartości powinny zawierać się w przedziale od 0 do 1,
+		\item \emph{dif} - wektor określający procentowy wpływ światła rozproszonego na powierzchnię (ang. \emph{diffuse light} - punkt 2.1.3). Wartości powinny zawierać się w przedziale od 0 do 1,
+		\item \emph{spec} - wektor określający procentowy wpływ światła kierunkowego na powierzchnię (ang. \emph{specular light} - punkt 2.1.3). Wartości powinny zawierać się w przedziale od 0 do 1,
 		\item \emph{specShin} - skalar, który wpływa na wygląd odblasków na powierzchni (przyjmuje wartości od kliku do kilkuset).
 		\item \emph{trans} - skalar określający procentowy wpływ przezroczystości przedmiotu na kolor powierzchni (w przypadku zera nie jest wysyłany promień przechodzący przez powierzchnię). Wartości zawierać się w przedziale od 0 do 1,
 		\item \emph{mirror} - skalar określający procentowy wpływ promieni odbitych na ostateczny kolor piksela (w przypadku zera nie jest wysyłany żaden promień odbity).
 		\item \emph{local} - parametr skalarny określający procentowy wpływ właściwych parametrów powierzchni na kolor piksela.
 		\item \emph{density} - skalar określający gęstość przedmiotu (współczynniki gęstości są stabelaryzowane i dostępne w Internecie), która wpływa na złamanie światła. Gęstość ośrodka sceny wynosi 1.
-	\end{enumerate}
+	\end{itemize}
 
 \item \emph{sphere}
 
-	\begin{enumerate}
-		\item \emph{amb} - wektor określający procentowy wpływ światła otoczenia na powierzchnię (ang. \emph{ambient light} - patrz (!ROZDZIAŁ!)). Wartości powinny zawierać się w przedziale od 0 do 1,
-		\item \emph{dif} - wektor określający procentowy wpływ światła rozproszonego na powierzchnię (ang. \emph{diffuse light} - patrz (!ROZDZIAŁ!). Wartości powinny zawierać się w przedziale od 0 do 1,
-		\item \emph{spec} - wektor określający procentowy wpływ światła kierunkowego na powierzchnię (ang. \emph{specular light} - patrz (!ROZDZIAŁ!)). Wartości powinny zawierać się w przedziale od 0 do 1,
+	\begin{itemize}
+		\item \emph{amb} - wektor określający procentowy wpływ światła otoczenia na powierzchnię (ang. \emph{ambient light} -  punkt 2.1.3). Wartości powinny zawierać się w przedziale od 0 do 1,
+		\item \emph{dif} - wektor określający procentowy wpływ światła rozproszonego na powierzchnię (ang. \emph{diffuse light} -  punkt 2.1.3). Wartości powinny zawierać się w przedziale od 0 do 1,
+		\item \emph{spec} - wektor określający procentowy wpływ światła kierunkowego na powierzchnię (ang. \emph{specular light} - punkt 2.1.3). Wartości powinny zawierać się w przedziale od 0 do 1,
 		\item \emph{specShin} - skalar, który wpływa na wygląd odblasków na powierzchni (przyjmuje wartości od kliku do kilkuset).
 		\item \emph{trans} - skalar określający procentowy wpływ przezroczystości przedmiotu na kolor powierzchni (w przypadku zera nie jest wysyłany promień przechodzący przez powierzchnię).
 		\item \emph{pos} - wektor określający położenie środka sfery.
@@ -103,11 +106,11 @@ Plik wejściowy składa się z szeregu linii definiujących zadane obiekty. Dwa 
 		\item \emph{mirror} - skalar określający procentowy wpływ promieni odbitych na ostateczny kolor piksela (w przypadku zera nie jest wysyłany żaden promień odbity).
 		\item \emph{local} - parametr skalarny określający procentowy wpływ właściwych parametrów powierzchni na kolor piksela.
 		\item \emph{density} - skalar określający gęstość przedmiotu (współczynniki gęstości są stabelaryzowane i dostępne w Internecie), która wpływa na złamanie światła. Gęstość ośrodka sceny wynosi 1.
-	\end{enumerate}
+	\end{itemize}
 
 \item \emph{obj} - po tym słowie kluczowym należy podać nazwę pliku \emph{obj} (wraz z rozszerzeniem). Program wczyta ten plik konwertując wielokąty w nim zdefiniowane na trójkąty. Pliki \emph{.obj} mogą wskazywać na pliki \emph{.mtl} zawierające definicję materiałów z nimi związanych. Jeżeli taki plik znajduje się w katalogu z programem, to również zostanie on wczytany. W przeciwnym wypadku zostanie zastosowany materiał domyślny.
 
-\lstinputlisting[language={}]{exampleinput.txt}
+\lstinputlisting[language={}, caption={Przykładowy plik wejściowy}]{exampleinput.txt}
 
 
 \end{itemize}

@@ -1,0 +1,37 @@
+\begin{thebibliography}{1}
+
+\bibitem{scratch}
+Strachpixel 2.0.
+\newblock https://www.scratchapixel.com.
+\newblock Accessed: 27.09.2017.
+
+\bibitem{wikiMoll}
+Wikipedia, wolna encyklopedia.
+\newblock Accessed: 15.09.2017.
+
+\bibitem{snellius}
+Wikipedia, wolna encyklopedia.
+\newblock Accessed: 02.11.2017.
+
+\bibitem{dunn02}
+I.~Parberry F.~Dunn.
+\newblock {\em 3D Math Primer for Graphics and Game Development}.
+\newblock Wordware Publishing, Inc., 2002.
+
+\bibitem{falski2004}
+M.~Falski.
+\newblock Przegląd modeli oświetlenia w grafice komputerowej.
+\newblock Master's thesis, Uniwersytet Wrocławski, 2004.
+\newblock Praca magisterska pod kierunkiem dr A. Łukaszewskiego.
+
+\bibitem{foley95}
+tłum. J.~Zabrodzki J.~D. Foley~i in.
+\newblock {\em Wprowadzenie do Grafiki Komputerowej}.
+\newblock WNT, Warszawa, 1995.
+
+\bibitem{suffern2007}
+K.~Suffern.
+\newblock {\em Ray Tracing from the Ground Up}.
+\newblock A K Peters, Ltd., Wellesley, Massachusetts, 2007.
+
+\end{thebibliography}

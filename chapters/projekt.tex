@@ -234,6 +234,7 @@ Podobnie jak obiekt klasy Scene, obiekt klasy Camera jest zbudowany według wzor
 \normalsize
 
 Widgety są składowymi elementami graficznego interfejsu użytkownika i nie wszystkie z nich muszą być reprezentowane poprzez obiekty. Klasa GLwidget odpowiada za prezentowanie kolejnych klatek użytkownikowi. W przypadku kiedy główne okno aplikacji (MainWindow, ,,rodzic'' GLwidget) otrzyma informacje o wygenerowaniu kolejnej klatki od MasterThread wywołuje odpowiednią metodę GLwidget - GLwidget odwołuje się do Klasy Scene, od której otrzymuje tablicę pikseli (Pixels) do wyświetlenia. 
+\pagebreak
 
 \subsubsection{FileLoader}
 
@@ -251,7 +252,7 @@ Widgety są składowymi elementami graficznego interfejsu użytkownika i nie wsz
 \end{longtable}
 \normalsize
 
-FileLoader jest klasą odpowiedzialną za wczytanie definicji sceny z pliku (stąd powiązania z klasami Scene i Camera). Jest ona wykorzystywana przez klasę MasterThread. Klasa korzysta z biblioteki tinyobjloader, dzięki której możliwe jest wczytywanie modeli zapisanych w formacie ,,obj''. Bibliotekę można znaleźć pod adresem https://github.com/syoyo/tinyobjloader. Jest ona udostępniona na licencji MIT.
+FileLoader jest klasą odpowiedzialną za wczytanie definicji sceny z pliku (stąd powiązania z klasami Scene i Camera). Jest ona wykorzystywana przez klasę MasterThread. Klasa korzysta z biblioteki tinyobjloader (https://github.com/syoyo/tinyobjloader), dzięki której możliwe jest wczytywanie modeli zapisanych w formacie ,,obj''. Biblioteka ta jest udostępniona na licencji MIT.
 
 \subsubsection{InputParser}
 
@@ -283,25 +284,19 @@ Klasa InputParser jest prostą klasą pozwalająca na obróbkę danych wejściow
 
 Klasa Light określa obiekty światła. Więcej o świetle i jego znaczeniu na scenie można przeczytać w rozdziale drugim.
 
-\subsubsection{MainWindow}
+\subsubsection{Sphere}
 
 \footnotesize
 \begin{longtable}{|p{14cm}|}
-    \caption{MainWindow} \label{tab:MainWindow} \\ \hline
-    \multicolumn{1}{|c|}{MainWindow} \\ \hline
-    -ui : MainWindow* \\
-    -statisticWindow : StatisticsWindow* \\
-    -masterThread : MasterThread* \ \
-    -statusLabel : QLabel* \\ \hline
-    -createMaster() \\
-    -ShowStats() \\
-    -setSpeed(double time) \\
-    -on\_actionStatistics\_triggered() \\
-    -onQuit(); \\ \hline
+    \caption{Sphere} \label{tab:Sphere} \\ \hline
+    \multicolumn{1}{|c|}{Sphere} \\ \hline
+    -radius : float \\
+    -pos : Vector3* \\
+    \hline
 \end{longtable}
 \normalsize
 
-Klasa MainWindow reprezentuje główne okno aplikacji. Ze względów projektowych jest ona odpowiedzialna za tworzenie obiektu MasterThread (ma to związek z mechanizmem przypisania sygnałów do slotów - mechanizm komunikacji międzywątkowej w Qt) jak i potrzebie komunikacji między jedną i drugą klasą. Klasa MainWindow (wraz z GLwidget i StatisticWidnow) reprezentuje warstwę prezentacji tworzonej aplikacji.
+Klasa Sphere jest klasą reprezentującą sferę. Dziedziczy ona po SceneObject, a więc implementuje metody specyficzne dla tego typu obiektu (np. badanie przecięcia z promieniem).
 
 \subsubsection{MasterThread}
 
@@ -321,7 +316,7 @@ Klasa MainWindow reprezentuje główne okno aplikacji. Ze względów projektowyc
     -queue : queue$<$Chunk$>$ \\
     -test : int \\
     \hline
-	run() \\
+	+run() \\
 	-splitToChunks(int num) \\
 	-clearQueue(queue$<$Chunk$>$ q) \\
     -sendCameraBcast() \\
@@ -337,7 +332,6 @@ Klasa MainWindow reprezentuje główne okno aplikacji. Ze względów projektowyc
     -waitUntillRdy() \\
     -printResult(double spf, double bsp) \\
     -getNames() \\
-    -emitNames() \\
     +getNumOfChunks() : int \\
     +workIsReady() : void \\
     +setTime(double time) : void \\
@@ -366,6 +360,27 @@ Głównym zadaniem MasterThread jest zarządzanie węzłami wykonawczymi (sam st
 
 Chunk jest prostą strukturą wykorzystywaną w komunikacji Master/Slave (MasterThread, SlaveMPI). Zawiera on w sobie informacje o tym, jaki wycinek obrazu powinien być wyznaczany przez dany węzeł wykonawczy.
 
+\subsubsection{MainWindow}
+
+\footnotesize
+\begin{longtable}{|p{14cm}|}
+    \caption{MainWindow} \label{tab:MainWindow} \\ \hline
+    \multicolumn{1}{|c|}{MainWindow} \\ \hline
+    -ui : MainWindow* \\
+    -statisticWindow : StatisticsWindow* \\
+    -masterThread : MasterThread* \ \
+    -statusLabel : QLabel* \\ \hline
+    -createMaster() \\
+    -ShowStats() \\
+    -setSpeed(double time) \\
+    -on\_actionStatistics\_triggered() \\
+    -onQuit(); \\ \hline
+\end{longtable}
+\normalsize
+
+Klasa MainWindow reprezentuje główne okno aplikacji. Ze względów projektowych jest ona odpowiedzialna za tworzenie obiektu MasterThread (ma to związek z mechanizmem przypisania sygnałów do slotów - mechanizm komunikacji międzywątkowej w Qt) jak i potrzebie komunikacji między jedną i drugą klasą. Klasa MainWindow (wraz z GLwidget i StatisticWidnow) reprezentuje warstwę prezentacji tworzonej aplikacji.
+
+
 \subsubsection{Pixels}
 
 \footnotesize
@@ -386,6 +401,7 @@ Chunk jest prostą strukturą wykorzystywaną w komunikacji Master/Slave (Master
 
 Klasa Pixels przechowuje tablice pikseli w formie ciągu bajtów unsigned char* (taka reprezentacja jest wykorzystywana przez funkcje rysujące, które zapewniają przyspieszenie sprzętowe). Pozwala ona stworzyć wygodny interfejs czytania i pisania do tablicy. 
 
+\newpage
 \subsubsection{Plane}
 
 \footnotesize
@@ -426,6 +442,31 @@ Klasa reprezentuje obiekty płaszczyzn, wykorzystywane przy podziale podprzestrz
 
 Klasa RayTracer zawiera w sobie zestaw metod, które pozwalają na realizację algorytmu śledzenia promieni. W tym celu odwołuje się ona do pól klas Scene i Camera. Każdy obiekt SlaveMPI (zawierający w sobie algorytm działający na węzłach wykonawczych) tworzy własny obiekt RayTracer'a. Klasa ta zostanie dokładniej opisana w rozdziale 6.
 
+\subsubsection{SceneObject}
+
+\footnotesize
+\begin{longtable}{|p{14cm}|}
+    \caption{SceneObject} \label{tab:SceneObject} \\ \hline
+    \multicolumn{1}{|c|}{SceneObject} \\ \hline
+    \#specShin : float \\
+    \#transparency : float \\
+    \#mirror : float \\
+    \#local : float \\
+    \#density : float \\
+    \#amb : Vector3* \\
+    \#dif : Vector3* \\
+    \#spec : Vector3* \\
+    \hline
+	+getLocalColor(normal : Vector3, cross : Vector3, observation : Vector3) : Vector3 \\
+	+trace(cross : Vector3, start : Vector3, dir : Vector3, dist : float) : bool \\
+	+getNormalVector(cross : Vector3) : Vector3 \\
+	+getBoundingBox() : BoundingBox \\
+	\hline
+\end{longtable}
+\normalsize
+
+SceneObject jest wirtualną klasą, po której powinny dziedziczyć wszystkie obiekty sceny. Pozwala ona na wykorzystywanie wielopostaciowości (widoczne np. w klasie Scene), wymuszając na klasach potomnych implementacje metod pozwalających określić przecięcie z promieniem (trace()), oblicznie wektora normalnego w punkcie (getNormalVector()), czy pobranie koloru w punkcie (getLocalColor())
+
 \subsubsection{Scene}
 
 \footnotesize
@@ -458,30 +499,6 @@ Klasa RayTracer zawiera w sobie zestaw metod, które pozwalają na realizację a
 
 Obiekt klasy Scene zawiera definicję całej sceny. Jest on napisany według wzorca Singleton. Wywołując statyczną metodę getInstance() otrzymamy na niego wskaźnik. Obiekt Scene jest jednym z częściej wykorzystywanych obiektów, gdyż jest centralnym elementem aplikacji - zawiera pola istotne dla wielu klas. W związku z tym udostępnia on interfejs pozwalający na pobieranie interesujących daną klasę danych (np. metoda isInShadow, która bada czy dany punkt znajduje się w cieniu. Klasa, zgodnie z flagą useBSP, dokonuje przeglądu zupełnego lub wykorzystuje drzewo).
 
-\subsubsection{SceneObject}
-
-\footnotesize
-\begin{longtable}{|p{14cm}|}
-    \caption{SceneObject} \label{tab:SceneObject} \\ \hline
-    \multicolumn{1}{|c|}{SceneObject} \\ \hline
-    \#specShin : float \\
-    \#transparency : float \\
-    \#mirror : float \\
-    \#local : float \\
-    \#density : float \\
-    \#amb : Vector3* \\
-    \#dif : Vector3* \\
-    \#spec : Vector3* \\
-    \hline
-	+getLocalColor(normal : Vector3, cross : Vector3, observation : Vector3) : Vector3 \\
-	+trace(cross : Vector3, start : Vector3, dir : Vector3, dist : float) : bool \\
-	+getNormalVector(cross : Vector3) : Vector3 \\
-	+getBoundingBox() : BoundingBox \\
-	\hline
-\end{longtable}
-\normalsize
-
-SceneObject jest wirtualną klasą, po której powinny dziedziczyć wszystkie obiekty sceny. Pozwala ona na wykorzystywanie wielopostaciowości (widoczne np. w klasie Scene), wymuszając na klasach potomnych implementacje metod pozwalających określić przecięcie z promieniem (trace()), oblicznie wektora normalnego w punkcie (getNormalVector()), czy pobranie koloru w punkcie (getLocalColor())
 
 \subsubsection{Serializable}
 
@@ -552,20 +569,7 @@ SlaveMPI jest klasą analogiczną do klasy MasterThraed, jednak jej obiekt jest 
 
 StatisticWindow jest oknem, które (jak sama nazwa wskazuje) ma prezentować statystki dotyczące programu - czas generowania jednej klatki, średni czas pracy danego węzła, liczbę obiektów na scenie itd.
 
-\subsubsection{Sphere}
-
-\footnotesize
-\begin{longtable}{|p{14cm}|}
-    \caption{Sphere} \label{tab:Sphere} \\ \hline
-    \multicolumn{1}{|c|}{Sphere} \\ \hline
-    -radius : float \\
-    -pos : Vector3* \\
-    \hline
-\end{longtable}
-\normalsize
-
-Klasa Sphere jest klasą reprezentującą sferę. Dziedziczy ona po SceneObject, a więc implementuje metody specyficzne dla tego typu obiektu (np. badanie przecięcia z promieniem).
-
+\newpage
 \subsubsection{Triangle}
 
 \footnotesize

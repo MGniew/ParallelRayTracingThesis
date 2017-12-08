@@ -17,9 +17,16 @@
 \usepackage{slashbox,pict2e}
 \usepackage{subcaption}
 \usepackage{ucs}
+\usepackage{pgfplots}
+\usepackage[most]{tcolorbox}
 \graphicspath{ {images/} }
 
+\makeatletter
+\renewcommand{\ALG@name}{Algorytm}
+\makeatother
 
+\captionsetup[subfigure]{labelformat=empty}
+\captionsetup[subfigure]{aboveskip=-8pt}
 \definecolor{mygreen}{rgb}{0,0.6,0}
 \definecolor{mygray}{rgb}{0.5,0.5,0.5}
 \definecolor{mymauve}{rgb}{0.58,0,0.82}
@@ -103,119 +110,121 @@
 %\bibliographystyle{plain}
 %\bibliography{bibliography}{}
 %\addcontentsline{toc}{chapter}{Bibliografia}
-\begin{thebibliography}{9}
+\begin{thebibliography}{99}
+
+\bibitem{bspfaq}
+	BSP FAQ: \\
+	ftp://ftp.sgi.com/other/bspfaq/faq/bspfaq.html, 03.11.2017
+
+\bibitem{wikiPar}
+	Czech Z. J. 
+	\emph{Wprowadzenie do obliczeń równoległych},
+	Wydawnictwo Naukowe PWN, 2013
+	
+\bibitem{bvhvsoctee}
+	Dievald T., http://thomasdiewald.com/blog/?p=1488, 11.08.2017
+
+\bibitem{dunn02}
+  Dunn F., Parberry I.,
+  \emph{3D Math Primer for Graphics and Game Development}.
+  Wordware Publishing, Inc.
+  2002.
+
+\bibitem{trees}
+	Ericson Christer,
+	\emph{Real-Time Collision Detection},
+	CRC Press, 2005
+	
+\bibitem{falski2004}
+	Falski M. 
+	\emph{Przegląd modeli oświetlenia w grafice komputerowej}
+	Praca magisterska pod kierunkiem dr A. Łukaszewskiego,
+	Uniwersytet Wrocławski,
+	2004
 
 \bibitem{foley95}
-  J. D. Foley i in.
+  Foley J. D.  i in.
   \emph{Wprowadzenie do Grafiki Komputerowej}.
   tłum. J. Zabrodzki,
   WNT, Warszawa
   1995.
   
-\bibitem{dunn02}
-  F. Dunn, I. Parberry,
-  \emph{3D Math Primer for Graphics and Game Development}.
-  Wordware Publishing, Inc.
-  2002.
+\bibitem{octree1}
+	Glassner A. S. ,
+	\emph{Space Subdivision for Fast Ray Tracing},
+	University of North Carolina at Chapel Hill,
+	1984 
+	
+\bibitem{sah1}
+	Kammaje R. P., Mora B.,
+	\emph{A Study of Restricted BSP Trees for Ray Tracing}
+	University of Wales Swansea,
+	2007
+	
+\bibitem{mpich}
+	Dokumentacja MPICH | High-Performance Portable MPI: \\
+	https://www.mpich.org/, 03.07.2017 
+	
+\bibitem{qt}
+	Dokumentacja biblioteki Qt: \\
+	http://wiki.qt.io, 09.09.2017
   
 \bibitem{suffern2007}
-	K. Suffern
+	Suffern K. 
 	\emph{Ray Tracing from the Ground Up}.
 	A K Peters, Ltd.
 	Wellesley, Massachusetts,
 	2007.
 	
+\bibitem{octree2}
+	Samet H.,
+	\emph{Implementing Ray Tracing with Octrees and Neighbor Finding},
+	University of Maryland,
+	Collage Park, 1989	
+	
 \bibitem{scratch}
 	StrachPixel 2.0:
 	https://www.scratchapixel.com, 27.09.2017
+		
+\bibitem{bspvskd}
+	Vinkler T., Havran V., Bittner J.,
+	\emph{Bounding Volume Hierarchies versus Kd-trees on Contemporary Many-Core Architectures},
+	Marsyk University, Czech Technical University in Praque, 2016 
 	
+
+\bibitem{sah2}
+	Wald I.,
+	\emph{Realtime Ray Tracing and Interactive Global Illumination},
+	Computer Graphics Group, Saarland University Saarbrucken, Germany,
+	2004
+
+\bibitem{snellius}
+	Walker J., Halliday D., Resnick. R,
+	\emph{Podstawy Fizyki}, str. 23,
+	PWN, Warszawa,
+	2016.
+
 \bibitem{wikiMoll}
 	Wikipedia, Wolna Encyklopedia:\\ 
 	https://en.wikipedia.org/wiki/Moller–Trumbore\_intersection\_algorithm, 15.09.2017
 	
-	
-\bibitem{snellius}
-	Wikipedia, Wolna Encyklopedia:\\ 
-	https://pl.wikipedia.org/wiki/Prawo\_Snelliusa,
-	02.11.2017
-	
-	
-\bibitem{falski2004}
-	M. Falski
-	\emph{Przegląd modeli oświetlenia w grafice komputerowej}
-	Praca magisterska pod kierunkiem dr A. Łukaszewskiego,
-	Uniwersytet Wrocławski,
-	2004
-	
-\bibitem{qt}
-	Qt: https://www.qt.io/
-	
-\bibitem{wikiPar}
-	Z. J. Czech
-	\emph{Wprowadzenie do obliczeń równoległych},
-	Wydawnictwo Naukowe PWN, 2013
-	
-\bibitem{mpich}
-	MPICH | High-Performance Portable MPI: \\
-	https://www.mpich.org/, 03.07.2017
-
-
-\bibitem{trees}
-	Christer Ericson,
-	\emph{Real-Time Collision Detection},
-	CRC Press, 2005
-	
-
-\bibitem{octree1}
-	A. S. Glassner,
-	\emph{Space Subdivision for Fast Ray Tracing},
-	University of North Carolina at Chapel Hill,
-	1984
-
-\bibitem{octree2}
-	H. Samet,
-	\emph{Implementing Ray Tracing with Octrees and Neighbor Finding},
-	University of Maryland,
-	Collage Park, 1989
-	
-\bibitem{bspvskd}
-	T. Vinkler, V. Havran, J. Bittner,
-	\emph{Bounding Volume Hierarchies versus Kd-trees on Contemporary Many-Core Architectures},
-	Marsyk University, Czech Technical University in Praque
-
-	
 \bibitem{bvhvskd2}
-	M. Zlatuska, V. Havran
+	Zlatuska M., Havran V. 
 	\emph{Ray Tracing on a GPU with CUDA –
 Comparative Study of Three Algorithms},
-	Czech Technical University in Praque
-	
-\bibitem{bvhvsoctee}
-	T. Dievald, http://thomasdiewald.com/blog/?p=1488, 11.08.2017
-	
-\bibitem{bspfaq}
-	BSP FAQ: ftp://ftp.sgi.com/other/bspfaq/faq/bspfaq.html, 03.11.2017
+	Czech Technical University in Praque,
+	2010
 	
 \bibitem{zuk2008}
-	R. Żukowski,
+	Żukowski R.,
 	\emph{Automatyczna dekompozycja sceny 3D na portale i sektory}
 	Praca magisterska pod kierunkiem dr A. Łukaszewskiego,
 	Uniwersytet Wrocławski,
 	2008
-`	
-\bibitem{sah1}
-	R. P. Kammaje, B. Mora,
-	\emph{A Study of Restricted BSP Trees for Ray Tracing}
-	University of Wales Swansea
 	
-\bibitem{sah2}
-	I. Wald,
-	\emph{Realtime Ray Tracing and Interactive Global Illumination},
-	Computer Graphics Group, Saarland University Saarbrucken, Germany,
-	2004
-	
-\bibitem{gpipe}	
-	https://www.khronos.org/opengl/wiki/Rendering\_Pipeline\_Overview
+\bibitem{gpipe}
+	Internetowa encyklopedia na temat OpenGL: \\
+	https://www.khronos.org/opengl/wiki/Rendering\_Pipeline\_Overview, 11.10.2017
 	
 \end{thebibliography}
 

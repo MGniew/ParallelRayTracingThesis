@@ -1,4 +1,21 @@
 This is BibTeX, Version 0.99dThe top-level auxiliary file: thesis.aux
-I found no \bibdata command---while reading file thesis.aux
-I found no \bibstyle command---while reading file thesis.aux
-(There were 2 error messages)
+The style file: plain.bst
+Database file #1: bibliography.bib
+Warning--I didn't find a database entry for "gpipe"
+Warning--I didn't find a database entry for "trees"
+Warning--I didn't find a database entry for "octree1"
+Warning--I didn't find a database entry for "octree2"
+Warning--I didn't find a database entry for "bvhvsoctee"
+Warning--I didn't find a database entry for "bspvskd"
+Warning--I didn't find a database entry for "bvhvskd2"
+Warning--I didn't find a database entry for "bspfaq"
+Warning--I didn't find a database entry for "zuk2008"
+Warning--I didn't find a database entry for "sah1"
+Warning--I didn't find a database entry for "sah2"
+Warning--I didn't find a database entry for "qt"
+Warning--I didn't find a database entry for "wikiPar"
+Warning--I didn't find a database entry for "mpich"
+Warning--to sort, need author or key in scratch
+Warning--to sort, need author or key in wikiMoll
+Warning--to sort, need author or key in snellius
+(There were 17 warnings)

@@ -85,7 +85,7 @@ if (observationVector.scalarProduct(normalVector) < 0) {
 }
 \end{lstlisting}
 
-Biorąc pod uwagę, że kierunek wektora normalnego ma wpływ na otrzymany kolor lokalny powierzchni (jeżeli jego kierunek jest niezgodny z kierunkiem światła to znaczy, że powierzchnia nie jest oświetlona) należy go odwrócić tak, aby był on zgodny z kierunkiem obserwacji - np. w sytuacji, w której obserwator znajdowałby się w kuli (wraz ze światłem oświetlającym scenę), a wektor normalny do powierzchni kuli skierowany byłby na zewnątrz, oświetlenie i tak nie miałoby na nią wpływu.
+Biorąc pod uwagę, że kierunek wektora normalnego ma wpływ na otrzymany kolor lokalny powierzchni (jeżeli jego kierunek jest niezgodny z kierunkiem światła to znaczy, że powierzchnia nie jest oświetlona), należy go odwrócić tak, aby był on zgodny z kierunkiem obserwacji - np. w sytuacji, w której obserwator znajdowałby się w kuli (wraz ze światłem oświetlającym scenę), a wektor normalny do powierzchni kuli skierowany byłby na zewnątrz, oświetlenie i tak nie miałoby na nią wpływu.
 
 \subsection{BSP}
 
@@ -258,7 +258,7 @@ while (true) {
 
 Powyższy kod przedstawia główną pętlę programu węzła zarządzającego. Zanim zostanie ona wywołana, \emph{MasterThread} rozsyła informacje o wczytanej scenie, kamerze i głębokości drzewa śledzenia promieni do każdego z węzłów wykorzystując komunikację typu \emph{broadcast} (dzieje się to w konstruktorze klasy).
 
-Zgodnie z założeniami, rozpoczyna się ona od podziału generowanego obrazu na fragmenty, których definicje trafiają na kolejkę oczekujących zadań. Następnie algorytm zdejmuje zadania z kolejki i wysyła je do kolejnych węzłów wykonawczych (zostaje tutaj ustalona liczba zadań aktualnie wykonywanych). W momencie, w którym master otrzyma wyniki działań (tablicę pikseli) któregokolwiek węzła, następuje sprawdzenie, czy istnieją jeszcze jakieś zadania do wykonania. Jeżeli tak, to jedno z nich zostanie wysłane do węzła, od którego otrzymaliśmy właśnie fragment obrazu, jeżeli nie, to liczba aktualnie wykonywanych zadań zmniejsza się.
+Zgodnie z założeniami rozpoczyna się ona od podziału generowanego obrazu na fragmenty, których definicje trafiają na kolejkę oczekujących zadań. Następnie algorytm zdejmuje zadania z kolejki i wysyła je do kolejnych węzłów wykonawczych (zostaje tutaj ustalona liczba zadań aktualnie wykonywanych). W momencie, w którym master otrzyma wyniki działań (tablicę pikseli) któregokolwiek węzła, następuje sprawdzenie, czy istnieją jeszcze jakieś zadania do wykonania. Jeżeli tak, to jedno z nich zostanie wysłane do węzła, od którego otrzymaliśmy właśnie fragment obrazu, jeżeli nie, to liczba aktualnie wykonywanych zadań zmniejsza się.
 
 W chwili, w której liczba wykonywanych zadań spadnie do zera, zostaje wysłany sygnał do wątku GUI informujący go o tym, że generowana klatka animacji jest gotowa. Zostaje również uaktualniona pozycja kamery, która następnie jest wysyłana do każdego z węzłów wykonawczych.
 
